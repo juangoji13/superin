@@ -36,13 +36,38 @@ export default function LoginPage() {
 
       if (data?.user) {
         // Query user role in public.usuarios
-        const { data: userData, error: userError } = await supabase
+        let { data: userData, error: userError } = await supabase
           .from('usuarios')
           .select('rol, activo')
           .eq('id', data.user.id)
-          .single();
+          .maybeSingle();
 
-        if (userError || !userData) {
+        // Si el usuario existe en Supabase Auth pero no tiene registro en public.usuarios
+        if (!userData) {
+          if (data.user.email === 'superinadmin@gmail.com') {
+            const { data: newProfile, error: insertError } = await supabase
+              .from('usuarios')
+              .insert({
+                id: data.user.id,
+                nombre: 'Administradora Principal',
+                email: data.user.email,
+                rol: 'administradora',
+                activo: true
+              })
+              .select()
+              .single();
+
+            if (insertError) {
+              console.error('Error al registrar perfil de administrador:', insertError);
+              throw new Error('Tu usuario no está registrado en el sistema de personal y el registro automático falló.');
+            }
+            userData = newProfile;
+          } else {
+            throw new Error('Tu usuario no está registrado en el sistema de personal.');
+          }
+        }
+
+        if (!userData) {
           throw new Error('Tu usuario no está registrado en el sistema de personal.');
         }
 

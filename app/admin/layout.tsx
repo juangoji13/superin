@@ -76,7 +76,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: 'Pedidos Dashboard', icon: 'dashboard', href: '/admin/pedidos' },
-    { name: 'Menú y Stock', icon: 'restaurant_menu', href: '/admin/menu' }
+    { name: 'Menú y Stock', icon: 'restaurant_menu', href: '/admin/menu' },
+    { name: 'Configuración', icon: 'settings', href: '/admin/ajustes' }
   ];
 
   return (

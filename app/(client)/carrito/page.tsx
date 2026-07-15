@@ -35,6 +35,7 @@ export default function CarritoPage() {
   const [deliveryCost, setDeliveryCost] = useState(5000);
   const [timeSlots, setTimeSlots] = useState<string[]>(DEFAULT_TIME_SLOTS);
   const [whatsappContact, setWhatsappContact] = useState('573001234567');
+  const [bancos, setBancos] = useState<any[]>([]);
 
   // Fetch configs
   useEffect(() => {
@@ -65,6 +66,21 @@ export default function CarritoPage() {
           .single();
         if (waData?.valor && typeof waData.valor === 'object' && 'numero' in waData.valor) {
           setWhatsappContact((waData.valor as any).numero || '573001234567');
+        }
+
+        const { data: bData } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'datos_transferencia')
+          .single();
+        if (bData?.valor && typeof bData.valor === 'object' && 'bancos' in bData.valor) {
+          setBancos((bData.valor as any).bancos || []);
+        } else {
+          // Default fallback
+          setBancos([
+            { banco: 'Nequi', numero: '3001234567', titular: 'Super IN' },
+            { banco: 'Bancolombia', numero: 'Ahorros 123-456789-01', titular: 'Super IN SAS' }
+          ]);
         }
       } catch (err) {
         console.error('Failed to load configs from Supabase. Using defaults.', err);
@@ -557,6 +573,24 @@ Pago: ${paymentMethod}`;
               
               {paymentMethod === 'Transferencia' && (
                 <div className="mt-4 p-4 bg-surface-container rounded-lg border border-outline-variant border-dashed w-full" onClick={(e) => e.stopPropagation()}>
+                  {/* Cuentas bancarias */}
+                  <div className="flex flex-col gap-2 mb-4 bg-surface p-3 rounded-lg border border-outline-variant/30">
+                    <p className="font-caption font-bold text-primary mb-1">Cuentas para transferencia:</p>
+                    {bancos.length === 0 ? (
+                      <p className="text-[10px] text-on-surface-variant">No hay cuentas de cobro registradas. Contacta al soporte para concretar el pago.</p>
+                    ) : (
+                      bancos.map((b, index) => (
+                        <div key={index} className="flex flex-col text-[11px] pb-2 border-b border-outline-variant/10 last:border-0 last:pb-0">
+                          <div className="flex justify-between items-center font-bold">
+                            <span className="text-primary">{b.banco}</span>
+                            <span className="text-on-background">{b.numero}</span>
+                          </div>
+                          <span className="text-on-surface-variant font-medium">Titular: {b.titular}</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
                   <p className="font-caption text-caption text-on-surface-variant mb-3">
                     Adjunta el comprobante de pago para agilizar tu pedido.
                   </p>

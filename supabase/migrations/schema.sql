@@ -236,3 +236,12 @@ USING (bucket_id = 'imagenes-menu');
 CREATE POLICY "Solo personal autenticado puede subir/modificar imagenes de menu"
 ON storage.objects FOR ALL
 USING (bucket_id = 'imagenes-menu' AND auth.role() = 'authenticated');
+
+-- 10. Habilitar tiempo real (Realtime) para pedidos y cotizaciones en Supabase
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.pedidos;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.cotizaciones;
+  END IF;
+END $$;

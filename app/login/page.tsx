@@ -59,7 +59,7 @@ export default function LoginPage() {
 
             if (insertError) {
               console.error('Error al registrar perfil de administrador:', insertError);
-              throw new Error('Tu usuario no está registrado en el sistema de personal y el registro automático falló.');
+              throw new Error('Error de registro automático: ' + insertError.message);
             }
             userData = newProfile;
           } else {

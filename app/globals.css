@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-display-lg: var(--font-montserrat), sans-serif;
+  --font-headline-lg: var(--font-montserrat), sans-serif;
+  --font-headline-lg-mobile: var(--font-montserrat), sans-serif;
+  --font-title-md: var(--font-montserrat), sans-serif;
+  --font-body-lg: var(--font-inter), sans-serif;
+  --font-body-md: var(--font-inter), sans-serif;
+  --font-label-sm: var(--font-inter), sans-serif;
+  --font-caption: var(--font-inter), sans-serif;
+
+  /* Colors */
+  --color-primary: #012d1d;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1b4332;
+  --color-on-primary-container: #86af99;
+  --color-secondary: #7f5700;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #ffb628;
+  --color-on-secondary-container: #6d4a00;
+  --color-tertiary: #471700;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #6a2600;
+  --color-on-tertiary-container: #ff8348;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-background: #fef8f3;
+  --color-on-background: #1d1b19;
+  --color-surface: #fef8f3;
+  --color-surface-dim: #ded9d4;
+  --color-surface-bright: #fef8f3;
+  --color-surface-variant: #e6e2dd;
+  --color-on-surface: #1d1b19;
+  --color-on-surface-variant: #414844;
+  --color-outline: #717973;
+  --color-outline-variant: #c1c8c2;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f8f3ee;
+  --color-surface-container: #f2ede8;
+  --color-surface-container-high: #ece7e2;
+  --color-surface-container-highest: #e6e2dd;
+
+  /* Border Radius */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-xl: 40px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-sm: 8px;
+  --spacing-base: 8px;
+  --spacing-container-margin: 20px;
+  --spacing-gutter: 16px;
+}
+
+/* Material Symbols styling */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  font-family: var(--font-body-md);
+  min-height: 100dvh;
+}
+
+/* Tap highlight removal for mobile buttons */
+.tap-highlight-transparent {
+  -webkit-tap-highlight-color: transparent;
+}

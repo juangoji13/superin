@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vista de Domiciliario - Super IN</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#ece7e2",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1b4332",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-bright": "#fef8f3",
+                        "on-background": "#1d1b19",
+                        "secondary-fixed": "#ffdead",
+                        "on-tertiary-fixed": "#360f00",
+                        "surface-container": "#f2ede8",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-secondary-container": "#6d4a00",
+                        "on-secondary-fixed": "#281900",
+                        "surface-container-highest": "#e6e2dd",
+                        "secondary-container": "#ffb628",
+                        "on-secondary-fixed-variant": "#604100",
+                        "secondary": "#7f5700",
+                        "inverse-surface": "#32302d",
+                        "on-primary-fixed-variant": "#274e3d",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#c1ecd4",
+                        "on-primary-fixed": "#002114",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1d1b19",
+                        "surface-container-low": "#f8f3ee",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#3f6653",
+                        "outline": "#717973",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "outline-variant": "#c1c8c2",
+                        "surface": "#fef8f3",
+                        "surface-dim": "#ded9d4",
+                        "surface-variant": "#e6e2dd",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f5f0eb",
+                        "tertiary-container": "#6a2600",
+                        "inverse-primary": "#a5d0b9",
+                        "on-surface-variant": "#414844",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#86af99",
+                        "tertiary": "#471700",
+                        "background": "#fef8f3",
+                        "primary": "#012d1d",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffba3b",
+                        "on-tertiary-container": "#ff8348"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "8px",
+                        "container-margin": "20px",
+                        "gutter": "16px",
+                        "safe": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-md": ["Montserrat"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .shadow-soft { box-shadow: 0 4px 12px rgba(27, 67, 50, 0.08); }
+        .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background h-full flex flex-col font-body-md antialiased pb-24">
+<!-- Top Navigation (Mobile Friendly Anchor) -->
+<header class="bg-surface sticky top-0 z-40 border-b border-outline-variant/30 pt-safe px-container-margin h-16 flex items-center justify-between">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold tracking-tight">Super IN</h1>
+<div class="flex items-center gap-md text-primary">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-container-margin py-lg space-y-lg">
+<!-- Status Header -->
+<div class="flex justify-between items-end mb-sm">
+<div>
+<h2 class="font-title-md text-title-md text-on-background">Mis Entregas</h2>
+<p class="font-caption text-caption text-on-surface-variant mt-xs">2 pedidos pendientes</p>
+</div>
+<div class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+                Activo
+            </div>
+</div>
+<!-- Delivery Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl p-md shadow-soft border border-outline-variant/20 relative overflow-hidden transition-all">
+<!-- Top Status Bar -->
+<div class="flex justify-between items-center mb-md pb-md border-b border-outline-variant/30">
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container py-1 px-2 rounded">#ORD-4829</span>
+</div>
+<div class="font-title-md text-title-md text-primary">$26.500 <span class="font-caption text-caption text-on-surface-variant font-normal">Efectivo</span></div>
+</div>
+<!-- Customer Details -->
+<div class="space-y-sm mb-md">
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-background">Carlos Mendoza</p>
+<p class="font-caption text-caption text-on-surface-variant">Cliente Frecuente</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-1" style="font-variation-settings: 'FILL' 0;">location_on</span>
+<div>
+<p class="font-body-md text-body-md text-on-background">Carrera 51B # 80-12</p>
+<p class="font-caption text-caption text-on-surface-variant">Edificio Torres del Mar, Apto 402</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-1" style="font-variation-settings: 'FILL' 0;">phone_iphone</span>
+<p class="font-body-md text-body-md text-on-background">300 123 4567</p>
+</div>
+</div>
+<!-- Quick Communication Actions -->
+<div class="flex gap-sm mb-lg">
+<button class="flex-1 flex justify-center items-center gap-xs py-2 bg-surface-container hover:bg-surface-container-high rounded-lg font-label-sm text-label-sm text-on-surface transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[18px]">map</span>
+                    Mapa
+                </button>
+<button class="flex-1 flex justify-center items-center gap-xs py-2 bg-surface-container hover:bg-surface-container-high rounded-lg font-label-sm text-label-sm text-on-surface transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[18px]">call</span>
+                    Llamar
+                </button>
+<button class="flex-1 flex justify-center items-center gap-xs py-2 bg-surface-container hover:bg-surface-container-high rounded-lg font-label-sm text-label-sm text-on-surface transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+                    WhatsApp
+                </button>
+</div>
+<!-- Progression Actions -->
+<div class="bg-surface-container-low p-1 rounded-lg flex relative h-12">
+<!-- Active Indicator Background (Moves based on state) -->
+<div class="absolute inset-y-1 left-1 w-[calc(33.333%-4px)] bg-primary rounded-md transition-all duration-300 shadow-sm z-0" id="status-indicator-1"></div>
+<button class="flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-primary z-10 transition-colors relative" onclick="updateStatus(1, 0, this)">
+                    Recogido
+                </button>
+<button class="flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-surface-variant z-10 transition-colors relative" onclick="updateStatus(1, 1, this)">
+                    En camino
+                </button>
+<button class="flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-surface-variant z-10 transition-colors relative" onclick="updateStatus(1, 2, this)">
+                    Entregado
+                </button>
+</div>
+</article>
+<!-- Delivery Card 2 (In Progress Example) -->
+<article class="bg-surface-container-lowest rounded-xl p-md shadow-soft border border-outline-variant/20 relative overflow-hidden transition-all">
+<div class="flex justify-between items-center mb-md pb-md border-b border-outline-variant/30">
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container py-1 px-2 rounded">#ORD-4830</span>
+</div>
+<div class="font-title-md text-title-md text-primary">$42.000 <span class="font-caption text-caption text-on-surface-variant font-normal">Tarjeta</span></div>
+</div>
+<div class="space-y-sm mb-md opacity-75">
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-background">Laura Gómez</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-1" style="font-variation-settings: 'FILL' 0;">location_on</span>
+<div>
+<p class="font-body-md text-body-md text-on-background">Calle 93 # 46-20</p>
+<p class="font-caption text-caption text-on-surface-variant">Oficina 305</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-1 rounded-lg flex relative h-12">
+<div class="absolute inset-y-1 left-[calc(33.333%+2px)] w-[calc(33.333%-4px)] bg-secondary-container rounded-md transition-all duration-300 shadow-sm z-0"></div>
+<button class="flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-surface-variant z-10 transition-colors relative">
+                    Recogido
+                </button>
+<button class="flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-secondary-container z-10 transition-colors relative">
+                    En camino
+                </button>
+<button class="flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-surface-variant z-10 transition-colors relative">
+                    Entregado
+                </button>
+</div>
+</article>
+</main>
+<script>
+        function updateStatus(cardId, position, btnElement) {
+            const indicator = document.getElementById(`status-indicator-${cardId}`);
+            const buttons = btnElement.parentElement.querySelectorAll('button');
+            
+            // Move indicator
+            if (position === 0) {
+                indicator.style.left = '4px';
+                indicator.className = "absolute inset-y-1 w-[calc(33.333%-4px)] bg-primary rounded-md transition-all duration-300 shadow-sm z-0";
+            } else if (position === 1) {
+                indicator.style.left = 'calc(33.333% + 2px)';
+                indicator.className = "absolute inset-y-1 w-[calc(33.333%-4px)] bg-secondary-container rounded-md transition-all duration-300 shadow-sm z-0";
+            } else {
+                indicator.style.left = 'calc(66.666% - 1px)';
+                indicator.className = "absolute inset-y-1 w-[calc(33.333%-4px)] bg-surface-tint rounded-md transition-all duration-300 shadow-sm z-0";
+            }
+
+            // Update text colors
+            buttons.forEach((btn, idx) => {
+                if (idx === position) {
+                    if(position === 0) {
+                        btn.className = "flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-primary z-10 transition-colors relative";
+                    } else if (position === 1) {
+                         btn.className = "flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-secondary-container z-10 transition-colors relative";
+                    } else {
+                         btn.className = "flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-primary z-10 transition-colors relative";
+                    }
+                } else {
+                    btn.className = "flex-1 flex justify-center items-center font-label-sm text-label-sm text-on-surface-variant z-10 transition-colors relative";
+                }
+            });
+        }
+    </script>
+</body></html>

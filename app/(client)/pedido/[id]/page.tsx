@@ -1,0 +1,453 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+
+interface OrderDetail {
+  id: string;
+  nombre: string;
+  cantidad: number;
+  precio: number;
+  observaciones: string;
+  componentes: any;
+}
+
+interface Order {
+  codigo: string;
+  cliente: string;
+  celular: string;
+  direccion: string;
+  barrio: string;
+  referencia: string;
+  fecha: string;
+  franja: string;
+  estado: string;
+  subtotal: number;
+  domicilio: number;
+  total: number;
+  metodo_pago: string;
+  creado_a: string;
+  tiempo_estimado?: number;
+}
+
+const STEPS = [
+  { name: 'Pedido Recibido', icon: 'receipt', description: 'Super IN ha recibido tu orden y está en cola.' },
+  { name: 'Confirmado', icon: 'thumb_up', description: 'La administradora ha confirmado y validado el stock.' },
+  { name: 'En Preparación', icon: 'skillet', description: 'Los chefs están preparando tu almuerzo.' },
+  { name: 'En Camino', icon: 'two_wheeler', description: 'El repartidor va hacia tu ubicación.' },
+  { name: 'Entregado', icon: 'sports_motorsports', description: '¡Buen provecho!' }
+];
+
+export default function PedidoEstadoPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const orderCode = id as string;
+
+  const [order, setOrder] = useState<Order | null>(null);
+  const [details, setDetails] = useState<OrderDetail[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Timer countdown
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  
+  // Fetch order data
+  useEffect(() => {
+    if (!orderCode) return;
+
+    async function fetchOrder() {
+      try {
+        const { data: orderData, error: orderErr } = await supabase
+          .from('pedidos')
+          .select('*')
+          .eq('codigo', orderCode)
+          .single();
+
+        if (orderErr || !orderData) {
+          console.error('Order not found', orderErr);
+          setLoading(false);
+          return;
+        }
+
+        setOrder(orderData);
+
+        const { data: detailsData, error: detailsErr } = await supabase
+          .from('detalles_pedido')
+          .select('*')
+          .eq('pedido_codigo', orderCode);
+
+        if (detailsData) {
+          setDetails(detailsData as OrderDetail[]);
+        }
+      } catch (err) {
+        console.error('Error fetching order', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchOrder();
+
+    // Subscribe to updates
+    const channel = supabase
+      .channel(`order-updates-${orderCode}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'pedidos',
+          filter: `codigo=eq.${orderCode}`
+        },
+        (payload) => {
+          setOrder(payload.new as Order);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [orderCode]);
+
+  // Countdown logic for 'Pendiente de confirmación'
+  useEffect(() => {
+    if (!order || order.estado !== 'Pendiente de confirmación') {
+      setTimeLeft('');
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const createdTime = new Date(order.creado_a).getTime();
+      const limitTime = createdTime + 15 * 60 * 1000; // +15 mins
+      const now = new Date().getTime();
+      const diff = limitTime - now;
+
+      if (diff <= 0) {
+        clearInterval(interval);
+        // Mark order as expired or redirect
+        router.push(`/pedido/${orderCode}/expirado`);
+      } else {
+        const minutes = Math.floor(diff / (60 * 1000));
+        const seconds = Math.floor((diff % (60 * 1000)) / 1000);
+        setTimeLeft(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [order, orderCode, router]);
+
+  // Map state string to timeline step index
+  const getActiveStepIndex = (estado: string) => {
+    switch (estado) {
+      case 'Pendiente de confirmación':
+        return 0;
+      case 'Confirmado':
+        return 1;
+      case 'En preparación':
+        return 2;
+      case 'En camino':
+        return 3;
+      case 'Entregado':
+        return 4;
+      default:
+        return -1; // e.g. Cancelled or Expired
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!order) return;
+    if (order.estado !== 'Pendiente de confirmación') {
+      alert('Solo se pueden cancelar pedidos pendientes de confirmación.');
+      return;
+    }
+
+    const confirmCancel = confirm('¿Estás seguro de que deseas cancelar este pedido?');
+    if (!confirmCancel) return;
+
+    try {
+      const { error } = await supabase
+        .from('pedidos')
+        .update({ estado: 'Cancelado' })
+        .eq('codigo', orderCode);
+
+      if (error) throw error;
+      setOrder(prev => prev ? { ...prev, estado: 'Cancelado' } : null);
+      alert('Pedido cancelado correctamente.');
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo cancelar el pedido. Por favor contáctanos por WhatsApp.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-grow flex items-center justify-center py-xl">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="flex-grow flex flex-col items-center justify-center text-center px-container-margin py-xl max-w-md mx-auto w-full">
+        <span className="material-symbols-outlined text-[64px] text-error mb-md">
+          warning
+        </span>
+        <h2 className="font-title-md text-primary mb-xs">Pedido no encontrado</h2>
+        <p className="font-body-md text-on-surface-variant mb-lg">
+          No pudimos encontrar ningún pedido con el código <strong>{orderCode}</strong>.
+        </p>
+        <Link
+          href="/"
+          className="bg-primary text-on-primary font-label-sm px-lg py-md rounded-full hover:bg-primary-container"
+        >
+          Volver al Inicio
+        </Link>
+      </div>
+    );
+  }
+
+  const activeIndex = getActiveStepIndex(order.estado);
+
+  return (
+    <div className="pt-4 pb-24 px-container-margin md:px-xl max-w-4xl mx-auto w-full flex flex-col gap-lg">
+      <div className="flex items-center gap-sm md:hidden">
+        <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
+          <span className="material-symbols-outlined text-on-surface">arrow_back</span>
+        </Link>
+        <h1 className="font-title-md text-title-md text-on-surface">Estado del Pedido</h1>
+      </div>
+
+      {/* Status Hero */}
+      <section className="flex flex-col items-center justify-center text-center py-lg bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/30 p-lg relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary-container rounded-full opacity-10 blur-2xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary-container rounded-full opacity-10 blur-2xl"></div>
+        
+        {order.estado === 'Cancelado' ? (
+          <div className="w-16 h-16 bg-error-container text-on-error-container rounded-full flex items-center justify-center mb-md z-10">
+            <span className="material-symbols-outlined text-3xl">cancel</span>
+          </div>
+        ) : order.estado === 'Expirado' ? (
+          <div className="w-16 h-16 bg-outline-variant/30 text-on-surface-variant rounded-full flex items-center justify-center mb-md z-10">
+            <span className="material-symbols-outlined text-3xl">timer_off</span>
+          </div>
+        ) : (
+          <div className="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center mb-md z-10">
+            <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+              {activeIndex === 4 ? 'check_circle' : 'restaurant'}
+            </span>
+          </div>
+        )}
+        
+        <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-xs z-10">
+          {order.estado === 'Cancelado'
+            ? 'Pedido Cancelado'
+            : order.estado === 'Expirado'
+            ? 'Pedido Expirado'
+            : `Pedido ${order.estado}`}
+        </h1>
+        <p className="font-body-lg text-body-lg text-on-surface-variant z-10">
+          Código: <span className="font-bold text-primary">{order.codigo}</span>
+        </p>
+      </section>
+
+      {/* Alert Banner / Countdown Timer */}
+      {order.estado === 'Pendiente de confirmación' && timeLeft && (
+        <div className="bg-secondary-container/20 border-l-4 border-secondary-container p-md rounded-r-lg flex items-start gap-md">
+          <span className="material-symbols-outlined text-secondary mt-1">info</span>
+          <div>
+            <p className="font-label-sm text-label-sm text-on-secondary-container font-semibold">
+              Esperando confirmación del restaurante.
+            </p>
+            <p className="font-caption text-caption text-on-surface-variant mt-1">
+              Tu pedido expirará en <strong className="text-primary font-mono text-body-md">{timeLeft}</strong> si no es confirmado.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {order.estado === 'Cancelado' && (
+        <div className="bg-error-container/20 border-l-4 border-error p-md rounded-r-lg flex items-start gap-md">
+          <span className="material-symbols-outlined text-error mt-1">cancel</span>
+          <div>
+            <p className="font-label-sm text-label-sm text-on-error-container font-semibold">
+              Este pedido ha sido cancelado.
+            </p>
+            <p className="font-caption text-caption text-on-surface-variant mt-1">
+              Si crees que es un error, por favor contáctanos por WhatsApp.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+        {/* Left Column: Details & Items */}
+        <div className="flex flex-col gap-lg">
+          {/* Summary */}
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+            <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/30 pb-sm font-bold">
+              Detalles de Entrega
+            </h2>
+            <div className="flex flex-col gap-sm">
+              <div className="flex justify-between items-center py-1">
+                <span className="text-on-surface-variant font-medium">Cliente</span>
+                <span className="font-semibold text-on-background">{order.cliente}</span>
+              </div>
+              <div className="flex justify-between items-start py-1">
+                <span className="text-on-surface-variant font-medium">Dirección</span>
+                <span className="font-semibold text-on-background text-right">
+                  {order.direccion}<br />Barrio {order.barrio}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-on-surface-variant font-medium">Franja Horaria</span>
+                <span className="font-semibold text-on-background bg-surface-variant px-3 py-0.5 rounded-full text-xs">
+                  {order.franja}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-on-surface-variant font-medium">Método de Pago</span>
+                <span className="font-semibold text-on-background">{order.metodo_pago}</span>
+              </div>
+              {order.tiempo_estimado && (
+                <div className="flex justify-between items-center py-1 bg-primary-container/10 p-sm rounded-lg">
+                  <span className="text-primary font-bold">Tiempo estimado</span>
+                  <span className="font-bold text-primary">{order.tiempo_estimado} minutos</span>
+                </div>
+              )}
+            </div>
+          </article>
+
+          {/* Items List */}
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+            <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/30 pb-sm font-bold">
+              Productos Solicitados
+            </h2>
+            <div className="flex flex-col gap-md">
+              {details.map((item) => (
+                <div key={item.id} className="flex justify-between items-start pb-sm border-b border-outline-variant/10 last:border-0 last:pb-0">
+                  <div>
+                    <h4 className="font-label-sm text-on-background font-bold">
+                      {item.nombre} <span className="text-primary font-normal">x{item.cantidad}</span>
+                    </h4>
+                    {item.componentes ? (
+                      <p className="font-caption text-on-surface-variant mt-1 text-[11px]">
+                        {Object.entries(item.componentes)
+                          .map(([_, comp]: any) => comp?.nombre)
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
+                    ) : (
+                      item.observaciones && (
+                        <p className="font-caption text-on-surface-variant mt-1 text-[11px]">
+                          Obs: {item.observaciones}
+                        </p>
+                      )
+                    )}
+                  </div>
+                  <span className="font-label-sm text-primary font-semibold">
+                    ${(item.precio * item.cantidad).toLocaleString('es-CO')}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-outline-variant/20 pt-md flex justify-between items-center mt-sm">
+              <span className="font-title-md text-on-background font-bold">Total</span>
+              <span className="font-title-md text-primary font-bold">
+                ${order.total.toLocaleString('es-CO')} COP
+              </span>
+            </div>
+          </article>
+
+          {/* Actions */}
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-md">
+            <p className="font-body-md text-on-surface-variant">
+              ¿Quieres realizar un cambio o resolver dudas sobre tu pedido?
+            </p>
+            <a
+              href={`https://wa.me/573001234567?text=${encodeURIComponent(`Hola, tengo una pregunta sobre mi pedido ${order.codigo}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-[#25D366] text-white font-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold"
+            >
+              <span className="material-symbols-outlined">chat</span>
+              Chatear por WhatsApp
+            </a>
+            {order.estado === 'Pendiente de confirmación' && (
+              <button
+                onClick={handleCancelOrder}
+                className="w-full bg-transparent text-error border border-error hover:bg-error-container/10 font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-sm transition-colors mt-2 text-sm cursor-pointer"
+              >
+                Cancelar Pedido
+              </button>
+            )}
+          </article>
+        </div>
+
+        {/* Right Column: Timeline */}
+        <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+          <h2 className="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/30 pb-sm font-bold">
+            Seguimiento de Entrega
+          </h2>
+          {order.estado === 'Cancelado' ? (
+            <div className="text-center py-xl text-on-surface-variant flex flex-col items-center">
+              <span className="material-symbols-outlined text-[48px] text-error mb-sm">block</span>
+              <p className="font-body-md font-semibold">El pedido fue cancelado y no se está procesando.</p>
+            </div>
+          ) : (
+            <div className="relative pl-2">
+              {STEPS.map((step, index) => {
+                const isActive = index <= activeIndex;
+                const isCurrent = index === activeIndex;
+
+                return (
+                  <div key={step.name} className="timeline-item relative pb-lg flex gap-md">
+                    {index < STEPS.length - 1 && (
+                      <div
+                        className={`absolute left-[22px] top-[24px] bottom-0 w-[2px] z-0 ${
+                          index < activeIndex ? 'bg-primary' : 'bg-outline-variant/30'
+                        }`}
+                      />
+                    )}
+                    <div
+                      className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all ${
+                        isActive
+                          ? 'bg-primary text-on-primary shadow-sm'
+                          : 'bg-surface-container-highest border border-outline-variant text-outline-variant'
+                      }`}
+                    >
+                      <span
+                        className="material-symbols-outlined text-[20px]"
+                        style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        {step.icon}
+                      </span>
+                    </div>
+                    <div className="pt-1 flex-1">
+                      <h3
+                        className={`font-label-sm text-sm ${
+                          isCurrent
+                            ? 'text-primary font-bold'
+                            : isActive
+                            ? 'text-on-background font-semibold'
+                            : 'text-on-surface-variant/60 font-medium'
+                        }`}
+                      >
+                        {step.name}
+                      </h3>
+                      <p className="font-caption text-caption text-on-surface-variant mt-1">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </article>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Super IN - Tu almuerzo favorito, directo a tu puerta</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        body {
+            background-color: var(--color-background, #fef8f3);
+            color: var(--color-on-background, #1d1b19);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#ece7e2",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1b4332",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-bright": "#fef8f3",
+                        "on-background": "#1d1b19",
+                        "secondary-fixed": "#ffdead",
+                        "on-tertiary-fixed": "#360f00",
+                        "surface-container": "#f2ede8",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-secondary-container": "#6d4a00",
+                        "on-secondary-fixed": "#281900",
+                        "surface-container-highest": "#e6e2dd",
+                        "secondary-container": "#ffb628",
+                        "on-secondary-fixed-variant": "#604100",
+                        "secondary": "#7f5700",
+                        "inverse-surface": "#32302d",
+                        "on-primary-fixed-variant": "#274e3d",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#c1ecd4",
+                        "on-primary-fixed": "#002114",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1d1b19",
+                        "surface-container-low": "#f8f3ee",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#3f6653",
+                        "outline": "#717973",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "outline-variant": "#c1c8c2",
+                        "surface": "#fef8f3",
+                        "surface-dim": "#ded9d4",
+                        "surface-variant": "#e6e2dd",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f5f0eb",
+                        "tertiary-container": "#6a2600",
+                        "inverse-primary": "#a5d0b9",
+                        "on-surface-variant": "#414844",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#86af99",
+                        "tertiary": "#471700",
+                        "background": "#fef8f3",
+                        "primary": "#012d1d",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffba3b",
+                        "on-tertiary-container": "#ff8348"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "8px",
+                        "container-margin": "20px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-md": ["Montserrat"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar (Web) -->
+<header class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-margin h-20 bg-surface/90 backdrop-blur-md shadow-sm border-b border-outline-variant">
+<div class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">Super IN</div>
+<nav class="flex gap-lg">
+<a class="text-primary border-b-2 border-primary font-bold pb-1 font-title-md text-title-md transition-colors" href="#">Menú</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-title-md text-title-md" href="#">Mis Pedidos</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-title-md text-title-md" href="#">Eventos</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-title-md text-title-md" href="#">Soporte</a>
+</nav>
+<div class="flex gap-md text-primary">
+<button class="scale-95 active:opacity-80 transition-all hover:text-primary-container">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="scale-95 active:opacity-80 transition-all hover:text-primary-container">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-16 md:pt-20 pb-[100px] md:pb-0 min-h-screen">
+<!-- Hero Section -->
+<section class="relative w-full min-h-[618px] flex items-center justify-center bg-surface-container-low px-container-margin md:px-xl py-xl overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center opacity-40" data-alt="A mouth-watering, high-resolution close-up food photography shot of traditional Colombian coconut rice and perfectly golden fried fish. The dish is presented on a clean, modern ceramic plate resting on a warm wooden table. Soft, natural daylight streams in from a side window, highlighting the crispy texture of the fish and the gloss of the rice. The overall aesthetic is warm, inviting, and appetizing, perfectly aligning with a premium food delivery brand in light mode." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLuXXf0trIIA-AE4svzO90QJaxj39J9ga2yD1wEKgxYM_agO-J-4lQPt4pHBr_iieCZYrDJgdH1Krrwp4duu4LsHqiYYIUD8QyIPBEaH5dYNnB0MZxH97m4KNO_f0eoG9xk9eqk6SbxkKP_zcf7YTpm2t8wQYVY4bo-7nA576JgEs2XToKsg6ZNNImrUi92SmOdaGLMfeEapJV6i0RUAhBH1A1PHP5hSWoY1jt1HxDIVFXqgjpeJqYfQ_JVDiPy9gzzvk9Nl3670k')"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-lg items-center">
+<div class="flex flex-col gap-md max-w-xl">
+<span class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm rounded-full w-fit">Barranquilla</span>
+<h1 class="font-display-lg text-display-lg md:text-[64px] md:leading-[72px] text-on-background font-bold tracking-tight">Tu almuerzo favorito, <span class="text-primary">directo a tu puerta</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2 mb-4">Pide fácil, recibe rápido y disfruta comida casera preparada con los mejores ingredientes locales.</p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary text-on-primary font-label-sm text-label-sm rounded-full px-8 py-4 hover:bg-primary-container active:scale-95 transition-all shadow-[0_4px_12px_rgba(27,67,50,0.15)] flex items-center justify-center gap-2">
+                            Ver menú de hoy
+                            <span class="material-symbols-outlined text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Bento Grid -->
+<section class="max-w-7xl mx-auto px-container-margin md:px-xl py-xl md:py-[80px]">
+<div class="text-center mb-xl">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-background">Nuestros Servicios</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Soluciones gastronómicas para cada ocasión</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Domicilios Card -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container shadow-[0_4px_12px_rgba(27,67,50,0.08)] hover:shadow-[0_8px_24px_rgba(27,67,50,0.12)] transition-all duration-300 min-h-[320px] flex flex-col justify-end p-lg cursor-pointer">
+<div class="absolute inset-0 z-0 transition-transform duration-700 group-hover:scale-105">
+<div class="w-full h-full bg-cover bg-center" data-alt="A clean, modern overhead shot of a premium food delivery box being prepared on a marble countertop. The packaging is eco-friendly and neat, filled with vibrant, fresh home-style food. Bright, even studio lighting creates a crisp light-mode aesthetic, emphasizing efficiency, cleanliness, and the tactile quality of the warm minimal design style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBSValRAfyLenBekAKt0AxD9MBTwbyTa3ldVEk8uN-Xbmtl1qLvWCBRfUWko_aGGd_txgHi8SS4fK9l8AYv5onPZQXJkq_L7YXVtlwjhln-zz4Im4BlkDk1xQ7PWqBdnbToYP71XVF3kkAINS9sVA07mm9_Trp_t2xdnGVB-rZaGQQ9PjH82nLOCkQ800ZiICbL0J31KGF_tgm_OYQeYVkJNSRvWFX0V0iJPAZruk7lG3YpjFm6kCnDWFs416A7lB0bvjJEhbJWtec')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 text-white">
+<div class="bg-primary/90 p-3 rounded-full inline-flex mb-4 backdrop-blur-sm">
+<span class="material-symbols-outlined text-white" data-icon="two_wheeler">two_wheeler</span>
+</div>
+<h3 class="font-title-md text-title-md font-bold mb-2">Domicilios</h3>
+<p class="font-body-md text-body-md text-white/90">Tu almuerzo diario entregado con rapidez y frescura en tu hogar u oficina.</p>
+</div>
+</div>
+<!-- Salón de eventos Card -->
+<div class="group relative overflow-hidden rounded-xl bg-surface-container shadow-[0_4px_12px_rgba(27,67,50,0.08)] hover:shadow-[0_8px_24px_rgba(27,67,50,0.12)] transition-all duration-300 min-h-[320px] flex flex-col justify-end p-lg cursor-pointer">
+<div class="absolute inset-0 z-0 transition-transform duration-700 group-hover:scale-105">
+<div class="w-full h-full bg-cover bg-center" data-alt="A beautifully set event table in a modern, airy banquet hall. The table features elegant white linens, subtle floral centerpieces, and fine ceramic tableware, illuminated by warm, natural light streaming through large windows. The scene conveys a sense of celebration, premium quality, and meticulous organization, fitting perfectly within a sophisticated, warm-minimalist light-mode UI." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB3o4B52PF2GyMxdB6y3tVlNqK6LghmNXciSfl8b2TZ0HqQL5KDCpqjQAS7MRWa91VpAj6Mu4mIv2g4vOXSgQET9qM9wDA4YHKzsAQjXAQa28SApnPwJLY8wBGpkeLuf52SAwJTUfTDloXz8b4YbSRJXnVBJBx4IDVLf4-To1B17_TmcPs_V1heZaJXAgod28502ydTN1eTVecTdlS6Cwa-M6bkudWRsbgCRUvjOPbvqZUe4N0-Ewdq8FtAuxsGZatt5iaq2ML5woY')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 text-white">
+<div class="bg-secondary-container/90 text-on-secondary-container p-3 rounded-full inline-flex mb-4 backdrop-blur-sm">
+<span class="material-symbols-outlined" data-icon="celebration">celebration</span>
+</div>
+<h3 class="font-title-md text-title-md font-bold mb-2">Salón de eventos</h3>
+<p class="font-body-md text-body-md text-white/90">Espacios elegantes y catering exclusivo para tus celebraciones más importantes.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high py-xl px-container-margin md:px-xl border-t border-outline-variant/50">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-lg">
+<div class="text-center md:text-left">
+<div class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight mb-2">Super IN</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Barranquilla, Colombia</p>
+</div>
+<div class="flex gap-md text-on-surface-variant">
+<span class="font-body-md text-body-md">Precios en COP</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 lg:hidden flex justify-around items-center px-4 pb-safe h-16 bg-surface-container-lowest border-t border-outline-variant/30 shadow-[0_-4px_12px_rgba(27,67,50,0.08)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 mt-1 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-caption text-caption mt-1">Menú</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform active:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-caption text-caption mt-1">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform active:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-caption text-caption mt-1">Carrito</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform active:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-caption text-caption mt-1">Perfil</span>
+</a>
+</nav>
+</body></html>

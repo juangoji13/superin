@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Super IN - Gestión de Menú y Stock</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#ece7e2",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#1b4332",
+                      "tertiary-fixed": "#ffdbcd",
+                      "surface-bright": "#fef8f3",
+                      "on-background": "#1d1b19",
+                      "secondary-fixed": "#ffdead",
+                      "on-tertiary-fixed": "#360f00",
+                      "surface-container": "#f2ede8",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "on-secondary-container": "#6d4a00",
+                      "on-secondary-fixed": "#281900",
+                      "surface-container-highest": "#e6e2dd",
+                      "secondary-container": "#ffb628",
+                      "on-secondary-fixed-variant": "#604100",
+                      "secondary": "#7f5700",
+                      "inverse-surface": "#32302d",
+                      "on-primary-fixed-variant": "#274e3d",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "primary-fixed": "#c1ecd4",
+                      "on-primary-fixed": "#002114",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#1d1b19",
+                      "surface-container-low": "#f8f3ee",
+                      "on-error-container": "#93000a",
+                      "surface-tint": "#3f6653",
+                      "outline": "#717973",
+                      "on-tertiary-fixed-variant": "#7c2e00",
+                      "outline-variant": "#c1c8c2",
+                      "surface": "#fef8f3",
+                      "surface-dim": "#ded9d4",
+                      "surface-variant": "#e6e2dd",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#f5f0eb",
+                      "tertiary-container": "#6a2600",
+                      "inverse-primary": "#a5d0b9",
+                      "on-surface-variant": "#414844",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#86af99",
+                      "tertiary": "#471700",
+                      "background": "#fef8f3",
+                      "primary": "#012d1d",
+                      "primary-fixed-dim": "#a5d0b9",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed-dim": "#ffba3b",
+                      "on-tertiary-container": "#ff8348"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "xl": "40px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "base": "8px",
+                      "container-margin": "20px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "caption": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Montserrat"
+                      ],
+                      "headline-lg-mobile": [
+                              "Montserrat"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Montserrat"
+                      ],
+                      "display-lg": [
+                              "Montserrat"
+                      ]
+              },
+              "fontSize": {
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden lg:flex flex-col py-lg w-[280px] h-screen bg-surface-container dark:bg-inverse-surface border-r border-outline-variant shadow-lg fixed left-0 top-0">
+<div class="px-lg mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-primary dark:text-primary-fixed font-bold">Panel Admin</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm">Super IN Barranquilla</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-sm">
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-lg mx-2 flex items-center gap-3 p-3 active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-lg mx-2 flex items-center gap-3 p-3 active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+<span class="font-label-sm text-label-sm">Pedidos</span>
+</a>
+</li>
+<li>
+<a class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-lg mx-2 flex items-center gap-3 p-3 shadow-[0_4px_12px_rgba(27,67,50,0.08)]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+<span class="font-label-sm text-label-sm">Menú Diario</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-lg mx-2 flex items-center gap-3 p-3 active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-label-sm text-label-sm">Inventario</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-lg mx-2 flex items-center gap-3 p-3 active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+<span class="font-label-sm text-label-sm">Clientes</span>
+</a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-lg mx-2 flex items-center gap-3 p-3 active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-sm text-label-sm">Configuración</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="px-lg mt-auto pt-lg border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-label-sm text-label-sm py-3 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors mb-md shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                Nuevo Evento
+            </button>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-all rounded-lg mx-2 flex items-center gap-3 p-3 active:scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+<span class="font-label-sm text-label-sm">Cerrar Sesión</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-[280px] min-h-screen bg-background p-lg lg:p-xl">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">Gestión de Menú y Stock</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm">Controla la disponibilidad del menú diario y arma tu plato.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-sm text-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm self-start md:self-auto shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                Nuevo Plato
+            </button>
+</header>
+<!-- Tabs -->
+<div class="border-b border-outline-variant mb-xl flex overflow-x-auto no-scrollbar gap-lg">
+<button class="pb-3 border-b-2 border-primary text-primary font-label-sm text-label-sm whitespace-nowrap px-sm">
+                Platos ya hechos
+            </button>
+<button class="pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-background font-label-sm text-label-sm whitespace-nowrap px-sm transition-colors">
+                Opciones 'Ármate un plato'
+            </button>
+<button class="pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-background font-label-sm text-label-sm whitespace-nowrap px-sm transition-colors">
+                Stock
+            </button>
+</div>
+<!-- Filters & Search Bar (Bento style container) -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant shadow-[0_4px_12px_rgba(27,67,50,0.08)] mb-xl flex flex-col md:flex-row gap-md items-center">
+<div class="relative w-full md:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 border-[1.5px] border-outline-variant rounded-lg bg-surface-container-lowest text-on-background font-body-md text-body-md focus:border-primary focus:ring-0 outline-none transition-colors" placeholder="Buscar plato..." type="text"/>
+</div>
+<div class="flex gap-sm w-full md:w-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
+<button class="px-4 py-1.5 rounded-full border border-outline-variant text-on-background bg-surface-container-lowest hover:bg-surface-container-low font-label-sm text-label-sm whitespace-nowrap transition-colors">
+                    Todos
+                </button>
+<button class="px-4 py-1.5 rounded-full border border-transparent bg-primary-container text-on-primary-container font-label-sm text-label-sm whitespace-nowrap transition-colors">
+                    Disponibles
+                </button>
+<button class="px-4 py-1.5 rounded-full border border-outline-variant text-on-background bg-surface-container-lowest hover:bg-surface-container-low font-label-sm text-label-sm whitespace-nowrap transition-colors">
+                    Agotados
+                </button>
+</div>
+<div class="md:ml-auto w-full md:w-auto">
+<button class="w-full md:w-auto px-4 py-2 rounded-lg border border-outline-variant text-on-surface-variant flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">filter_list</span>
+<span class="font-label-sm text-label-sm">Filtros</span>
+</button>
+</div>
+</div>
+<!-- Data Table (Bento Style Grid Layout for Table) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(27,67,50,0.08)] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant font-semibold w-24">Foto</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant font-semibold">Nombre del Plato</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant font-semibold w-32 text-right">Precio (COP)</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant font-semibold w-24 text-center">Stock</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant font-semibold w-32 text-center">Estado</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant font-semibold w-24 text-center">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 (Available) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-md">
+<img class="w-16 h-12 object-cover rounded-md border border-outline-variant shadow-sm" data-alt="A top-down view of a beautifully plated traditional Colombian Bandeja Paisa, featuring rice, beans, chicharron, fried egg, plantain, and arepa on a clean white ceramic plate, set against a warm, light cream minimal background. High quality food photography, bright soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPINtHnsg-I3XzqgFCE4jTHDkBDyW8i08rhg69BFNRx_r4k0A78krrbYU1YYVX3BpwUnUH-YgF01oE_LkeKI1gdpU0HoEw7uALknJxs071ZghqQ_xmedF4RJhrRrpUSaU16r64A-n81-M3sH-gIY8dLv7HXFrHadMNZJfNNTzGcAErh6QcA_fsPLotNlbI1Yb3rDFqqkM-D5B78YraiPdtlwev4loCOtg7gb6Yfwckn-QHmC67QDTf3QgFwmYA8lc2kESIbob6Uvc"/>
+</td>
+<td class="p-md">
+<div class="font-body-md text-body-md text-on-background font-medium">Bandeja Paisa Tradicional</div>
+<div class="font-caption text-caption text-on-surface-variant mt-1">Plato Principal • Carnes</div>
+</td>
+<td class="p-md text-right font-body-md text-body-md text-primary font-semibold">
+                                $ 35.000
+                            </td>
+<td class="p-md text-center">
+<span class="font-body-md text-body-md text-on-background font-medium">42</span>
+</td>
+<td class="p-md text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-caption text-caption">
+                                    Disponible
+                                </span>
+</td>
+<td class="p-md text-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-low" title="Editar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container" title="Eliminar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 (Low Stock) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-md">
+<img class="w-16 h-12 object-cover rounded-md border border-outline-variant shadow-sm" data-alt="A close up shot of a steaming bowl of Ajiaco soup, rich yellow color, garnished with capers, cream, and a side of avocado. Served in a rustic bowl on a pristine light cream surface, bathed in natural, bright daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrhGdygPg2gBVdZe4rRrzdfyjz9dydoNxivityYDyg4rzHm1sVpaewewPyWZgPO06OZr2oblyrBwwmlKNmMGLy374bQ24BjAkhTFVjilrxID_lgbiIZFDBbvO5-7wYoSUDFnOq_NdNPRPBkHiKBSPutg5wPJm7yPWCkxW7b_eidvqEEwzrtT8j5LF-Aqb4nHUg8IbbUXKkJRl5rVVPKgyig9iaxyBdtv8MmqLmD2qRnfo0AcLCKbWC1hpisvsRdQacL0bx-_J36s0"/>
+</td>
+<td class="p-md">
+<div class="font-body-md text-body-md text-on-background font-medium">Ajiaco Santafereño</div>
+<div class="font-caption text-caption text-on-surface-variant mt-1">Sopas • Tradicional</div>
+</td>
+<td class="p-md text-right font-body-md text-body-md text-primary font-semibold">
+                                $ 28.500
+                            </td>
+<td class="p-md text-center">
+<!-- Low stock indicator -->
+<div class="flex items-center justify-center gap-1 text-error font-body-md text-body-md font-semibold">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span>5</span>
+</div>
+</td>
+<td class="p-md text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-caption text-caption">
+                                    Poco Stock
+                                </span>
+</td>
+<td class="p-md text-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-low" title="Editar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container" title="Eliminar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 (Out of Stock) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group opacity-75">
+<td class="p-md">
+<img class="w-16 h-12 object-cover rounded-md border border-outline-variant shadow-sm grayscale-[30%]" data-alt="A beautifully presented whole fried Mojarra fish served on a minimalist ceramic platter with coconut rice, fresh side salad, and patacones, positioned on a light cream table background, high resolution, appetizing warm lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNqJJLJ-cGfB7xd2p-OMGE3G14eW9uE5ztzySou0d_OVS0jZ0eKqLtTJWecQIJPfcVkhsMl9h6rVo76s0-TzWQ3zSiAimV0IK6kfb86d83e72wsesb6aRaEMdIJFDG6LgJn6Ch9lKaQsRnxqLDkcnqZSxty3HAN43UtdxRHIcEcMfDw6GjLVdwZ5I0FZyG3yKdLx2eLFs9MORsnPBsLN4X-wbtamO5r0_NIF0PYLWdyW94PuWY1PgNuipNdzVfT5wuVPMCeDJl-fs"/>
+</td>
+<td class="p-md">
+<div class="font-body-md text-body-md text-on-surface-variant font-medium line-through decoration-outline">Mojarra Frita con Arroz con Coco</div>
+<div class="font-caption text-caption text-outline mt-1">Pescados • Especial del día</div>
+</td>
+<td class="p-md text-right font-body-md text-body-md text-on-surface-variant font-semibold">
+                                $ 45.000
+                            </td>
+<td class="p-md text-center">
+<span class="font-body-md text-body-md text-error font-bold">0</span>
+</td>
+<td class="p-md text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-error-container text-on-error-container font-caption text-caption">
+                                    Agotado
+                                </span>
+</td>
+<td class="p-md text-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-low" title="Editar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container" title="Eliminar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">delete</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 (Available) -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-md">
+<img class="w-16 h-12 object-cover rounded-md border border-outline-variant shadow-sm" data-alt="A modern presentation of Arroz de Lisa served in a small black cast iron skillet, garnished with fresh cilantro and a side of suero costeño. Set on a warm cream minimal background, bright top-down lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCnv3qQSJ5HKFB2aiwoYPS_yCTqhdLHqqsLy7EzRNUUrGhIlJjB-aOdC8ppKn0MaVFUKWr3bQUXD5TdJEXPDNAsPBQ0-tvzJmbquJWVFuFZB7ea1v_-jHHbvmxwwMHwRRSRyNvUXnmph1YBf7QS4IveI5HDF7Cjg8bcc2x-qwKc06f8NPh6MjRQYoivR2S6VX8cLYy9zcDAsygxGLZgW2OOKn-C-cMt_nDA5XH75ysJlZcJEvnIiDmnKFeNh2e2q8LuOFK7HX4pvg"/>
+</td>
+<td class="p-md">
+<div class="font-body-md text-body-md text-on-background font-medium">Arroz de Lisa</div>
+<div class="font-caption text-caption text-on-surface-variant mt-1">Arroces • Local</div>
+</td>
+<td class="p-md text-right font-body-md text-body-md text-primary font-semibold">
+                                $ 22.000
+                            </td>
+<td class="p-md text-center">
+<span class="font-body-md text-body-md text-on-background font-medium">18</span>
+</td>
+<td class="p-md text-center">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-caption text-caption">
+                                    Disponible
+                                </span>
+</td>
+<td class="p-md text-center">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container-low" title="Editar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">edit</span>
+</button>
+<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-error-container" title="Eliminar">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-surface-container-low border-t border-outline-variant p-md flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Mostrando 1 a 4 de 24 platos</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-background transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container hover:text-on-background font-label-sm text-label-sm flex items-center justify-center transition-colors">2</button>
+<button class="w-8 h-8 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container hover:text-on-background font-label-sm text-label-sm flex items-center justify-center transition-colors">3</button>
+<button class="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-background transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

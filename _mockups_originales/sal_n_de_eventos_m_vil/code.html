@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Super IN - Salón de Eventos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#ece7e2",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#1b4332",
+                      "tertiary-fixed": "#ffdbcd",
+                      "surface-bright": "#fef8f3",
+                      "on-background": "#1d1b19",
+                      "secondary-fixed": "#ffdead",
+                      "on-tertiary-fixed": "#360f00",
+                      "surface-container": "#f2ede8",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "on-secondary-container": "#6d4a00",
+                      "on-secondary-fixed": "#281900",
+                      "surface-container-highest": "#e6e2dd",
+                      "secondary-container": "#ffb628",
+                      "on-secondary-fixed-variant": "#604100",
+                      "secondary": "#7f5700",
+                      "inverse-surface": "#32302d",
+                      "on-primary-fixed-variant": "#274e3d",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "primary-fixed": "#c1ecd4",
+                      "on-primary-fixed": "#002114",
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#1d1b19",
+                      "surface-container-low": "#f8f3ee",
+                      "on-error-container": "#93000a",
+                      "surface-tint": "#3f6653",
+                      "outline": "#717973",
+                      "on-tertiary-fixed-variant": "#7c2e00",
+                      "outline-variant": "#c1c8c2",
+                      "surface": "#fef8f3",
+                      "surface-dim": "#ded9d4",
+                      "surface-variant": "#e6e2dd",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#f5f0eb",
+                      "tertiary-container": "#6a2600",
+                      "inverse-primary": "#a5d0b9",
+                      "on-surface-variant": "#414844",
+                      "error": "#ba1a1a",
+                      "on-primary-container": "#86af99",
+                      "tertiary": "#471700",
+                      "background": "#fef8f3",
+                      "primary": "#012d1d",
+                      "primary-fixed-dim": "#a5d0b9",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed-dim": "#ffba3b",
+                      "on-tertiary-container": "#ff8348"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "xl": "40px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "base": "8px",
+                      "container-margin": "20px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "caption": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Montserrat"
+                      ],
+                      "headline-lg-mobile": [
+                              "Montserrat"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Montserrat"
+                      ],
+                      "display-lg": [
+                              "Montserrat"
+                      ]
+              },
+              "fontSize": {
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased pb-24 font-body-md text-body-md md:hidden">
+<!-- Top Navigation (Mobile App Context - Back Button) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30">
+<button aria-label="Volver" class="text-primary p-2 -ml-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<span class="font-title-md text-title-md text-primary font-bold">Eventos</span>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative h-[530px] w-full flex items-end justify-center pb-12 px-container-margin">
+<div class="absolute inset-0 bg-black/40 z-10"></div>
+<img alt="Salón de eventos decorado" class="absolute inset-0 w-full h-full object-cover z-0" data-alt="A beautifully decorated event hall for a wedding, featuring elegant round tables with crisp white linens, lush floral centerpieces with cream and soft peach roses. Warm, inviting ambient lighting with string lights overhead. The style is modern corporate meets tactile warmth, high-resolution photography, prioritizing appetizing and elegant event aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEpe5JRmjcAUXbyWb8iyJ1tCE7VPpysQfWWOfQH0EPUuVFOTg44Vn6mMwL251BAhPC2nALCY_awSow2zvwj3gfUKSykNdBPoohWfREoCPcqYue_CwZPkOhDx1ipkBIhWcHsJql_M65XHyxkusF00ohH9MsV75RpY7shJWoR20zLWMK4mFPJPxxp-0AsxSfnT9b7QGsiE5tvnbzdkBCnVeSz7ItqUeqoJ5dGDIZ4YUGmfseSCdExz-6kI-C00JuHENGQ59274O3W74"/>
+<div class="relative z-20 text-center w-full max-w-sm">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-white mb-4 shadow-sm">Celebra tus mejores momentos con Super IN Eventos</h1>
+<p class="font-body-md text-body-md text-white/90">Espacios elegantes y banquetería premium para ocasiones inolvidables.</p>
+</div>
+</section>
+<!-- Tipos de Eventos (Horizontal Scroll) -->
+<section class="py-lg px-container-margin overflow-hidden">
+<h2 class="font-title-md text-title-md text-on-surface mb-md">Nuestros Servicios</h2>
+<div class="flex gap-4 overflow-x-auto pb-4 -mx-container-margin px-container-margin snap-x scrollbar-hide" style="scrollbar-width: none;">
+<!-- Card 1 -->
+<div class="min-w-[260px] bg-surface-container-lowest rounded-[24px] overflow-hidden shadow-[0_4px_12px_rgba(27,67,50,0.08)] snap-center flex-shrink-0">
+<img alt="Cumpleaños" class="w-full h-[160px] object-cover" data-alt="A joyful birthday celebration setting with modern, warm minimalist decor. A beautifully crafted artisan cake sits on a wooden table, surrounded by subtle pastel balloons and warm fairy lights. High-resolution, tactile photography that feels appetizing and premium, not cluttered." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB67y9pKtxiwpuWGp8wXb0ig4HxQfDITNUK0jeHK7uo8oVCEAzAxv7AIa7Zcqw1AnlB_oTNvYWWjXouf34YylCKecxjzFEg8E9chSfEmZx3GmM0tIVN5HxCRAvxyzXstlfFKtvLpQpkZBj0SpPkX6y5S12zaTnp3PPa7bg9Jwg2e5OqHogeJcI2DmDr3fUOx4JP81GmSPTYjqbG_QZGkq2T8kW692umyPS8ZJ4pI1U7ubwa-Bi_re4KEoygdfCChH6CdKFKd30WSiI"/>
+<div class="p-md">
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Cumpleaños</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Paquetes completos para celebrar tu día especial con familia y amigos.</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="min-w-[260px] bg-surface-container-lowest rounded-[24px] overflow-hidden shadow-[0_4px_12px_rgba(27,67,50,0.08)] snap-center flex-shrink-0">
+<img alt="Bodas" class="w-full h-[160px] object-cover" data-alt="An elegant wedding reception table setting, close up on fine china, crystal glasses, and a delicate personalized menu card. The lighting is warm and romantic, highlighting the premium tactile textures of the linens. Modern, clean layout reflecting elevated gastronomy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnakr8Z96laNQh-LZ733DzOyX-y3UUhQFICfUdarOfl5NgtAyOq1diVDDNGLPoVciuKdtRjNnHdN5iiz2GBSia_o7YMshAM5n3aQ2HID8AWoC2KWwLCNB0VffkD4iFWrftxwHVxrliJGu-3yGeTyr3dYafCYVCWLBAm8XldbHuejpWFbEBaWkbiK127G6FUSNOquqBjGcLxK8oUR8DQaorQvmlrvnnCJNdgHWB0bwuaSlil5_5UHPWCCL5VcrwurazaqmzfmE1TPk"/>
+<div class="p-md">
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Bodas</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Banquetería de primera clase y decoración romántica para el gran día.</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="min-w-[260px] bg-surface-container-lowest rounded-[24px] overflow-hidden shadow-[0_4px_12px_rgba(27,67,50,0.08)] snap-center flex-shrink-0">
+<img alt="Corporativos" class="w-full h-[160px] object-cover" data-alt="A sophisticated corporate catering setup featuring an array of gourmet finger foods and artisanal appetizers on slate platters. Clean, organized layout with warm minimalist aesthetics. High-resolution food photography that looks efficient and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXIYsLr2rBusM7bR7EF2i41y5ljAYhxJHfzayH47G_LCEuw7IKp4MzD4wqpI9-8C3T2rIxXwyWhKFYiXry15-m98g4aVWcv5IRVeF-OXN1ZfrisQnptET6uZtYSbP674jR35hWQfOUpmUI4HLu7O1hLAzfG95NnZFoDn6kLwn90kTNIlOvYxRicF0mOcCBC4hH7VN4TCHmxHymrQyYiv87NyE7Ze5-c3Qv4RvdkaK47D_oNSKq0aoFyUa_4sLL4Th6TvMIizxvlS4"/>
+<div class="p-md">
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Corporativos</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Coffe breaks, almuerzos de negocios y fiestas de fin de año empresariales.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Galería (Bento Grid) -->
+<section class="py-lg px-container-margin bg-surface-container-low">
+<h2 class="font-title-md text-title-md text-on-surface mb-md">Galería</h2>
+<div class="grid grid-cols-2 gap-2 auto-rows-[120px]">
+<div class="col-span-2 row-span-2 rounded-[24px] overflow-hidden">
+<img alt="Salón principal" class="w-full h-full object-cover" data-alt="A stunning wide shot of an elegant event space ready for guests. Round tables dressed in pristine white, soft warm lighting casting gentle shadows, high-end tableware glinting. The atmosphere is warm, premium, and immaculately organized, reflecting modern corporate elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBO96pcwjEE7L96Hhg2rwXIDkr_R44HplJbxcvBR24hhAMO5Dwu_MSJ2upz6NGTvJ-ygUvv0FfqcPq39Ltd3HAoGoIRnStWhQKGh4mLnUbmLq1hSaK1F27WXJ6c_7oKIpEVYZTTe4Qg4cSppd2urLWTeh2cb-5EdvKLPJgotaz5856T4TEVguxsqkoC964AkQ91bB-7UYsu-SQjQ4u0HEp6DduqTVx1EShEW_F886qlezWhNr0zbbjus_3jKK8Fm8JXa5yh-ineR7Q"/>
+</div>
+<div class="rounded-xl overflow-hidden">
+<img alt="Platillo elegante" class="w-full h-full object-cover" data-alt="Close up of a beautifully plated gourmet appetizer served at a premium event. Vibrant fresh ingredients, crisp presentation on a modern white plate. High resolution, tactile, making the food look irresistible and elegant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJnnA7oPmKi4iRESOXy2LPoLw2eMS0CXphyrijMI6VtD1NIlM1ohhxmt3yvIu9uUICohKw9XdoHhc2LHK1I3afl5KUY1h3twOuB4jS0t38_E9tHng6Jsh32Ud7wHtZWKZCQuyaNq4XgLRmuhuIJ7q-FIV6hss7rwLu4NBp-JHSYtBvB8uT0zdXv2jbJ7_vBeNN43HNfk8c35NeCD3q6fjRZnyKKTRSHo9hz9lvPwtGVD1hquufxFD8KZF-BIiQevg3llRMlpvOJhU"/>
+</div>
+<div class="rounded-xl overflow-hidden">
+<img alt="Decoración floral" class="w-full h-full object-cover" data-alt="Detail shot of a refined floral centerpiece on a banquet table. Soft cream and muted green tones, modern minimalist arrangement in a tasteful vase, capturing the warmth and high-quality styling of the event service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdtvYnyKOQ4KarK-F37Q-6wYtbo_vcSBZUHbxhPHZ9vOOrwhbpd6GrMzZR92loynAWP6Hx_xvg_5T2giTCz1Zj9n-1b5ZidCFNmTKOtvDSQg1b616Gv7rqABuVY2PWjOxLb4T_RFcW7K0426CSX1YY5b1CGwGAbR9bSoC-d4yk2CCkYxWC470muH3ri5WPb_zbLxEHcIdbQm1JgCZo7XmhxVOA3GaPCLusUmBuqf_OWFeV5Y01eIJta63egl4v-2lIjQhAg-u7zM8"/>
+</div>
+</div>
+</section>
+<!-- Formulario de Cotización -->
+<section class="py-xl px-container-margin bg-surface">
+<h2 class="font-title-md text-title-md text-on-surface mb-sm">Cotiza tu Evento</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Déjanos tus datos y te contactaremos para organizar cada detalle.</p>
+<form class="space-y-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface" for="nombre">Nombre completo</label>
+<input class="w-full bg-surface-container-lowest border-1.5 border-outline-variant rounded-lg px-4 py-3 font-body-md focus:border-primary focus:ring-0 transition-colors" id="nombre" placeholder="Ej: María Gómez" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface" for="celular">Celular</label>
+<input class="w-full bg-surface-container-lowest border-1.5 border-outline-variant rounded-lg px-4 py-3 font-body-md focus:border-primary focus:ring-0 transition-colors" id="celular" placeholder="+57 300 000 0000" type="tel"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface" for="tipo_evento">Tipo de evento</label>
+<select class="w-full bg-surface-container-lowest border-1.5 border-outline-variant rounded-lg px-4 py-3 font-body-md focus:border-primary focus:ring-0 transition-colors appearance-none" id="tipo_evento">
+<option disabled="" selected="" value="">Selecciona una opción</option>
+<option value="cumpleanos">Cumpleaños</option>
+<option value="boda">Boda</option>
+<option value="corporativo">Corporativo</option>
+<option value="otro">Otro</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface" for="fecha">Fecha estimada</label>
+<input class="w-full bg-surface-container-lowest border-1.5 border-outline-variant rounded-lg px-4 py-3 font-body-md focus:border-primary focus:ring-0 transition-colors" id="fecha" type="date"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface" for="invitados">Nº Invitados</label>
+<input class="w-full bg-surface-container-lowest border-1.5 border-outline-variant rounded-lg px-4 py-3 font-body-md focus:border-primary focus:ring-0 transition-colors" id="invitados" placeholder="Ej: 50" type="number"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-sm text-label-sm text-on-surface" for="mensaje">Mensaje o requerimientos especiales</label>
+<textarea class="w-full bg-surface-container-lowest border-1.5 border-outline-variant rounded-lg px-4 py-3 font-body-md focus:border-primary focus:ring-0 transition-colors resize-none" id="mensaje" placeholder="Cuéntanos más sobre lo que imaginas..." rows="3"></textarea>
+</div>
+<button class="w-full mt-lg bg-primary text-on-primary font-label-sm text-label-sm py-4 rounded-full flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+                    Solicitar cotización por WhatsApp
+                </button>
+</form>
+</section>
+</main>
+<!-- Bottom Navigation Shell Placeholder (Not rendered on focused sub-pages based on mandate, but included structurally if needed for global flow. Suppressed here as this is a specific lead-gen page) -->
+</body></html>

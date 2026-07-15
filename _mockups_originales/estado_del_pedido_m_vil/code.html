@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Estado del Pedido - Super IN</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#ece7e2",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#1b4332",
+                    "tertiary-fixed": "#ffdbcd",
+                    "surface-bright": "#fef8f3",
+                    "on-background": "#1d1b19",
+                    "secondary-fixed": "#ffdead",
+                    "on-tertiary-fixed": "#360f00",
+                    "surface-container": "#f2ede8",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "on-secondary-container": "#6d4a00",
+                    "on-secondary-fixed": "#281900",
+                    "surface-container-highest": "#e6e2dd",
+                    "secondary-container": "#ffb628",
+                    "on-secondary-fixed-variant": "#604100",
+                    "secondary": "#7f5700",
+                    "inverse-surface": "#32302d",
+                    "on-primary-fixed-variant": "#274e3d",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "primary-fixed": "#c1ecd4",
+                    "on-primary-fixed": "#002114",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#1d1b19",
+                    "surface-container-low": "#f8f3ee",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#3f6653",
+                    "outline": "#717973",
+                    "on-tertiary-fixed-variant": "#7c2e00",
+                    "outline-variant": "#c1c8c2",
+                    "surface": "#fef8f3",
+                    "surface-dim": "#ded9d4",
+                    "surface-variant": "#e6e2dd",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f5f0eb",
+                    "tertiary-container": "#6a2600",
+                    "inverse-primary": "#a5d0b9",
+                    "on-surface-variant": "#414844",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#86af99",
+                    "tertiary": "#471700",
+                    "background": "#fef8f3",
+                    "primary": "#012d1d",
+                    "primary-fixed-dim": "#a5d0b9",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#ffba3b",
+                    "on-tertiary-container": "#ff8348"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "xl": "40px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "base": "8px",
+                    "container-margin": "20px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "caption": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Montserrat"
+                    ],
+                    "headline-lg-mobile": [
+                            "Montserrat"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "title-md": [
+                            "Montserrat"
+                    ],
+                    "display-lg": [
+                            "Montserrat"
+                    ]
+            },
+            "fontSize": {
+                    "caption": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .timeline-line {
+            position: absolute;
+            left: 23px;
+            top: 24px;
+            bottom: 0;
+            width: 2px;
+            background-color: theme('colors.outline-variant');
+            z-index: 0;
+        }
+        .timeline-item:last-child .timeline-line {
+            display: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md antialiased pb-[80px] lg:pb-0">
+<!-- TopNavBar (Responsive Navigation Shell) -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 md:h-20 bg-surface/90 backdrop-blur-md border-b border-outline-variant shadow-sm transition-all hidden md:flex">
+<div class="flex items-center gap-lg">
+<span class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">Super IN</span>
+<div class="hidden md:flex gap-md ml-lg">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors scale-95 active:opacity-80 transition-all" href="#">Menú</a>
+<a class="text-primary border-b-2 border-primary font-bold pb-1 hover:text-primary transition-colors scale-95 active:opacity-80 transition-all" href="#">Mis Pedidos</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors scale-95 active:opacity-80 transition-all" href="#">Eventos</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors scale-95 active:opacity-80 transition-all" href="#">Soporte</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 scale-95 active:opacity-80 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_cart</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 scale-95 active:opacity-80 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Mobile Header -->
+<header class="md:hidden flex items-center justify-between px-container-margin h-16 bg-surface border-b border-outline-variant sticky top-0 z-40 shadow-sm">
+<button class="text-on-surface-variant p-2 -ml-2 rounded-full active:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="font-title-md text-title-md font-bold text-primary">Estado del Pedido</span>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-4 md:pt-28 px-container-margin md:px-xl max-w-3xl mx-auto flex flex-col gap-lg">
+<!-- Status Header Hero -->
+<section class="flex flex-col items-center justify-center text-center py-lg bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/30 p-lg relative overflow-hidden">
+<!-- Abstract graphic elements -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-container rounded-full opacity-20 blur-2xl"></div>
+<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary-container rounded-full opacity-20 blur-2xl"></div>
+<div class="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center mb-md z-10">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-xs z-10">Pedido Recibido</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant z-10">Código: <span class="font-bold text-primary">SUP-1042</span></p>
+</section>
+<!-- Alert Banner -->
+<div class="bg-secondary-container/20 border-l-4 border-secondary-container p-md rounded-r-lg flex items-start gap-md">
+<span class="material-symbols-outlined text-secondary mt-1">info</span>
+<div>
+<p class="font-label-sm text-label-sm text-on-secondary-container">Esperando confirmación del restaurante.</p>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Tiempo máximo estimado: 15 minutos.</p>
+</div>
+</div>
+<!-- Bento Grid Layout for Details & Timeline -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Left Column: Details -->
+<div class="flex flex-col gap-lg">
+<!-- Order Summary Card -->
+<article class="bg-surface-container-lowest rounded-2xl p-lg shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/30 flex flex-col gap-md">
+<h2 class="font-title-md text-title-md text-on-background border-b border-outline-variant/30 pb-sm">Detalles del Pedido</h2>
+<div class="flex justify-between items-center py-2">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-body-md text-body-md">Dirección</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-background text-right">Calle 84 # 52-20<br/>Barranquilla, CO</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="font-body-md text-body-md">Franja Entrega</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-background bg-surface-variant px-3 py-1 rounded-full">11:30 AM</span>
+</div>
+<div class="flex justify-between items-center pt-sm mt-sm border-t border-outline-variant/30">
+<span class="font-title-md text-title-md text-on-background">Total</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">$45.000 <span class="font-caption text-caption text-on-surface-variant font-normal">COP</span></span>
+</div>
+</article>
+<!-- Actions Card -->
+<article class="bg-surface-container-lowest rounded-2xl p-lg shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/30 flex flex-col items-center text-center gap-md">
+<p class="font-body-md text-body-md text-on-surface-variant">¿Necesitas hacer un cambio o tienes preguntas?</p>
+<button class="w-full bg-[#25D366] text-white font-label-sm text-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-sm hover:bg-[#1EBE5C] transition-colors shadow-md active:scale-[0.98]">
+<!-- Using generic chat icon as placeholder for WhatsApp logo per Material Symbols constraints -->
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat</span>
+                        Abrir WhatsApp
+                    </button>
+<button class="w-full bg-transparent text-secondary border-2 border-secondary font-label-sm text-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-sm hover:bg-surface-variant transition-colors mt-2 active:scale-[0.98]">
+                        Cancelar Pedido
+                    </button>
+</article>
+</div>
+<!-- Right Column: Timeline Tracking -->
+<article class="bg-surface-container-lowest rounded-2xl p-lg shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/30">
+<h2 class="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/30 pb-sm">Seguimiento</h2>
+<div class="relative pl-2">
+<!-- Step 1: Received (Active) -->
+<div class="timeline-item relative pb-lg flex gap-md">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-md ring-4 ring-surface-container-lowest">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">receipt</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-sm text-label-sm text-on-background">Pedido Recibido</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-1">10:15 AM - Super IN ha recibido tu orden.</p>
+</div>
+</div>
+<!-- Step 2: Confirmed -->
+<div class="timeline-item relative pb-lg flex gap-md opacity-50">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-12 h-12 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center ring-4 ring-surface-container-lowest">
+<span class="material-symbols-outlined text-outline">thumb_up</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-sm text-label-sm text-on-background">Confirmado</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-1">El restaurante está revisando los detalles.</p>
+</div>
+</div>
+<!-- Step 3: Prep -->
+<div class="timeline-item relative pb-lg flex gap-md opacity-50">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-12 h-12 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center ring-4 ring-surface-container-lowest">
+<span class="material-symbols-outlined text-outline">skillet</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-sm text-label-sm text-on-background">En Preparación</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-1">Tus platos están siendo preparados con cariño.</p>
+</div>
+</div>
+<!-- Step 4: En camino -->
+<div class="timeline-item relative pb-lg flex gap-md opacity-50">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-12 h-12 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center ring-4 ring-surface-container-lowest">
+<span class="material-symbols-outlined text-outline">two_wheeler</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-sm text-label-sm text-on-background">En Camino</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-1">El repartidor se dirige a tu dirección.</p>
+</div>
+</div>
+<!-- Step 5: Entregado -->
+<div class="timeline-item relative flex gap-md opacity-50">
+<div class="timeline-line"></div>
+<div class="relative z-10 w-12 h-12 rounded-full bg-surface-container-highest border-2 border-outline-variant flex items-center justify-center ring-4 ring-surface-container-lowest">
+<span class="material-symbols-outlined text-outline">home</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-sm text-label-sm text-on-background">Entregado</h3>
+<p class="font-caption text-caption text-on-surface-variant mt-1">¡Buen provecho!</p>
+</div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Nav Shell) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 md:hidden flex justify-around items-center px-4 pb-safe h-16 bg-surface-container-lowest border-t border-outline-variant/30 shadow-[0_-4px_12px_rgba(27,67,50,0.08)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform active:bg-surface-container-high rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-caption text-caption mt-1">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform active:bg-surface-container-high rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+<span class="font-caption text-caption mt-1">Menú</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 mt-1 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="font-caption text-caption mt-1 font-bold">Carrito</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform active:bg-surface-container-high rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-caption text-caption mt-1">Perfil</span>
+</a>
+</nav>
+</body></html>

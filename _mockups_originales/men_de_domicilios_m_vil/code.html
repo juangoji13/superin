@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Super IN - Menú de Domicilios</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#ece7e2",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1b4332",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-bright": "#fef8f3",
+                        "on-background": "#1d1b19",
+                        "secondary-fixed": "#ffdead",
+                        "on-tertiary-fixed": "#360f00",
+                        "surface-container": "#f2ede8",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-secondary-container": "#6d4a00",
+                        "on-secondary-fixed": "#281900",
+                        "surface-container-highest": "#e6e2dd",
+                        "secondary-container": "#ffb628",
+                        "on-secondary-fixed-variant": "#604100",
+                        "secondary": "#7f5700",
+                        "inverse-surface": "#32302d",
+                        "on-primary-fixed-variant": "#274e3d",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#c1ecd4",
+                        "on-primary-fixed": "#002114",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1d1b19",
+                        "surface-container-low": "#f8f3ee",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#3f6653",
+                        "outline": "#717973",
+                        "on-tertiary-fixed-variant": "#7c2e00",
+                        "outline-variant": "#c1c8c2",
+                        "surface": "#fef8f3",
+                        "surface-dim": "#ded9d4",
+                        "surface-variant": "#e6e2dd",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f5f0eb",
+                        "tertiary-container": "#6a2600",
+                        "inverse-primary": "#a5d0b9",
+                        "on-surface-variant": "#414844",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#86af99",
+                        "tertiary": "#471700",
+                        "background": "#fef8f3",
+                        "primary": "#012d1d",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffba3b",
+                        "on-tertiary-container": "#ff8348"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "40px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "8px",
+                        "container-margin": "20px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-md": ["Montserrat"],
+                        "display-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .soft-lift {
+            box-shadow: 0 4px 12px rgba(27, 67, 50, 0.08);
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .soft-lift:active {
+            box-shadow: 0 8px 24px rgba(27, 67, 50, 0.12);
+            transform: translateY(-2px) scale(0.98);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md pb-[120px]">
+<!-- TopNavBar (Web) -->
+<nav class="hidden md:flex fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/90 backdrop-blur-md shadow-sm border-b border-outline-variant">
+<div class="font-headline-lg text-primary font-bold tracking-tight">Super IN</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Menú</a>
+<a class="text-primary border-b-2 border-primary font-bold pb-1 hover:text-primary transition-colors" href="#">Mis Pedidos</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Eventos</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Soporte</a>
+</div>
+<div class="flex gap-md">
+<button class="text-primary hover:text-primary transition-colors scale-95 active:opacity-80"><span class="material-symbols-outlined">shopping_cart</span></button>
+<button class="text-primary hover:text-primary transition-colors scale-95 active:opacity-80"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</nav>
+<!-- Header Mobile (Contextual replacement for TopNav) -->
+<header class="md:hidden sticky top-0 bg-surface/90 backdrop-blur-md z-40 px-container-margin py-md flex justify-between items-center">
+<div>
+<h1 class="font-headline-lg-mobile text-primary">Super IN</h1>
+<p class="font-caption text-on-surface-variant">Jueves, 26 Oct</p>
+</div>
+<button class="relative text-primary p-2 bg-surface-container rounded-full">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-0 right-0 bg-secondary-container text-on-secondary-container rounded-full w-4 h-4 flex items-center justify-center font-caption text-[10px]">1</span>
+</button>
+</header>
+<main class="px-container-margin md:px-xl md:mt-24 mt-4 max-w-7xl mx-auto">
+<!-- Banner -->
+<section class="bg-primary-container text-on-primary-container rounded-xl p-md mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined">info</span>
+<p class="font-label-sm">Haz tu pedido para hoy o prográmalo para mañana</p>
+</section>
+<!-- Tabs -->
+<div class="flex gap-sm mb-lg overflow-x-auto pb-2 hide-scrollbar">
+<button class="bg-primary text-on-primary font-label-sm px-lg py-sm rounded-full whitespace-nowrap">Platos ya hechos</button>
+<button class="bg-surface-container text-on-surface-variant font-label-sm px-lg py-sm rounded-full whitespace-nowrap border border-outline-variant">Ármate un plato</button>
+</div>
+<h2 class="font-title-md text-primary mb-md">Platos ya hechos</h2>
+<!-- Dish Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Item 1 -->
+<article class="bg-surface-container-lowest rounded-xl soft-lift overflow-hidden flex flex-col relative cursor-pointer">
+<div class="h-48 w-full relative">
+<img class="w-full h-full object-cover" data-alt="A delicious traditional Colombian coastal lunch featuring coconut rice, fried plantains, and a fresh side salad, presented on a clean white plate. The lighting is bright and inviting, casting soft shadows that highlight the textures of the food. The setting is warm minimalist, with a creamy beige background that evokes an elevated culinary experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACbxDzIS5TpzpHjUnqgnSh-l5bPnVhVjrv0d9iZR2XxFzv2KcJIaWY1gLoikX1pbx26N8zQLQkVBmpNqZXN0FzUWruU9m1vv8V-At-XSKzmOUNTS5XkLCkdG89ar_oU4Z1YBQwt4lVUH-pntrFMaRv3MYqqIwewMfnCgaEV4nsbDk-Ehr5ypYFdWfm8jcZqLGZ9BxxKK01C7LclYFeK_0KkJb5qV9zP3KKX5_5AVlZN3C04YM3NNhizm24bPy7NxCRi-ULPhgIISE"/>
+<div class="absolute top-sm left-sm bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full border border-outline-variant flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+<span class="font-caption text-on-surface-variant">20 disponibles</span>
+</div>
+</div>
+<div class="p-md flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-title-md text-on-background mb-1">Almuerzo costeño</h3>
+<p class="font-caption text-on-surface-variant line-clamp-2 mb-md">Arroz con coco, patacones, ensalada fresca y proteína a elección.</p>
+</div>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-title-md text-primary font-bold">$22.000</span>
+<button class="bg-primary-container text-on-primary-container rounded-full p-2 hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 2 -->
+<article class="bg-surface-container-lowest rounded-xl soft-lift overflow-hidden flex flex-col relative cursor-pointer">
+<div class="h-48 w-full relative">
+<img class="w-full h-full object-cover" data-alt="A perfectly grilled cut of beef (Carne Asada) served alongside golden potatoes and a vibrant chimichurri sauce. The image is captured from an overhead, appetizing angle with high-resolution clarity. The lighting is warm and natural, emphasizing the savory grill marks and rich colors of the meat against a simple, premium cream background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnsQzmXGl4zHzc4fGTRZuuBVjyJLHxA87DkSYsuybNNs0R3O0_Iq2jiBaKRvQyGkHb45fseTjj2hvAvsUs6lXo7YrTM0n3Po3Ph5DDVACnHOeJndR_pJuSrDJz5KXNKAbcNO-B_d9gMql5o7rY0M44CqkBJJBnQs_U9MGOkkaD015yAsQTYbVEU6p-jdH-z6wf2bx8_i5viP61FooGQmdv4agCGo7p1sX5oLmiorHTS8gfope_XM2IHgLxkGKGl1zrFM4KFvWGYHM"/>
+<div class="absolute top-sm left-sm bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full border border-outline-variant flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary-container"></div>
+<span class="font-caption text-on-surface-variant">8 disponibles</span>
+</div>
+</div>
+<div class="p-md flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-title-md text-on-background mb-1">Carne asada</h3>
+<p class="font-caption text-on-surface-variant line-clamp-2 mb-md">Corte premium a la parrilla con acompañamientos tradicionales.</p>
+</div>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-title-md text-primary font-bold">$25.000</span>
+<button class="bg-primary-container text-on-primary-container rounded-full p-2 hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 3 (Agotado) -->
+<article class="bg-surface-container-low rounded-xl overflow-hidden flex flex-col relative opacity-75 grayscale-[30%]">
+<div class="h-48 w-full relative">
+<img class="w-full h-full object-cover" data-alt="A beautifully plated whole fried fish served with lime wedges and a side of traditional yuca fries. The presentation is neat and appetizing, set on a modern ceramic plate. The lighting is bright and evenly distributed, highlighting the golden crispiness of the fish in a modern corporate dining style with warm minimalistic undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZOWmCxpcuVpskeW5ok58mqvu7XCeOGP107SLllOIejlPkxpV9-h6vbNox5QB8UE2YFIq3AgdG8tB7ZoO1nM4VzvO8lnFU-mbk_L3YXYRtQxAd1BK1RQV_g0NjJVQU20JKdyJnozZIpNsY6KB1psh4WyscI8F_yVbPn0okcsE88qRoOQR_08MM5490S5TFUpthmMNMtdTpUt0wTlH6xls9zuMW_7q19SckM7fXsYACbSyocMGrkzZMOnz7z_Xr3470D9b5GBsHRyk"/>
+<div class="absolute inset-0 bg-surface/40 backdrop-blur-[2px] flex items-center justify-center">
+<span class="bg-error-container text-on-error-container font-label-sm px-md py-sm rounded-full">AGOTADO</span>
+</div>
+</div>
+<div class="p-md flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-title-md text-on-background mb-1 text-on-surface-variant">Pescado frito</h3>
+<p class="font-caption text-on-surface-variant line-clamp-2 mb-md">Pescado fresco del día frito, con arroz blanco y ensalada.</p>
+</div>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-title-md text-on-surface-variant font-bold">$28.000</span>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- Bottom Action Bar (Mobile cart summary) -->
+<div class="fixed bottom-[80px] md:bottom-lg left-1/2 transform -translate-x-1/2 w-11/12 max-w-md z-40 lg:hidden">
+<button class="w-full bg-primary text-on-primary font-label-sm py-md px-lg rounded-full shadow-lg flex justify-between items-center active:scale-[0.98] transition-transform">
+<span class="flex items-center gap-sm"><span class="material-symbols-outlined" data-weight="fill">shopping_bag</span> Ver carrito</span>
+<span class="font-bold">$22.000</span>
+</button>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 lg:hidden flex justify-around items-center px-4 pb-safe h-16 bg-surface-container-lowest border-t border-outline-variant/30 shadow-[0_-4px_12px_rgba(27,67,50,0.08)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-caption mt-1">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 mt-1 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-weight="fill">restaurant</span>
+<span class="font-caption mt-1 font-bold">Menú</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="font-caption mt-1">Carrito</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-caption mt-1">Perfil</span>
+</a>
+</nav>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</body></html>

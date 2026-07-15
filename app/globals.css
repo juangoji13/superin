@@ -90,3 +90,28 @@ body {
 .tap-highlight-transparent {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Custom interactive animation for product cards */
+.soft-lift {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+}
+.soft-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px -8px rgba(1, 45, 29, 0.12);
+}
+
+/* Toast Notification animations */
+@keyframes slideUpFadeIn {
+  from {
+    transform: translate(-50%, 20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-toast-in {
+  animation: slideUpFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

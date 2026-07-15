@@ -83,6 +83,9 @@ export default function DomiciliosPage() {
   const [dishQuantity, setDishQuantity] = useState(1);
   const [dishNotes, setDishNotes] = useState('');
 
+  // Toast feedback state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   // Customizer Selections
   const [customSelections, setCustomSelections] = useState({
     Arroz: '',
@@ -122,6 +125,13 @@ export default function DomiciliosPage() {
     fetchMenu();
   }, []);
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
   const handleAddPrepared = (dish: any) => {
     setSelectedDish(dish);
     setDishQuantity(1);
@@ -138,6 +148,7 @@ export default function DomiciliosPage() {
       cantidad: dishQuantity,
       observaciones: dishNotes
     });
+    showToast(`¡${selectedDish.nombre} añadido al carrito!`);
     setSelectedDish(null);
   };
 
@@ -202,7 +213,7 @@ export default function DomiciliosPage() {
       Postre: 'Sin postre'
     });
     setCustomNotes('');
-    alert('¡Plato personalizado agregado al carrito!');
+    showToast('¡Almuerzo personalizado agregado al carrito!');
   };
 
   const getOptionsByGroup = (group: string) => {
@@ -210,94 +221,202 @@ export default function DomiciliosPage() {
   };
 
   return (
-    <div className="px-container-margin md:px-xl md:mt-6 mt-4 max-w-7xl mx-auto w-full pb-24">
-      {/* Banner */}
-      <section className="bg-primary-container text-on-primary-container rounded-xl p-md mb-lg flex items-center gap-sm">
-        <span className="material-symbols-outlined">info</span>
-        <p className="font-label-sm">Haz tu pedido para hoy o prográmalo para mañana</p>
+    <div className="px-container-margin md:px-xl md:mt-8 mt-6 max-w-7xl mx-auto w-full pb-24 flex flex-col gap-lg">
+      
+      {/* Immersive Hero Header */}
+      <header className="relative bg-gradient-to-br from-primary-container to-primary text-on-primary rounded-3xl p-8 md:p-12 overflow-hidden shadow-soft-lift flex flex-col gap-md">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div className="max-w-2xl relative z-10">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-secondary-container text-on-secondary-container font-label-sm text-xs rounded-full mb-4 font-bold shadow-sm">
+            <span className="material-symbols-outlined text-sm">delivery_dining</span>
+            Entrega rápida en Barranquilla y Soledad
+          </span>
+          <h1 className="font-display-lg text-3xl md:text-5xl text-white font-extrabold tracking-tight mb-4 leading-tight">
+            Domicilios de comida típica en Barranquilla
+          </h1>
+          <p className="font-body-lg text-base md:text-lg text-on-primary-container/85 mb-6 max-w-xl">
+            Almuerzos caseros con sabor caribeño auténtico, preparados al día con ingredientes frescos y entregados calientes a tu casa u oficina.
+          </p>
+          <div className="flex flex-wrap items-center gap-md">
+            <a
+              href="#menu-seccion"
+              className="bg-secondary-container text-on-secondary-container font-label-sm px-6 py-3 rounded-full hover:bg-secondary-container/95 active:scale-95 transition-all shadow-md font-bold text-sm"
+            >
+              Haz tu pedido ahora
+            </a>
+            <div className="flex items-center gap-sm bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10 text-xs">
+              <span className="font-medium text-white/80">Pagos seguros:</span>
+              <span className="font-bold text-white flex items-center gap-2">
+                Nequi • Daviplata • Efectivo
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Category Selection Section */}
+      <section id="menu-seccion" className="scroll-mt-24">
+        <div className="text-center md:text-left mb-6">
+          <h2 className="font-display-lg text-2xl md:text-3xl text-on-background font-bold">
+            Elige cómo quieres ordenar
+          </h2>
+          <p className="font-body-md text-on-surface-variant mt-1">
+            Haz tu pedido para hoy o prográmalo para mañana con la mayor frescura
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-md mb-8">
+          {/* Card 1: Platos ya hechos */}
+          <button
+            onClick={() => setActiveTab('prepared')}
+            className={`flex items-start gap-md p-6 rounded-2xl border text-left transition-all cursor-pointer ${
+              activeTab === 'prepared'
+                ? 'bg-surface-container-lowest border-primary shadow-soft-lift ring-1 ring-primary'
+                : 'bg-surface border-outline-variant hover:border-primary/50'
+            }`}
+          >
+            <div className={`p-3 rounded-xl ${activeTab === 'prepared' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+              <span className="material-symbols-outlined text-2xl">restaurant_menu</span>
+            </div>
+            <div>
+              <h3 className="font-title-md text-lg text-on-surface font-bold">Platos ya hechos</h3>
+              <p className="font-caption text-on-surface-variant mt-1">
+                Recetas tradicionales listas para disfrutar: bandeja paisa, mojarra frita, carnes y pescados frescos.
+              </p>
+              {activeTab === 'prepared' && (
+                <span className="inline-flex items-center gap-1 text-xs text-primary font-bold mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                  Viendo esta sección
+                </span>
+              )}
+            </div>
+          </button>
+
+          {/* Card 2: Ármate un plato */}
+          <button
+            onClick={() => setActiveTab('custom')}
+            className={`flex items-start gap-md p-6 rounded-2xl border text-left transition-all cursor-pointer ${
+              activeTab === 'custom'
+                ? 'bg-surface-container-lowest border-primary shadow-soft-lift ring-1 ring-primary'
+                : 'bg-surface border-outline-variant hover:border-primary/50'
+            }`}
+          >
+            <div className={`p-3 rounded-xl ${activeTab === 'custom' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+              <span className="material-symbols-outlined text-2xl">menu_book</span>
+            </div>
+            <div>
+              <h3 className="font-title-md text-lg text-on-surface font-bold">Ármate un plato</h3>
+              <p className="font-caption text-on-surface-variant mt-1">
+                Elige tu base de arroz, proteína preferida, acompañamiento, bebida y extras al gusto.
+              </p>
+              {activeTab === 'custom' && (
+                <span className="inline-flex items-center gap-1 text-xs text-primary font-bold mt-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                  Viendo esta sección
+                </span>
+              )}
+            </div>
+          </button>
+        </div>
       </section>
 
-      {/* Tabs */}
-      <div className="flex gap-sm mb-lg border-b border-outline-variant pb-3">
-        <button
-          onClick={() => setActiveTab('prepared')}
-          className={`font-label-sm px-lg py-sm rounded-full whitespace-nowrap transition-all duration-200 cursor-pointer ${
-            activeTab === 'prepared'
-              ? 'bg-primary text-on-primary font-bold'
-              : 'bg-surface-container text-on-surface-variant border border-outline-variant hover:bg-surface-container-high'
-          }`}
-        >
-          Platos ya hechos
-        </button>
-        <button
-          onClick={() => setActiveTab('custom')}
-          className={`font-label-sm px-lg py-sm rounded-full whitespace-nowrap transition-all duration-200 cursor-pointer ${
-            activeTab === 'custom'
-              ? 'bg-primary text-on-primary font-bold'
-              : 'bg-surface-container text-on-surface-variant border border-outline-variant hover:bg-surface-container-high'
-          }`}
-        >
-          Ármate un plato
-        </button>
-      </div>
-
+      {/* Main Tab Content */}
       {activeTab === 'prepared' ? (
         <div>
-          <h2 className="font-title-md text-primary mb-md">Nuestros Platos del Día</h2>
           {/* Dish Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
             {preparedDishes.map((dish) => {
               const isAvailable = dish.stock > 0;
+              const isLowStock = dish.stock > 0 && dish.stock <= 5;
+              
+              // Dynamic portion text
+              const portionText = dish.nombre.toLowerCase().includes('mojarra') || dish.nombre.toLowerCase().includes('bandeja') || dish.nombre.toLowerCase().includes('familiar')
+                ? 'Porción: 1-2 personas'
+                : 'Porción: 1 persona';
+
+              // Benefit-oriented copy fallback
+              const benefitText = dish.nombre.toLowerCase().includes('costeño')
+                ? 'Perfecta para un almuerzo costeño auténtico.'
+                : dish.nombre.toLowerCase().includes('pescado') || dish.nombre.toLowerCase().includes('mojarra')
+                ? 'Fresco del mar, ideal para compartir en casa.'
+                : 'Receta tradicional elaborada con ingredientes frescos.';
+
               return (
                 <article
                   key={dish.id}
                   onClick={() => isAvailable && handleAddPrepared(dish)}
-                  className={`bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col relative ${
-                    isAvailable ? 'soft-lift cursor-pointer' : 'opacity-75 grayscale-[20%]'
+                  className={`bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col relative border border-outline-variant/30 soft-lift shadow-sm ${
+                    isAvailable ? 'cursor-pointer' : 'opacity-85 grayscale-[20%]'
                   }`}
                 >
                   <div className="h-48 w-full relative">
                     <img
                       className="w-full h-full object-cover"
                       alt={dish.nombre}
-                      src={dish.foto || '/fallback-food.jpg'}
+                      src={dish.foto || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=600'}
+                      loading="lazy"
                     />
-                    {isAvailable ? (
-                      <div className="absolute top-sm left-sm bg-surface/90 backdrop-blur-sm px-2 py-1 rounded-full border border-outline-variant flex items-center gap-1">
-                        <div className="w-2 h-2 rounded-full bg-secondary-container"></div>
-                        <span className="font-caption text-[11px] text-on-surface-variant">
-                          {dish.stock} disponibles
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 bg-surface/40 backdrop-blur-[2px] flex items-center justify-center">
-                        <span className="bg-error-container text-on-error-container font-bold text-xs px-md py-sm rounded-full">
-                          AGOTADO
-                        </span>
-                      </div>
-                    )}
+                    
+                    {/* Color-coded Availability Badge */}
+                    <div className="absolute top-sm left-sm z-10">
+                      {isAvailable ? (
+                        isLowStock ? (
+                          <div className="bg-orange-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                            ¡Solo quedan {dish.stock}!
+                          </div>
+                        ) : (
+                          <div className="bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                            Disponible
+                          </div>
+                        )
+                      ) : (
+                        <div className="bg-error text-white px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md">
+                          Agotado
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Portion Range Badge */}
+                    <div className="absolute bottom-sm right-sm z-10 bg-black/60 backdrop-blur-sm text-white px-2.5 py-0.5 rounded text-[11px] font-semibold">
+                      {portionText}
+                    </div>
                   </div>
                   <div className="p-md flex-grow flex flex-col justify-between">
                     <div>
-                      <h3 className="font-title-md text-on-background mb-1">{dish.nombre}</h3>
-                      <p className="font-caption text-on-surface-variant line-clamp-2 mb-md">
+                      <h3 className="font-title-md text-lg text-on-surface font-extrabold leading-tight mb-1">{dish.nombre}</h3>
+                      <p className="font-caption text-on-surface-variant text-sm line-clamp-2 mb-2 leading-relaxed">
                         {dish.descripcion}
                       </p>
+                      <p className="font-caption text-primary/80 text-[11px] italic font-semibold mb-md">
+                        {benefitText}
+                      </p>
                     </div>
-                    <div className="flex justify-between items-end mt-auto">
-                      <span className="font-title-md text-primary font-bold">
-                        ${dish.precio.toLocaleString('es-CO')}
-                      </span>
-                      {isAvailable && (
+                    <div className="flex justify-between items-center mt-auto border-t border-outline-variant/10 pt-sm">
+                      <div className="flex flex-col">
+                        <span className="font-caption text-[10px] text-on-surface-variant/70 uppercase tracking-wider font-bold">
+                          Precio
+                        </span>
+                        <span className="font-title-md text-lg text-primary font-black">
+                          ${dish.precio.toLocaleString('es-CO')}
+                        </span>
+                      </div>
+                      {isAvailable ? (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleAddPrepared(dish);
                           }}
-                          className="bg-primary-container text-on-primary-container rounded-full p-2 hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center cursor-pointer"
+                          className="bg-primary hover:bg-primary-container text-on-primary font-bold text-xs px-4 py-2.5 rounded-full shadow-sm hover:shadow-md transition-all flex items-center gap-1 cursor-pointer"
                         >
-                          <span className="material-symbols-outlined">add</span>
+                          <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+                          Agregar
                         </button>
+                      ) : (
+                        <span className="bg-surface-container-high text-on-surface-variant/40 font-bold text-xs px-4 py-2.5 rounded-full cursor-not-allowed">
+                          Agotado
+                        </span>
                       )}
                     </div>
                   </div>
@@ -343,17 +462,17 @@ export default function DomiciliosPage() {
                             !hasStock
                               ? 'bg-surface-container-low border-outline-variant/30 opacity-50 cursor-not-allowed'
                               : isSelected
-                              ? 'bg-primary-container border-primary text-primary-container font-semibold'
+                              ? 'bg-primary border-primary text-on-primary font-semibold shadow-sm'
                               : 'bg-surface border-outline hover:border-primary cursor-pointer'
                           }`}
                         >
-                          <span className="font-body-md text-on-surface flex justify-between items-center w-full">
-                            {opt.nombre}
+                          <span className="font-body-md flex justify-between items-center w-full">
+                            <span className={isSelected ? 'text-white' : 'text-on-surface'}>{opt.nombre}</span>
                             {isSelected && (
-                              <span className="material-symbols-outlined text-[18px] text-primary">check_circle</span>
+                              <span className="material-symbols-outlined text-[18px] text-white">check_circle</span>
                             )}
                           </span>
-                          <span className="font-caption text-on-surface-variant mt-1">
+                          <span className={`font-caption mt-1 ${isSelected ? 'text-white/80' : 'text-on-surface-variant'}`}>
                             {!hasStock ? 'Agotado' : `${extraCost || 'Sin costo adicional'}`}
                           </span>
                         </button>
@@ -389,9 +508,10 @@ export default function DomiciliosPage() {
               </div>
               <button
                 onClick={submitCustomToCart}
-                className="w-full md:w-auto bg-primary text-on-primary font-label-sm px-lg py-md rounded-full hover:bg-primary-container active:scale-95 transition-all shadow-md cursor-pointer"
+                className="w-full md:w-auto bg-primary text-on-primary font-bold text-xs px-6 py-3.5 rounded-full hover:bg-primary-container active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
               >
-                Agregar plato personalizado
+                <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                Agregar al pedido
               </button>
             </div>
           </div>
@@ -454,32 +574,100 @@ export default function DomiciliosPage() {
               </button>
               <button
                 onClick={submitPreparedToCart}
-                className="flex-1 bg-primary text-on-primary py-sm rounded-full font-label-sm hover:bg-primary-container active:scale-95 transition-all cursor-pointer"
+                className="flex-1 bg-primary text-on-primary py-3 rounded-full font-bold text-xs hover:bg-primary-container active:scale-95 transition-all cursor-pointer"
               >
-                Agregar (${(selectedDish.precio * dishQuantity).toLocaleString('es-CO')})
+                Añadir al carrito (${(selectedDish.precio * dishQuantity).toLocaleString('es-CO')})
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Trust & Verification Section */}
+      <section className="mt-16 bg-surface-container-low rounded-3xl p-8 md:p-12 border border-outline-variant/30 flex flex-col gap-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+          {/* Col 1 */}
+          <div className="flex flex-col gap-sm">
+            <h3 className="font-title-md text-lg text-primary font-bold flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary">info</span>
+              ¿Quiénes somos?
+            </h3>
+            <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
+              En <strong>Super IN</strong> nos apasiona llevar la sazón casera y tradicional del Caribe a tu mesa. Cocinamos cada plato al día con ingredientes frescos comprados a productores locales en Barranquilla, garantizando un almuerzo contundente y lleno de amor.
+            </p>
+          </div>
+          {/* Col 2 */}
+          <div className="flex flex-col gap-sm">
+            <h3 className="font-title-md text-lg text-primary font-bold flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary">schedule</span>
+              Horarios y Entregas
+            </h3>
+            <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
+              <strong>Horario de atención:</strong> Lunes a Domingo de 10:00 AM a 3:00 PM.<br />
+              <strong>Franjas horarias:</strong> Despachamos en intervalos de 15 minutos para asegurar que tu comida llegue caliente y a tiempo.
+            </p>
+          </div>
+          {/* Col 3 */}
+          <div className="flex flex-col gap-sm">
+            <h3 className="font-title-md text-lg text-primary font-bold flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary">verified_user</span>
+              Garantía de Confianza
+            </h3>
+            <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
+              <strong>Cobertura:</strong> Domicilios con entrega rápida en todo Barranquilla y Soledad.<br />
+              <strong>Métodos de Pago:</strong> Recibimos efectivo, transferencia Bancolombia, Nequi y Daviplata de forma rápida y segura.
+            </p>
+          </div>
+        </div>
+
+        {/* Medios de Pago visual badges */}
+        <div className="border-t border-outline-variant/30 pt-lg flex flex-col md:flex-row justify-between items-center gap-md">
+          <span className="font-label-sm text-xs text-on-surface-variant font-semibold">
+            Medios de pago 100% seguros y verificados:
+          </span>
+          <div className="flex flex-wrap gap-sm justify-center">
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-outline-variant text-[11px] font-bold text-on-surface flex items-center gap-1 shadow-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-600"></span> Nequi
+            </span>
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-outline-variant text-[11px] font-bold text-on-surface flex items-center gap-1 shadow-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> Daviplata
+            </span>
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-outline-variant text-[11px] font-bold text-on-surface flex items-center gap-1 shadow-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500"></span> Transferencia Bancolombia
+            </span>
+            <span className="bg-white px-3 py-1.5 rounded-lg border border-outline-variant text-[11px] font-bold text-on-surface flex items-center gap-1 shadow-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Efectivo
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* Floating Bottom Action Bar (Mobile cart summary) */}
       {cartCount > 0 && (
-        <div className="fixed bottom-20 md:bottom-lg left-1/2 transform -translate-x-1/2 w-11/12 max-w-md z-40 md:hidden">
+        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-[92%] max-w-md z-40 md:hidden">
           <Link
             href="/carrito"
-            className="w-full bg-primary text-on-primary font-label-sm py-md px-lg rounded-full shadow-lg flex justify-between items-center active:scale-[0.98] transition-transform"
+            className="w-full bg-secondary-container text-on-secondary-container font-label-sm py-3.5 px-6 rounded-full shadow-[0_8px_30px_rgb(255,182,40,0.3)] border border-secondary-container/20 flex justify-between items-center active:scale-[0.98] transition-transform font-bold"
           >
             <span className="flex items-center gap-sm">
-              <span className="material-symbols-outlined" data-weight="fill">
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 shopping_bag
               </span>
               Ver mi pedido ({cartCount})
             </span>
-            <span className="font-bold">${cartTotal.toLocaleString('es-CO')}</span>
+            <span className="font-black text-sm">${cartTotal.toLocaleString('es-CO')} COP</span>
           </Link>
         </div>
       )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-primary-container text-on-primary-container px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-sm animate-toast-in border border-outline-variant/30 max-w-sm w-[90%] md:w-auto">
+          <span className="material-symbols-outlined text-secondary-container">check_circle</span>
+          <span className="font-label-sm font-bold text-sm text-white">{toastMessage}</span>
+        </div>
+      )}
+
     </div>
   );
 }

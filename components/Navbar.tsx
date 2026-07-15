@@ -40,17 +40,17 @@ export default function Navbar() {
     <>
       {/* TopNavBar (Web / Desktop) */}
       <header className="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-margin h-20 bg-surface/90 backdrop-blur-md shadow-sm border-b border-outline-variant">
-        <Link href="/" className="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">
+        <Link href="/" className="font-headline-lg text-headline-lg text-primary font-bold tracking-tight hover:opacity-90 transition-opacity">
           Super IN
         </Link>
-        <nav className="flex gap-lg">
+        <nav className="flex gap-[40px]">
           <Link
             href="/domicilios"
             className={`${
               isLinkActive('/domicilios')
                 ? 'text-primary border-b-2 border-primary font-bold'
-                : 'text-on-surface-variant font-medium hover:text-primary'
-            } pb-1 font-title-md text-title-md transition-colors`}
+                : 'text-on-surface-variant font-medium hover:text-primary border-b-2 border-transparent'
+            } pb-2 px-1 font-title-md text-title-md transition-all duration-200`}
           >
             Menú
           </Link>
@@ -59,8 +59,8 @@ export default function Navbar() {
             className={`${
               isLinkActive('/eventos')
                 ? 'text-primary border-b-2 border-primary font-bold'
-                : 'text-on-surface-variant font-medium hover:text-primary'
-            } pb-1 font-title-md text-title-md transition-colors`}
+                : 'text-on-surface-variant font-medium hover:text-primary border-b-2 border-transparent'
+            } pb-2 px-1 font-title-md text-title-md transition-all duration-200`}
           >
             Eventos
           </Link>
@@ -68,23 +68,25 @@ export default function Navbar() {
             href={`https://wa.me/${whatsappContact}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-on-surface-variant font-medium hover:text-primary transition-colors font-title-md text-title-md"
+            className="text-on-surface-variant font-medium hover:text-primary border-b-2 border-transparent pb-2 px-1 transition-all duration-200 font-title-md text-title-md"
           >
             Soporte
           </a>
         </nav>
         <div className="flex gap-md items-center text-primary">
-          <Link href="/carrito" className="relative p-2 scale-95 active:opacity-80 transition-all hover:text-primary-container">
-            <span className="material-symbols-outlined" data-icon="shopping_cart">
+          <Link 
+            href="/carrito" 
+            className="flex items-center gap-2 bg-primary text-on-primary font-label-sm px-4 py-2 rounded-full hover:bg-primary-container transition-all shadow-[0_2px_8px_rgba(1,45,29,0.15)] hover:shadow-[0_4px_12px_rgba(1,45,29,0.2)] scale-95 active:scale-90"
+          >
+            <span className="material-symbols-outlined text-[20px]" data-icon="shopping_cart">
               shopping_cart
             </span>
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-tertiary-container text-on-tertiary-container text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border border-surface">
-                {cartCount}
-              </span>
-            )}
+            <span className="font-bold text-xs">Mi Pedido</span>
+            <span className="bg-secondary-container text-on-secondary-container text-xs font-extrabold rounded-full px-2 py-0.5 min-w-[20px] text-center">
+              {cartCount}
+            </span>
           </Link>
-          <Link href="/admin/pedidos" className="p-2 scale-95 active:opacity-80 transition-all hover:text-primary-container">
+          <Link href="/admin/pedidos" className="p-2 scale-95 active:opacity-80 transition-all hover:bg-surface-container rounded-full text-on-surface-variant hover:text-primary">
             <span className="material-symbols-outlined" data-icon="account_circle">
               account_circle
             </span>

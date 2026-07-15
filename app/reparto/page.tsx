@@ -26,10 +26,13 @@ export default function RepartoPage() {
   // Authenticate / Role check
   useEffect(() => {
     async function checkRole() {
-      const demoRole = localStorage.getItem('superin_demo_role');
-      if (demoRole === 'domiciliario' || demoRole === 'administradora') {
-        setLoading(false);
-        return;
+      // Demo bypass (ONLY in development)
+      if (process.env.NODE_ENV === 'development') {
+        const demoRole = localStorage.getItem('superin_demo_role');
+        if (demoRole === 'domiciliario' || demoRole === 'administradora') {
+          setLoading(false);
+          return;
+        }
       }
 
       const { data: { session } } = await supabase.auth.getSession();

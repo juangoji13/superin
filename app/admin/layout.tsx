@@ -18,14 +18,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     async function checkAuth() {
-      // 1. Check demo role first
-      const demoRole = localStorage.getItem('superin_demo_role');
-      const demoUserStr = localStorage.getItem('superin_demo_user');
-      
-      if (demoRole === 'administradora' && demoUserStr) {
-        setUser(JSON.parse(demoUserStr));
-        setLoading(false);
-        return;
+      // 1. Check demo role first (ONLY in development)
+      if (process.env.NODE_ENV === 'development') {
+        const demoRole = localStorage.getItem('superin_demo_role');
+        const demoUserStr = localStorage.getItem('superin_demo_user');
+        
+        if (demoRole === 'administradora' && demoUserStr) {
+          setUser(JSON.parse(demoUserStr));
+          setLoading(false);
+          return;
+        }
       }
 
       // 2. Check Supabase Auth

@@ -136,32 +136,34 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Demo Bypass Panel */}
-        <div className="border-t border-outline-variant/50 pt-md mt-sm text-center flex flex-col gap-sm">
-          <span className="font-caption text-on-surface-variant font-bold">
-            ¿Probando el MVP? Acceso Rápido de Demo
-          </span>
-          <div className="flex gap-sm">
-            <select
-              value={demoRole}
-              onChange={(e) => setDemoRole(e.target.value)}
-              className="flex-1 bg-surface border border-outline rounded-lg px-3 py-2 text-xs font-semibold text-on-surface"
-            >
-              <option value="">Selecciona Rol...</option>
-              <option value="administradora">Administradora</option>
-              <option value="chef">Chef (Cocina)</option>
-              <option value="domiciliario">Domiciliario (Reparto)</option>
-            </select>
-            <button
-              onClick={handleDemoBypass}
-              disabled={!demoRole}
-              type="button"
-              className="bg-secondary-container text-on-secondary-container text-xs font-bold px-lg py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition-all cursor-pointer"
-            >
-              Entrar como Demo
-            </button>
+        {/* Demo Bypass Panel — ONLY in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="border-t border-outline-variant/50 pt-md mt-sm text-center flex flex-col gap-sm">
+            <span className="font-caption text-on-surface-variant font-bold">
+              ⚠️ Solo visible en desarrollo — Acceso Rápido de Demo
+            </span>
+            <div className="flex gap-sm">
+              <select
+                value={demoRole}
+                onChange={(e) => setDemoRole(e.target.value)}
+                className="flex-1 bg-surface border border-outline rounded-lg px-3 py-2 text-xs font-semibold text-on-surface"
+              >
+                <option value="">Selecciona Rol...</option>
+                <option value="administradora">Administradora</option>
+                <option value="chef">Chef (Cocina)</option>
+                <option value="domiciliario">Domiciliario (Reparto)</option>
+              </select>
+              <button
+                onClick={handleDemoBypass}
+                disabled={!demoRole}
+                type="button"
+                className="bg-secondary-container text-on-secondary-container text-xs font-bold px-lg py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition-all cursor-pointer"
+              >
+                Entrar como Demo
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

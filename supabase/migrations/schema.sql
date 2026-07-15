@@ -181,6 +181,15 @@ CREATE POLICY "Permitir lectura de detalles de pedidos" ON public.detalles_pedid
 CREATE POLICY "Permitir gestión de detalles a personal autenticado" ON public.detalles_pedido
     FOR ALL USING (auth.role() = 'authenticated');
 
+-- 11. Usuarios: Lectura pública, registro y actualización propia.
+CREATE POLICY "Permitir lectura pública de usuarios" ON public.usuarios
+    FOR SELECT USING (true);
+CREATE POLICY "Permitir registro de perfil propio" ON public.usuarios
+    FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Permitir actualización de perfil propio" ON public.usuarios
+    FOR UPDATE USING (auth.uid() = id);
+
+
 -- 6. Comprobantes:
 -- - Clientes pueden insertar.
 -- - Solo personal autenticado puede ver.

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
@@ -13,6 +13,25 @@ export default function EventosPage() {
   const [horario, setHorario] = useState('Día');
   const [mensaje, setMensaje] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [whatsappContact, setWhatsappContact] = useState('573001234567');
+
+  useEffect(() => {
+    async function fetchWhatsapp() {
+      try {
+        const { data } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'whatsapp_contacto')
+          .single();
+        if (data?.valor && typeof data.valor === 'object' && 'numero' in data.valor) {
+          setWhatsappContact((data.valor as any).numero || '573001234567');
+        }
+      } catch (err) {
+        console.error('Failed to load support phone', err);
+      }
+    }
+    fetchWhatsapp();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +73,7 @@ Invitados: ${invitados}
 Horario: ${horario}
 Mensaje: ${mensaje || 'Sin requerimientos especiales'}`;
 
-      const whatsappUrl = `https://wa.me/573001234567?text=${encodeURIComponent(messageText)}`;
+      const whatsappUrl = `https://wa.me/${whatsappContact}?text=${encodeURIComponent(messageText)}`;
 
       // 3. Clear form and alert
       setNombre('');

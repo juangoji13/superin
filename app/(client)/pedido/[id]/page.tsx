@@ -51,6 +51,26 @@ export default function PedidoEstadoPage() {
   
   // Timer countdown
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const [whatsappContact, setWhatsappContact] = useState('573001234567');
+
+  // Fetch configs
+  useEffect(() => {
+    async function fetchWhatsapp() {
+      try {
+        const { data } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'whatsapp_contacto')
+          .single();
+        if (data?.valor && typeof data.valor === 'object' && 'numero' in data.valor) {
+          setWhatsappContact((data.valor as any).numero || '573001234567');
+        }
+      } catch (err) {
+        console.error('Failed to load support phone', err);
+      }
+    }
+    fetchWhatsapp();
+  }, []);
   
   // Fetch order data
   useEffect(() => {
@@ -367,7 +387,7 @@ export default function PedidoEstadoPage() {
               ¿Quieres realizar un cambio o resolver dudas sobre tu pedido?
             </p>
             <a
-              href={`https://wa.me/573001234567?text=${encodeURIComponent(`Hola, tengo una pregunta sobre mi pedido ${order.codigo}`)}`}
+              href={`https://wa.me/${whatsappContact}?text=${encodeURIComponent(`Hola, tengo una pregunta sobre mi pedido ${order.codigo}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full bg-[#25D366] text-white font-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold"

@@ -1,12 +1,33 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { supabase } from '@/lib/supabase';
 
 export default function Navbar() {
   const pathname = usePathname();
   const { cartCount } = useCart();
+  const [whatsappContact, setWhatsappContact] = useState('573001234567');
+
+  useEffect(() => {
+    async function fetchWhatsapp() {
+      try {
+        const { data } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'whatsapp_contacto')
+          .single();
+        if (data?.valor && typeof data.valor === 'object' && 'numero' in data.valor) {
+          setWhatsappContact((data.valor as any).numero || '573001234567');
+        }
+      } catch (err) {
+        console.error('Failed to load support phone', err);
+      }
+    }
+    fetchWhatsapp();
+  }, []);
 
   const isLinkActive = (path: string) => {
     if (path === '/') {
@@ -44,7 +65,7 @@ export default function Navbar() {
             Eventos
           </Link>
           <a
-            href="https://wa.me/573001234567"
+            href={`https://wa.me/${whatsappContact}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-on-surface-variant font-medium hover:text-primary transition-colors font-title-md text-title-md"

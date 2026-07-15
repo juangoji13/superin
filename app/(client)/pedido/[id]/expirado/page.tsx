@@ -19,6 +19,25 @@ export default function PedidoExpiradoPage() {
   const orderCode = id as string;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [whatsappContact, setWhatsappContact] = useState('573001234567');
+
+  useEffect(() => {
+    async function fetchWhatsapp() {
+      try {
+        const { data } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'whatsapp_contacto')
+          .single();
+        if (data?.valor && typeof data.valor === 'object' && 'numero' in data.valor) {
+          setWhatsappContact((data.valor as any).numero || '573001234567');
+        }
+      } catch (err) {
+        console.error('Failed to load support phone', err);
+      }
+    }
+    fetchWhatsapp();
+  }, []);
 
   useEffect(() => {
     if (!orderCode) return;
@@ -121,7 +140,7 @@ export default function PedidoExpiradoPage() {
       {/* Actions */}
       <div className="flex flex-col gap-sm">
         <a
-          href={`https://wa.me/573001234567?text=${encodeURIComponent(`Hola, mi pedido ${orderCode} de la página web expiró. Me gustaría ver si todavía lo pueden preparar.`)}`}
+          href={`https://wa.me/${whatsappContact}?text=${encodeURIComponent(`Hola, mi pedido ${orderCode} de la página web expiró. Me gustaría ver si todavía lo pueden preparar.`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="w-full bg-[#25D366] text-white font-label-sm py-4 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold active:scale-[0.98]"

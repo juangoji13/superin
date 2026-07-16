@@ -490,7 +490,7 @@ export default function AdminMenuPage() {
                       <span
                         className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                           p.activo && p.stock > 0
-                            ? 'bg-primary-container text-primary'
+                            ? 'bg-primary/10 text-primary'
                             : 'bg-error-container text-error'
                         }`}
                       >
@@ -576,7 +576,7 @@ export default function AdminMenuPage() {
                       <span
                         className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                           o.activo && o.stock > 0
-                            ? 'bg-primary-container text-primary'
+                            ? 'bg-primary/10 text-primary'
                             : 'bg-error-container text-error'
                         }`}
                       >

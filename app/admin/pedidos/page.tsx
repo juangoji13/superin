@@ -48,6 +48,9 @@ export default function AdminPedidosPage() {
 
   // Search and filter
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Mobile active column state
+  const [activeMobileCol, setActiveMobileCol] = useState<string>('Pendiente de confirmación');
 
   // Fetch orders initially
   useEffect(() => {
@@ -374,13 +377,35 @@ export default function AdminPedidosPage() {
         </div>
       </section>
 
+      {/* Mobile Column Tabs Switcher */}
+      <div className="lg:hidden flex bg-surface-container px-lg border-b border-outline-variant/30 flex-shrink-0 overflow-x-auto gap-2">
+        {[
+          { label: 'Pendientes', state: 'Pendiente de confirmación', count: getOrdersByState('Pendiente de confirmación').length, color: 'bg-error' },
+          { label: 'Confirmados', state: 'Confirmado', count: getOrdersByState('Confirmado').length, color: 'bg-secondary' },
+          { label: 'En Cocina', state: 'En preparación', count: getOrdersByState('En preparación').length, color: 'bg-primary-container' },
+          { label: 'En Reparto', state: 'En camino', count: getOrdersByState('En camino').length, color: 'bg-primary' },
+          { label: 'Entregados', state: 'Entregado', count: getOrdersByState('Entregado').length, color: 'bg-[#2e7d32]' }
+        ].map((tab) => (
+          <button
+            key={tab.state}
+            onClick={() => setActiveMobileCol(tab.state)}
+            className={`py-3 px-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+              activeMobileCol === tab.state ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${tab.color}`}></span>
+            {tab.label} ({tab.count})
+          </button>
+        ))}
+      </div>
+
       {/* Workspace Area split into columns + Details Side Panel */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Kanban Board */}
-        <div className="flex-1 overflow-x-auto p-lg flex gap-lg bg-surface-container-low/20">
-          <div className="flex-1 min-w-[1200px] flex gap-lg">
+        <div className="flex-1 overflow-x-auto p-lg bg-surface-container-low/20">
+          <div className="min-w-0 lg:min-w-[1400px] h-full flex flex-col lg:flex-row gap-lg justify-start">
             {/* Column: Pendientes */}
-            <div className="flex-1 flex flex-col gap-sm max-w-sm">
+            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'Pendiente de confirmación' ? 'flex' : 'hidden lg:flex'}`}>
               <div className="flex items-center justify-between pb-2 border-b border-error/30">
                 <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
                   <span className="w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span>
@@ -388,61 +413,67 @@ export default function AdminPedidosPage() {
                 </h3>
               </div>
               <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
-                {getOrdersByState('Pendiente de confirmación').map((o) => (
-                  <div
-                    key={o.codigo}
-                    onClick={() => setSelectedOrder(o)}
-                    className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
-                      selectedOrder?.codigo === o.codigo
-                        ? 'border-primary ring-2 ring-primary-container/20'
-                        : 'border-outline-variant/30 hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-primary font-mono">{o.codigo}</span>
-                      <span className="text-[10px] text-error font-semibold bg-error-container/20 px-2 py-0.5 rounded-full">
-                        NUEVO
-                      </span>
-                    </div>
-                    <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                    <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                      <span className="material-symbols-outlined text-xs">location_on</span>
-                      {o.direccion} ({o.barrio})
-                    </p>
-                    <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                      <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
-                        {o.franja}
-                      </span>
-                      <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
-                    </div>
-                    <div className="flex gap-2 mt-3 pt-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setConfirmOrderTarget(o);
-                          setShowConfirmModal(true);
-                        }}
-                        className="flex-1 bg-primary text-on-primary text-xs font-bold py-1.5 rounded-full hover:bg-primary-container cursor-pointer transition-all"
-                      >
-                        Confirmar
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRejectOrder(o.codigo);
-                        }}
-                        className="border border-error text-error text-xs font-bold px-3 py-1.5 rounded-full hover:bg-error-container/10 cursor-pointer transition-all"
-                      >
-                        Rechazar
-                      </button>
-                    </div>
+                {getOrdersByState('Pendiente de confirmación').length === 0 ? (
+                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                    Sin pedidos pendientes
                   </div>
-                ))}
+                ) : (
+                  getOrdersByState('Pendiente de confirmación').map((o) => (
+                    <div
+                      key={o.codigo}
+                      onClick={() => setSelectedOrder(o)}
+                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                        selectedOrder?.codigo === o.codigo
+                          ? 'border-primary ring-2 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                        <span className="text-[10px] text-error font-semibold bg-error-container/20 px-2 py-0.5 rounded-full">
+                          NUEVO
+                        </span>
+                      </div>
+                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
+                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        {o.direccion} ({o.barrio})
+                      </p>
+                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                          {o.franja}
+                        </span>
+                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                      </div>
+                      <div className="flex gap-2 mt-3 pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmOrderTarget(o);
+                            setShowConfirmModal(true);
+                          }}
+                          className="flex-1 bg-primary text-on-primary text-xs font-bold py-1.5 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                        >
+                          Confirmar
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRejectOrder(o.codigo);
+                          }}
+                          className="border border-error text-error text-xs font-bold px-3 py-1.5 rounded-full hover:bg-error-container/10 cursor-pointer transition-all"
+                        >
+                          Rechazar
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
             {/* Column: Confirmados */}
-            <div className="flex-1 flex flex-col gap-sm max-w-sm">
+            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'Confirmado' ? 'flex' : 'hidden lg:flex'}`}>
               <div className="flex items-center justify-between pb-2 border-b border-secondary/30">
                 <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
                   <span className="w-2.5 h-2.5 rounded-full bg-secondary"></span>
@@ -450,102 +481,114 @@ export default function AdminPedidosPage() {
                 </h3>
               </div>
               <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
-                {getOrdersByState('Confirmado').map((o) => (
-                  <div
-                    key={o.codigo}
-                    onClick={() => setSelectedOrder(o)}
-                    className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
-                      selectedOrder?.codigo === o.codigo
-                        ? 'border-primary ring-2 ring-primary-container/20'
-                        : 'border-outline-variant/30 hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-primary font-mono">{o.codigo}</span>
-                      {o.tiempo_estimado && (
-                        <span className="text-[10px] text-primary font-bold bg-primary-container/10 px-2 py-0.5 rounded-full">
-                          {o.tiempo_estimado} min
-                        </span>
-                      )}
-                    </div>
-                    <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                    <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                      <span className="material-symbols-outlined text-xs">location_on</span>
-                      {o.direccion} ({o.barrio})
-                    </p>
-                    <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                      <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
-                        {o.franja}
-                      </span>
-                      <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
-                    </div>
-                    <div className="flex gap-2 mt-3 pt-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpdateStatus(o.codigo, 'En preparación');
-                        }}
-                        className="w-full bg-secondary text-on-secondary text-xs font-bold py-1.5 rounded-full hover:opacity-90 cursor-pointer transition-all"
-                      >
-                        Enviar a Cocina
-                      </button>
-                    </div>
+                {getOrdersByState('Confirmado').length === 0 ? (
+                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                    Sin pedidos confirmados
                   </div>
-                ))}
+                ) : (
+                  getOrdersByState('Confirmado').map((o) => (
+                    <div
+                      key={o.codigo}
+                      onClick={() => setSelectedOrder(o)}
+                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                        selectedOrder?.codigo === o.codigo
+                          ? 'border-primary ring-2 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                        {o.tiempo_estimado && (
+                          <span className="text-[10px] text-primary font-bold bg-primary-container/10 px-2 py-0.5 rounded-full">
+                            {o.tiempo_estimado} min
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
+                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        {o.direccion} ({o.barrio})
+                      </p>
+                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                          {o.franja}
+                        </span>
+                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                      </div>
+                      <div className="flex gap-2 mt-3 pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateStatus(o.codigo, 'En preparación');
+                          }}
+                          className="w-full bg-secondary text-on-secondary text-xs font-bold py-1.5 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                        >
+                          Enviar a Cocina
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Column: En Preparación */}
-            <div className="flex-1 flex flex-col gap-sm max-w-sm">
-              <div className="flex items-center justify-between pb-2 border-b border-primary/30">
+            {/* Column: En Cocina */}
+            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'En preparación' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-2 border-b border-primary-container/30">
                 <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
                   En Cocina ({getOrdersByState('En preparación').length})
                 </h3>
               </div>
               <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
-                {getOrdersByState('En preparación').map((o) => (
-                  <div
-                    key={o.codigo}
-                    onClick={() => setSelectedOrder(o)}
-                    className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
-                      selectedOrder?.codigo === o.codigo
-                        ? 'border-primary ring-2 ring-primary-container/20'
-                        : 'border-outline-variant/30 hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-primary font-mono">{o.codigo}</span>
-                    </div>
-                    <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                    <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                      <span className="material-symbols-outlined text-xs">location_on</span>
-                      {o.direccion} ({o.barrio})
-                    </p>
-                    <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                      <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
-                        {o.franja}
-                      </span>
-                      <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
-                    </div>
-                    <div className="flex gap-2 mt-3 pt-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpdateStatus(o.codigo, 'En camino');
-                        }}
-                        className="w-full bg-primary-container text-on-primary text-xs font-bold py-1.5 rounded-full hover:opacity-90 cursor-pointer transition-all"
-                      >
-                        Listo / Despachar
-                      </button>
-                    </div>
+                {getOrdersByState('En preparación').length === 0 ? (
+                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                    Sin pedidos en cocina
                   </div>
-                ))}
+                ) : (
+                  getOrdersByState('En preparación').map((o) => (
+                    <div
+                      key={o.codigo}
+                      onClick={() => setSelectedOrder(o)}
+                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                        selectedOrder?.codigo === o.codigo
+                          ? 'border-primary ring-2 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                      </div>
+                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
+                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        {o.direccion} ({o.barrio})
+                      </p>
+                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                          {o.franja}
+                        </span>
+                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                      </div>
+                      <div className="flex gap-2 mt-3 pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateStatus(o.codigo, 'En camino');
+                          }}
+                          className="w-full bg-primary-container text-on-primary text-xs font-bold py-1.5 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                        >
+                          Listo / Despachar
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Column: En Camino */}
-            <div className="flex-1 flex flex-col gap-sm max-w-sm">
+            {/* Column: En Reparto */}
+            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'En camino' ? 'flex' : 'hidden lg:flex'}`}>
               <div className="flex items-center justify-between pb-2 border-b border-primary/30">
                 <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
@@ -553,51 +596,113 @@ export default function AdminPedidosPage() {
                 </h3>
               </div>
               <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
-                {getOrdersByState('En camino').map((o) => (
-                  <div
-                    key={o.codigo}
-                    onClick={() => setSelectedOrder(o)}
-                    className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
-                      selectedOrder?.codigo === o.codigo
-                        ? 'border-primary ring-2 ring-primary-container/20'
-                        : 'border-outline-variant/30 hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-primary font-mono">{o.codigo}</span>
-                    </div>
-                    <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                    <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                      <span className="material-symbols-outlined text-xs">location_on</span>
-                      {o.direccion} ({o.barrio})
-                    </p>
-                    <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                      <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
-                        {o.franja}
-                      </span>
-                      <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
-                    </div>
-                    <div className="flex gap-2 mt-3 pt-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpdateStatus(o.codigo, 'Entregado');
-                        }}
-                        className="w-full bg-primary text-on-primary text-xs font-bold py-1.5 rounded-full hover:bg-primary-container cursor-pointer transition-all"
-                      >
-                        Marcar Entregado
-                      </button>
-                    </div>
+                {getOrdersByState('En camino').length === 0 ? (
+                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                    Sin pedidos en reparto
                   </div>
-                ))}
+                ) : (
+                  getOrdersByState('En camino').map((o) => (
+                    <div
+                      key={o.codigo}
+                      onClick={() => setSelectedOrder(o)}
+                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                        selectedOrder?.codigo === o.codigo
+                          ? 'border-primary ring-2 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                      </div>
+                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
+                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        {o.direccion} ({o.barrio})
+                      </p>
+                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                          {o.franja}
+                        </span>
+                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                      </div>
+                      <div className="flex gap-2 mt-3 pt-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateStatus(o.codigo, 'Entregado');
+                          }}
+                          className="w-full bg-primary text-on-primary text-xs font-bold py-1.5 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                        >
+                          Marcar Entregado
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
+
+            {/* Column: Entregados */}
+            <div className={`flex-grow flex-shrink flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'Entregado' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-2 border-b border-[#2e7d32]/30">
+                <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#2e7d32]"></span>
+                  Entregados ({getOrdersByState('Entregado').length})
+                </h3>
+              </div>
+              <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
+                {getOrdersByState('Entregado').length === 0 ? (
+                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                    Sin pedidos entregados
+                  </div>
+                ) : (
+                  getOrdersByState('Entregado').map((o) => (
+                    <div
+                      key={o.codigo}
+                      onClick={() => setSelectedOrder(o)}
+                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                        selectedOrder?.codigo === o.codigo
+                          ? 'border-primary ring-2 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                        <span className="text-[10px] text-[#2e7d32] font-semibold bg-[#2e7d32]/10 px-2 py-0.5 rounded-full">
+                          ENTREGADO
+                        </span>
+                      </div>
+                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
+                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        {o.direccion} ({o.barrio})
+                      </p>
+                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                          {o.franja}
+                        </span>
+                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
 
+        {/* Backdrop overlay for mobile drawer */}
+        {selectedOrder && (
+          <div
+            onClick={() => setSelectedOrder(null)}
+            className="lg:hidden fixed inset-0 bg-black/50 z-30 backdrop-blur-xs transition-opacity duration-300"
+          />
+        )}
+
         {/* Side Details Panel */}
-        {selectedOrder ? (
-          <aside className="w-[420px] border-l border-outline-variant/30 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 z-10">
+        {selectedOrder && (
+          <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[420px] lg:relative lg:inset-auto lg:z-10 lg:w-[420px] border-l border-outline-variant/30 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none transition-all duration-300">
             <div className="p-lg border-b border-outline-variant/30 flex justify-between items-center">
               <div>
                 <h3 className="font-title-md text-primary font-bold font-mono">{selectedOrder.codigo}</h3>
@@ -699,6 +804,7 @@ export default function AdminPedidosPage() {
               </div>
             </div>
 
+            {/* Side Drawer Actions Footer */}
             <div className="p-lg border-t border-outline-variant/30 bg-surface flex flex-col gap-sm">
               <div className="flex justify-between items-center mb-2">
                 <span className="font-bold text-sm">Total del Pedido:</span>
@@ -708,39 +814,77 @@ export default function AdminPedidosPage() {
               </div>
 
               <div className="flex gap-2">
+                {/* Contact via WhatsApp */}
                 <a
                   href={`https://wa.me/${selectedOrder.celular.replace(/\+/g, '')}?text=${encodeURIComponent(
                     `Hola ${selectedOrder.cliente}, me contacto del restaurante Super IN sobre tu pedido ${selectedOrder.codigo}...`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 bg-[#25D366] text-white text-xs font-bold py-3 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-all"
+                  className="flex-grow bg-[#25D366] text-white text-xs font-bold py-3 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-all"
                 >
                   <span className="material-symbols-outlined text-[16px]">chat</span>
                   WhatsApp
                 </a>
 
+                {/* State Transition Button */}
                 {selectedOrder.estado === 'Pendiente de confirmación' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setConfirmOrderTarget(selectedOrder);
+                        setShowConfirmModal(true);
+                      }}
+                      className="flex-grow bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                    >
+                      Confirmar
+                    </button>
+                    <button
+                      onClick={() => handleRejectOrder(selectedOrder.codigo)}
+                      className="bg-error-container text-error text-xs font-bold px-4 py-3 rounded-full hover:bg-error-container/80 cursor-pointer transition-all"
+                      title="Rechazar Pedido"
+                    >
+                      Rechazar
+                    </button>
+                  </>
+                )}
+
+                {selectedOrder.estado === 'Confirmado' && (
                   <button
-                    onClick={() => {
-                      setConfirmOrderTarget(selectedOrder);
-                      setShowConfirmModal(true);
-                    }}
-                    className="flex-1 bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                    onClick={() => handleUpdateStatus(selectedOrder.codigo, 'En preparación')}
+                    className="flex-grow bg-secondary text-on-secondary text-xs font-bold py-3 rounded-full hover:opacity-90 cursor-pointer transition-all"
                   >
-                    Confirmar Pedido
+                    Enviar a Cocina
+                  </button>
+                )}
+
+                {selectedOrder.estado === 'En preparación' && (
+                  <button
+                    onClick={() => handleUpdateStatus(selectedOrder.codigo, 'En camino')}
+                    className="flex-grow bg-primary-container text-on-primary-container text-xs font-bold py-3 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                  >
+                    Despachar
+                  </button>
+                )}
+
+                {selectedOrder.estado === 'En camino' && (
+                  <button
+                    onClick={() => handleUpdateStatus(selectedOrder.codigo, 'Entregado')}
+                    className="flex-grow bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                  >
+                    Entregado
                   </button>
                 )}
               </div>
+
+              {selectedOrder.estado === 'Entregado' && (
+                <div className="bg-success-container/20 text-[#2e7d32] p-md rounded-xl text-center text-xs font-bold flex items-center justify-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                  Pedido Entregado con Éxito
+                </div>
+              )}
             </div>
           </aside>
-        ) : (
-          <div className="hidden lg:flex flex-1 items-center justify-center text-center text-on-surface-variant/40">
-            <div className="flex flex-col items-center">
-              <span className="material-symbols-outlined text-[64px] mb-sm">toc</span>
-              <p className="font-semibold text-sm">Selecciona un pedido para ver los detalles</p>
-            </div>
-          </div>
         )}
       </div>
 

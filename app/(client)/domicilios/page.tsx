@@ -82,6 +82,7 @@ export default function DomiciliosPage() {
   const [selectedDish, setSelectedDish] = useState<any | null>(null);
   const [dishQuantity, setDishQuantity] = useState(1);
   const [dishNotes, setDishNotes] = useState('');
+  const [loading, setLoading] = useState(true);
 
   // Toast feedback state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -120,6 +121,8 @@ export default function DomiciliosPage() {
         }
       } catch (err) {
         console.error('Error connecting to Supabase, using mock data.', err);
+      } finally {
+        setLoading(false);
       }
     }
     fetchMenu();
@@ -325,7 +328,26 @@ export default function DomiciliosPage() {
         <div>
           {/* Dish Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-            {preparedDishes.map((dish) => {
+            {loading ? (
+              // Skeletons
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={`skel-${i}`} className="bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col border border-outline-variant/30 h-[380px]">
+                  <div className="h-48 w-full skeleton rounded-none"></div>
+                  <div className="p-md flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="h-6 w-3/4 skeleton mb-3"></div>
+                      <div className="h-4 w-full skeleton mb-2"></div>
+                      <div className="h-4 w-5/6 skeleton mb-4"></div>
+                    </div>
+                    <div className="flex justify-between items-center border-t border-outline-variant/10 pt-sm">
+                      <div className="h-8 w-20 skeleton"></div>
+                      <div className="h-10 w-28 skeleton rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              preparedDishes.map((dish) => {
               const isAvailable = dish.stock > 0;
               const isLowStock = dish.stock > 0 && dish.stock <= 5;
               
@@ -345,7 +367,7 @@ export default function DomiciliosPage() {
                 <article
                   key={dish.id}
                   onClick={() => isAvailable && handleAddPrepared(dish)}
-                  className={`bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col relative border border-outline-variant/30 soft-lift shadow-sm animate-card-in ${
+                  className={`bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col relative border border-outline-variant/30 tilt-card shadow-sm animate-card-in ${
                     isAvailable ? 'cursor-pointer' : 'opacity-85 grayscale-[20%]'
                   }`}
                   style={{ animationDelay: `${preparedDishes.indexOf(dish) * 80}ms` }}
@@ -409,7 +431,7 @@ export default function DomiciliosPage() {
                             e.stopPropagation();
                             handleAddPrepared(dish);
                           }}
-                          className="bg-primary hover:bg-primary-container text-on-primary font-bold text-xs px-4 py-2.5 rounded-full shadow-sm hover:shadow-md transition-all flex items-center gap-1 cursor-pointer"
+                          className="bg-primary hover:bg-primary-container text-on-primary font-bold text-xs px-4 py-2.5 rounded-full shadow-sm hover:shadow-md transition-all flex items-center gap-1 cursor-pointer btn-haptic"
                         >
                           <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
                           Agregar
@@ -514,7 +536,7 @@ export default function DomiciliosPage() {
               </div>
               <button
                 onClick={submitCustomToCart}
-                className="w-full md:w-auto bg-primary text-on-primary font-bold text-xs px-6 py-3.5 rounded-full hover:bg-primary-container active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                className="w-full md:w-auto bg-primary text-on-primary font-bold text-xs px-6 py-3.5 rounded-full hover:bg-primary-container btn-haptic transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
                 Agregar al pedido
@@ -580,7 +602,7 @@ export default function DomiciliosPage() {
               </button>
               <button
                 onClick={submitPreparedToCart}
-                className="flex-1 bg-primary text-on-primary py-3 rounded-full font-bold text-xs hover:bg-primary-container active:scale-95 transition-all cursor-pointer"
+                className="flex-1 bg-primary text-on-primary py-3 rounded-full font-bold text-xs hover:bg-primary-container btn-haptic transition-all cursor-pointer"
               >
                 Añadir al carrito (${(selectedDish.precio * dishQuantity).toLocaleString('es-CO')})
               </button>
@@ -650,10 +672,10 @@ export default function DomiciliosPage() {
 
       {/* Floating Bottom Action Bar (Mobile cart summary) */}
       {cartCount > 0 && (
-        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-[92%] max-w-md z-40 md:hidden">
+        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-[92%] max-w-md z-40 md:hidden animate-slide-up-bar">
           <Link
             href="/carrito"
-            className="w-full bg-secondary-container text-on-secondary-container font-label-sm py-3.5 px-6 rounded-full shadow-[0_8px_30px_rgb(255,182,40,0.3)] border border-secondary-container/20 flex justify-between items-center active:scale-[0.98] transition-transform font-bold"
+            className="w-full bg-secondary-container text-on-secondary-container font-label-sm py-3.5 px-6 rounded-full shadow-[0_8px_30px_rgb(255,182,40,0.3)] border border-secondary-container/20 flex justify-between items-center btn-haptic transition-transform font-bold"
           >
             <span className="flex items-center gap-sm">
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -668,7 +690,7 @@ export default function DomiciliosPage() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-primary-container text-on-primary-container px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-sm animate-toast-in border border-outline-variant/30 max-w-sm w-[90%] md:w-auto">
+        <div className="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-50 bg-primary-container text-on-primary-container px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-sm toast-enter border border-outline-variant/30 max-w-sm w-[90%] md:w-auto">
           <span className="material-symbols-outlined text-secondary-container">check_circle</span>
           <span className="font-label-sm font-bold text-sm text-white">{toastMessage}</span>
         </div>

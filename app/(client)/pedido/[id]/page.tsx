@@ -290,8 +290,15 @@ export default function PedidoEstadoPage() {
 
   if (loading) {
     return (
-      <div className="flex-grow flex items-center justify-center py-xl">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+      <div className="pt-4 pb-24 px-container-margin md:px-xl max-w-4xl mx-auto w-full flex flex-col gap-lg">
+        <div className="h-40 w-full skeleton rounded-2xl mb-lg border border-outline-variant/30"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+          <div className="flex flex-col gap-lg">
+            <div className="h-64 w-full skeleton rounded-2xl border border-outline-variant/30"></div>
+            <div className="h-48 w-full skeleton rounded-2xl border border-outline-variant/30"></div>
+          </div>
+          <div className="h-[400px] w-full skeleton rounded-2xl border border-outline-variant/30"></div>
+        </div>
       </div>
     );
   }
@@ -319,7 +326,24 @@ export default function PedidoEstadoPage() {
   const activeIndex = getActiveStepIndex(order.estado);
 
   return (
-    <div className="pt-4 pb-24 px-container-margin md:px-xl max-w-4xl mx-auto w-full flex flex-col gap-lg animate-fade-in">
+    <div className="pt-4 pb-24 px-container-margin md:px-xl max-w-4xl mx-auto w-full flex flex-col gap-lg animate-fade-in relative">
+      
+      {/* Confetti Animation for Delivered Status */}
+      {activeIndex === 4 && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {Array.from({ length: 60 }).map((_, i) => (
+            <div
+              key={`confetti-${i}`}
+              className="confetti-piece absolute"
+              style={{
+                left: `${Math.random() * 100}vw`,
+                animationDelay: `${Math.random() * 3}s`,
+                backgroundColor: ['#012d1d', '#ffb628', '#ff8348', '#86af99'][Math.floor(Math.random() * 4)]
+              }}
+            />
+          ))}
+        </div>
+      )}
       <div className="flex items-center gap-sm md:hidden">
         <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-on-surface">arrow_back</span>
@@ -534,49 +558,33 @@ export default function PedidoEstadoPage() {
               <p className="font-body-md font-semibold">El pedido fue cancelado y no se está procesando.</p>
             </div>
           ) : (
-            <div className="relative pl-2">
+            <div className="flex flex-col md:flex-row items-start md:items-start w-full relative pt-2">
               {STEPS.map((step, index) => {
                 const isActive = index <= activeIndex;
                 const isCurrent = index === activeIndex;
 
                 return (
-                  <div key={step.name} className="timeline-item relative pb-lg flex gap-md">
+                  <div key={step.name} className="flex-1 flex md:flex-col items-start md:items-center group relative w-full mb-6 md:mb-0">
+                    {/* Horizontal Line for Desktop */}
                     {index < STEPS.length - 1 && (
-                      <div
-                        className={`absolute left-[22px] top-[24px] bottom-0 w-[2px] z-0 ${
-                          index < activeIndex ? 'bg-primary' : 'bg-outline-variant/70'
-                        }`}
-                      />
+                      <div className={`hidden md:block absolute top-5 left-[50%] w-full h-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
                     )}
-                    <div
-                      className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all ${
-                        isActive
-                          ? 'bg-primary text-on-primary shadow-sm'
-                          : 'bg-surface-container-highest border border-outline-variant text-outline-variant'
-                      }`}
-                    >
-                      <span
-                        className="material-symbols-outlined text-[20px]"
-                        style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
-                      >
-                        {step.icon}
-                      </span>
+                    {/* Vertical Line for Mobile */}
+                    {index < STEPS.length - 1 && (
+                      <div className={`md:hidden absolute left-[22px] top-10 h-full w-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
+                    )}
+                    
+                    <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all duration-300 ${isActive ? 'bg-primary text-on-primary shadow-sm scale-110' : 'bg-surface-container-highest border border-outline-variant text-outline-variant scale-100'}`}>
+                      <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{step.icon}</span>
                     </div>
-                    <div className="pt-1 flex-1">
-                      <h3
-                        className={`font-label-sm text-sm ${
-                          isCurrent
-                            ? 'text-primary font-bold'
-                            : isActive
-                            ? 'text-on-background font-semibold'
-                            : 'text-on-surface-variant/60 font-medium'
-                        }`}
-                      >
-                        {step.name}
-                      </h3>
-                      <p className="font-caption text-caption text-on-surface-variant mt-1">
-                        {step.description}
-                      </p>
+                    
+                    <div className="ml-4 md:ml-0 md:mt-3 md:text-center flex-1 pr-2 md:pr-0">
+                      <h3 className={`font-label-sm text-sm transition-colors ${isCurrent ? 'text-primary font-bold' : isActive ? 'text-on-background font-semibold' : 'text-on-surface-variant/60 font-medium'}`}>{step.name}</h3>
+                      <p className="hidden md:block font-caption text-xs text-on-surface-variant mt-1.5 px-1 leading-tight max-w-[140px] mx-auto">{step.description}</p>
+                      {/* Show description on mobile only if current step */}
+                      {isCurrent && (
+                        <p className="md:hidden font-caption text-xs text-on-surface-variant mt-1">{step.description}</p>
+                      )}
                     </div>
                   </div>
                 );

@@ -21,9 +21,9 @@ interface Order {
 export default function RepartoPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmOrderCode, setConfirmOrderCode] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Audio notification for new delivery assignments
   const playDeliveryChime = () => {
@@ -95,6 +95,12 @@ export default function RepartoPage() {
     if (data) {
       setOrders(data as Order[]);
     }
+  };
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchDeliveries();
+    setTimeout(() => setIsRefreshing(false), 500); // Visual feedback delay
   };
 
   useEffect(() => {
@@ -187,7 +193,18 @@ export default function RepartoPage() {
         {/* Status Header */}
         <div className="flex justify-between items-end mb-sm">
           <div>
-            <h2 className="font-title-md text-title-md text-on-background font-bold">Mis Entregas</h2>
+            <h2 className="font-title-md text-title-md text-on-background font-bold flex items-center gap-2">
+              Mis Entregas
+              <button 
+                onClick={handleManualRefresh}
+                disabled={isRefreshing}
+                className={`p-1.5 rounded-full bg-surface-container-highest text-on-surface hover:bg-surface-variant transition-colors flex items-center justify-center ${isRefreshing ? 'opacity-50' : ''}`}
+              >
+                <span className={`material-symbols-outlined text-[18px] ${isRefreshing ? 'animate-[spinRefresh_1s_linear_infinite]' : ''}`}>
+                  refresh
+                </span>
+              </button>
+            </h2>
             <p className="font-caption text-caption text-on-surface-variant mt-0.5">
               {orders.length} pedidos activos
             </p>
@@ -276,41 +293,53 @@ export default function RepartoPage() {
                     <span className="material-symbols-outlined text-xs">map</span>
                     Ver Mapa
                   </a>
+                <div className="flex gap-sm pt-sm border-t border-outline-variant/40">
                   <a
                     href={`tel:${o.celular}`}
-                    className="flex justify-center items-center gap-1 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface border border-outline-variant/40 transition-colors"
+                    className="flex-1 bg-surface-container text-on-surface text-[10px] font-bold py-2 rounded-full flex items-center justify-center gap-1 hover:bg-surface-container-high transition-colors border border-outline-variant/40 shadow-sm btn-haptic"
                   >
-                    <span className="material-symbols-outlined text-xs">call</span>
+                    <span className="material-symbols-outlined text-[14px]">call</span>
                     Llamar
                   </a>
                   <a
                     href={waUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex justify-center items-center gap-1 py-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 rounded-lg text-[11px] font-bold text-[#1EBE5C] border border-[#25D366]/30 transition-colors"
+                    className="flex-1 bg-[#25D366] text-white text-[10px] font-bold py-2 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-colors shadow-sm btn-haptic"
                   >
-                    <span className="material-symbols-outlined text-xs">chat</span>
+                    <span className="material-symbols-outlined text-[14px]">chat</span>
                     WhatsApp
+                  </a>
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold py-2 rounded-full flex items-center justify-center gap-1 hover:bg-secondary-container/90 transition-colors shadow-sm btn-haptic"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">map</span>
+                    Ruta
                   </a>
                 </div>
 
                 {/* Operational status toggle */}
-                <div className="bg-surface-container-low p-1 rounded-xl flex gap-1 mt-sm relative h-11 border border-outline-variant/40">
-                  {o.estado !== 'Listo' && o.estado !== 'En camino' ? (
+                <div className="mt-sm">
+                  {o.estado === 'Confirmado' || o.estado === 'En preparación' ? (
                     <button
                       disabled
-                      className="w-full bg-surface-container-high text-on-surface-variant/60 rounded-lg text-xs font-bold flex justify-center items-center gap-1 opacity-70 cursor-not-allowed border border-outline-variant/40"
+                      className="w-full bg-surface-variant text-on-surface-variant/50 text-xs font-bold py-3.5 rounded-full flex items-center justify-center gap-2 cursor-not-allowed border border-outline-variant/30"
                     >
-                      <span className="material-symbols-outlined text-sm animate-pulse">skillet</span>
-                      En Cocina (Esperando preparación)
+                      <span className="material-symbols-outlined text-sm">hourglass_empty</span>
+                      Esperando a Cocina
                     </button>
                   ) : o.estado === 'Listo' ? (
                     <button
                       onClick={() => handleUpdateStatus(o.codigo, 'En camino')}
-                      className="w-full bg-primary text-on-primary rounded-lg text-xs font-bold flex justify-center items-center gap-1 hover:opacity-90 transition-all cursor-pointer shadow-sm"
+                      className="w-full bg-primary text-on-primary text-xs font-bold py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-primary-container active:scale-95 transition-all shadow-md cursor-pointer btn-haptic"
                     >
-                      <span className="material-symbols-outlined text-sm">local_shipping</span>
-                      Iniciar Reparto (Confirmar salida)
+                      <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                        two_wheeler
+                      </span>
+                      Iniciar Despacho
                     </button>
                   ) : (
                     <button
@@ -318,10 +347,12 @@ export default function RepartoPage() {
                         setConfirmOrderCode(o.codigo);
                         setShowConfirmModal(true);
                       }}
-                      className="w-full bg-[#2e7d32] text-white rounded-lg text-xs font-bold flex justify-center items-center gap-1 hover:opacity-90 transition-all cursor-pointer shadow-sm"
+                      className="w-full bg-secondary-container text-on-secondary-container text-xs font-bold py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-secondary-container/90 active:scale-95 transition-all shadow-md cursor-pointer btn-haptic"
                     >
-                      <span className="material-symbols-outlined text-sm">check_circle</span>
-                      Entregado (Finalizar pedido)
+                      <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                        check_circle
+                      </span>
+                      Confirmar Entrega
                     </button>
                   )}
                 </div>

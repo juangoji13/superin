@@ -791,7 +791,7 @@ export default function AdminPedidosPage() {
           </div>
           <div>
             <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">Recaudado</span>
-            <span className="text-sm font-extrabold text-on-background font-mono">${kpis.ventasHoy.toLocaleString('es-CO')}</span>
+            <span key={kpis.ventasHoy} className="text-sm font-extrabold text-on-background font-mono animate-count-up" style={{animationFillMode: 'both', display: 'inline-block'}}>${kpis.ventasHoy.toLocaleString('es-CO')}</span>
           </div>
         </div>
 
@@ -802,7 +802,7 @@ export default function AdminPedidosPage() {
           </div>
           <div>
             <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">Pendientes</span>
-            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.pendientes}</span>
+            <span key={kpis.pendientes} className="text-sm font-extrabold text-on-background font-mono animate-count-up" style={{animationFillMode: 'both', display: 'inline-block'}}>{kpis.pendientes}</span>
           </div>
         </div>
 
@@ -813,7 +813,7 @@ export default function AdminPedidosPage() {
           </div>
           <div>
             <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">En Cocina</span>
-            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.preparacion}</span>
+            <span key={kpis.preparacion} className="text-sm font-extrabold text-on-background font-mono animate-count-up" style={{animationFillMode: 'both', display: 'inline-block'}}>{kpis.preparacion}</span>
           </div>
         </div>
 
@@ -824,7 +824,7 @@ export default function AdminPedidosPage() {
           </div>
           <div>
             <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">En Camino</span>
-            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.camino}</span>
+            <span key={kpis.camino} className="text-sm font-extrabold text-on-background font-mono animate-count-up" style={{animationFillMode: 'both', display: 'inline-block'}}>{kpis.camino}</span>
           </div>
         </div>
 
@@ -835,7 +835,7 @@ export default function AdminPedidosPage() {
           </div>
           <div>
             <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">Total</span>
-            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.total}</span>
+            <span key={kpis.total} className="text-sm font-extrabold text-on-background font-mono animate-count-up" style={{animationFillMode: 'both', display: 'inline-block'}}>{kpis.total}</span>
           </div>
         </div>
       </section>

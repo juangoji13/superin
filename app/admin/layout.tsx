@@ -82,21 +82,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-background text-on-background flex h-screen overflow-hidden font-body-md antialiased">
-      {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col py-lg w-[260px] h-screen bg-surface-container border-r border-outline-variant/30 flex-shrink-0 z-10">
-        <div className="px-lg pb-lg mb-sm border-b border-outline-variant/30">
-          <Link href="/">
-            <span className="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">Super IN</span>
+      {/* Minified Expandable Sidebar */}
+      <aside className="hidden lg:flex flex-col py-lg w-[80px] hover:w-[260px] transition-all duration-300 h-screen bg-surface-container border-r border-outline-variant/30 flex-shrink-0 z-50 group overflow-hidden absolute left-0 top-0">
+        <div className="px-6 pb-lg mb-sm border-b border-outline-variant/30 whitespace-nowrap flex items-center">
+          <Link href="/" className="flex items-center gap-4">
+            <span className="material-symbols-outlined text-primary text-[28px]">restaurant_menu</span>
+            <span className="font-headline-lg text-xl text-primary font-bold tracking-tight opacity-0 group-hover:opacity-100 transition-opacity duration-200">Super IN</span>
           </Link>
         </div>
 
         {/* User Card */}
         {user && (
-          <div className="px-4 py-4 flex items-center gap-3 border-b border-outline-variant/20 mb-sm">
-            <div className="w-10 h-10 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold font-headline-lg text-lg">
+          <div className="px-5 py-4 flex items-center gap-4 border-b border-outline-variant/20 mb-sm whitespace-nowrap">
+            <div className="w-10 h-10 rounded-full bg-primary-container text-primary flex items-center justify-center flex-shrink-0 font-bold font-headline-lg text-lg">
               {user.nombre[0].toUpperCase()}
             </div>
-            <div className="overflow-hidden">
+            <div className="overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <p className="font-label-sm text-sm text-on-surface truncate font-bold">{user.nombre}</p>
               <p className="font-caption text-xs text-on-surface-variant capitalize">{user.rol}</p>
             </div>
@@ -104,45 +105,45 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}
 
         {/* Nav list */}
-        <nav className="flex-1 overflow-y-auto space-y-1 mt-2">
+        <nav className="flex-1 overflow-y-auto space-y-2 mt-2 px-3">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`mx-2 flex items-center gap-3 p-3 rounded-lg transition-all active:scale-[0.98] ${
+                className={`flex items-center gap-4 p-3 rounded-lg transition-all active:scale-[0.98] whitespace-nowrap btn-haptic ${
                   isActive
-                    ? 'bg-primary text-on-primary font-bold'
+                    ? 'bg-primary text-on-primary font-bold shadow-sm'
                     : 'text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
                 <span
-                  className="material-symbols-outlined text-[20px]"
+                  className="material-symbols-outlined text-[20px] flex-shrink-0"
                   style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
                 >
                   {item.icon}
                 </span>
-                <span className="font-label-sm text-sm">{item.name}</span>
+                <span className="font-label-sm text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* Actions */}
-        <div className="p-4 mt-auto border-t border-outline-variant/30 flex flex-col gap-sm">
+        <div className="p-3 mt-auto border-t border-outline-variant/30 flex flex-col gap-sm whitespace-nowrap">
           <button
             onClick={handleLogout}
-            className="w-full text-error hover:bg-error-container/10 rounded-lg flex items-center gap-3 p-3 transition-all cursor-pointer font-semibold"
+            className="w-full text-error hover:bg-error-container/20 rounded-lg flex items-center gap-4 p-3 transition-all cursor-pointer font-semibold btn-haptic"
           >
-            <span className="material-symbols-outlined text-[20px]">logout</span>
-            <span className="font-label-sm text-sm">Cerrar Sesión</span>
+            <span className="material-symbols-outlined text-[20px] flex-shrink-0">logout</span>
+            <span className="font-label-sm text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">Cerrar Sesión</span>
           </button>
         </div>
       </aside>
 
       {/* Main Panel Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden lg:ml-[80px]">
         {children}
       </div>
     </div>

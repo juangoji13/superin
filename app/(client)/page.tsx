@@ -7,7 +7,7 @@ export default function LandingPage() {
       <section className="relative w-full min-h-[618px] flex items-center justify-center bg-surface-container-low px-container-margin md:px-xl py-xl overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
-            className="w-full h-full bg-cover bg-center opacity-40"
+            className="w-full h-full bg-cover bg-center bg-fixed opacity-40 parallax-bg"
             style={{
               backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLuXXf0trIIA-AE4svzO90QJaxj39J9ga2yD1wEKgxYM_agO-J-4lQPt4pHBr_iieCZYrDJgdH1Krrwp4duu4LsHqiYYIUD8QyIPBEaH5dYNnB0MZxH97m4KNO_f0eoG9xk9eqk6SbxkKP_zcf7YTpm2t8wQYVY4bo-7nA576JgEs2XToKsg6ZNNImrUi92SmOdaGLMfeEapJV6i0RUAhBH1A1PHP5hSWoY1jt1HxDIVFXqgjpeJqYfQ_JVDiPy9gzzvk9Nl3670k')`,
             }}
@@ -28,13 +28,26 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/domicilios"
-                className="bg-primary text-on-primary font-label-sm text-label-sm rounded-full px-8 py-4 hover:bg-primary-container active:scale-95 transition-all shadow-[0_4px_12px_rgba(27,67,50,0.15)] flex items-center justify-center gap-2 w-fit"
+                className="bg-primary text-on-primary font-label-sm text-label-sm rounded-full px-8 py-4 hover:bg-primary-container btn-haptic transition-all shadow-[0_4px_12px_rgba(27,67,50,0.15)] flex items-center justify-center gap-2 w-fit"
               >
                 Ver menú de hoy
                 <span className="material-symbols-outlined text-[20px]" data-icon="arrow_forward">
                   arrow_forward
                 </span>
               </Link>
+            </div>
+            
+            {/* Quick Stats / Social Proof */}
+            <div className="flex gap-lg mt-8 pt-6 border-t border-outline-variant/30">
+              <div className="flex flex-col">
+                <span className="font-display-lg text-2xl font-bold text-primary animate-count-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>+15,000</span>
+                <span className="font-caption text-xs text-on-surface-variant font-medium">Pedidos entregados</span>
+              </div>
+              <div className="w-[1px] h-10 bg-outline-variant/30"></div>
+              <div className="flex flex-col">
+                <span className="font-display-lg text-2xl font-bold text-primary animate-count-up" style={{animationDelay: '0.4s', animationFillMode: 'both'}}>100%</span>
+                <span className="font-caption text-xs text-on-surface-variant font-medium">Sabor casero local</span>
+              </div>
             </div>
           </div>
         </div>

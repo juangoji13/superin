@@ -157,7 +157,7 @@ export default function CocinaPage() {
       if (error) throw error;
       
       // Update local state instantly
-      setOrders(prev => prev.filter(o => !(o.codigo === code && newStatus === 'En camino')));
+      setOrders(prev => prev.filter(o => !(o.codigo === code && newStatus === 'Listo')));
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     }
@@ -374,7 +374,7 @@ export default function CocinaPage() {
                   </div>
 
                   <button
-                    onClick={() => handleUpdateStatus(o.codigo, 'En camino')}
+                    onClick={() => handleUpdateStatus(o.codigo, 'Listo')}
                     className="w-full bg-surface-container border border-primary text-primary font-label-sm py-3 rounded-full hover:bg-primary-container/10 transition-colors flex justify-center items-center gap-2 active:scale-95 text-xs font-bold cursor-pointer shadow-xs"
                   >
                     Marcar como listo

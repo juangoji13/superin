@@ -456,6 +456,9 @@ export default function AdminPedidosPage() {
 
   // Group by columns
   const getOrdersByState = (state: string) => {
+    if (state === 'En camino') {
+      return filteredOrders.filter((o) => o.estado === 'Listo' || o.estado === 'En camino');
+    }
     return filteredOrders.filter((o) => o.estado === state);
   };
 
@@ -473,7 +476,7 @@ export default function AdminPedidosPage() {
   const kpis = {
     pendientes: orders.filter((o) => o.estado === 'Pendiente de confirmación').length,
     preparacion: orders.filter((o) => o.estado === 'En preparación' || o.estado === 'Confirmado').length,
-    camino: orders.filter((o) => o.estado === 'En camino').length,
+    camino: orders.filter((o) => o.estado === 'En camino' || o.estado === 'Listo').length,
     ventasHoy: orders
       .filter((o) => o.estado === 'Entregado' && isToday(o.creado_a))
       .reduce((sum, o) => sum + o.total, 0),
@@ -885,11 +888,11 @@ export default function AdminPedidosPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleUpdateStatus(o.codigo, 'En camino');
+                            handleUpdateStatus(o.codigo, 'Listo');
                           }}
                           className="w-full bg-primary-container text-on-primary-container text-[10px] font-bold py-1 rounded-full hover:opacity-90 cursor-pointer transition-all"
                         >
-                          Listo / Despachar
+                          Marcar Listo
                         </button>
                       </div>
                     </div>
@@ -924,6 +927,15 @@ export default function AdminPedidosPage() {
                     >
                       <div className="flex justify-between items-start mb-1.5">
                         <span className="font-bold text-primary font-mono text-[11px]">{o.codigo}</span>
+                        {o.estado === 'Listo' ? (
+                          <span className="bg-secondary-container text-on-secondary-container text-[8px] font-bold px-1.5 py-0.25 rounded-full">
+                            Listo
+                          </span>
+                        ) : (
+                          <span className="bg-primary-container text-on-primary-container text-[8px] font-bold px-1.5 py-0.25 rounded-full">
+                            En Reparto
+                          </span>
+                        )}
                       </div>
                       <h4 className="font-bold text-on-background text-[11px] mb-0.5 truncate">{o.cliente}</h4>
                       <p className="text-[10px] text-on-surface-variant mb-1.5 truncate flex items-center gap-0.5">
@@ -937,15 +949,27 @@ export default function AdminPedidosPage() {
                         <span className="text-primary font-bold text-[10px]">${o.total.toLocaleString('es-CO')}</span>
                       </div>
                       <div className="flex gap-1 mt-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateStatus(o.codigo, 'Entregado');
-                          }}
-                          className="w-full bg-primary text-on-primary text-[10px] font-bold py-1 rounded-full hover:bg-primary-container cursor-pointer transition-all"
-                        >
-                          Marcar Entregado
-                        </button>
+                        {o.estado === 'Listo' ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpdateStatus(o.codigo, 'En camino');
+                            }}
+                            className="w-full bg-primary text-on-primary text-[10px] font-bold py-1 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                          >
+                            Iniciar Reparto
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpdateStatus(o.codigo, 'Entregado');
+                            }}
+                            className="w-full bg-[#2e7d32] text-white text-[10px] font-bold py-1 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                          >
+                            Marcar Entregado
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))
@@ -1171,17 +1195,26 @@ export default function AdminPedidosPage() {
 
                 {selectedOrder.estado === 'En preparación' && (
                   <button
-                    onClick={() => handleUpdateStatus(selectedOrder.codigo, 'En camino')}
+                    onClick={() => handleUpdateStatus(selectedOrder.codigo, 'Listo')}
                     className="flex-grow bg-primary-container text-on-primary-container text-[10px] font-bold py-2 rounded-full hover:opacity-90 cursor-pointer transition-all"
                   >
-                    Despachar
+                    Marcar Listo
+                  </button>
+                )}
+
+                {selectedOrder.estado === 'Listo' && (
+                  <button
+                    onClick={() => handleUpdateStatus(selectedOrder.codigo, 'En camino')}
+                    className="flex-grow bg-primary text-on-primary text-[10px] font-bold py-2 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                  >
+                    Despachar (En Camino)
                   </button>
                 )}
 
                 {selectedOrder.estado === 'En camino' && (
                   <button
                     onClick={() => handleUpdateStatus(selectedOrder.codigo, 'Entregado')}
-                    className="flex-grow bg-primary text-on-primary text-[10px] font-bold py-2 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                    className="flex-grow bg-[#2e7d32] text-white text-[10px] font-bold py-2 rounded-full hover:opacity-90 cursor-pointer transition-all"
                   >
                     Entregado
                   </button>

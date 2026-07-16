@@ -63,7 +63,7 @@ export default function RepartoPage() {
     const { data } = await supabase
       .from('pedidos')
       .select('*')
-      .in('estado', ['Confirmado', 'En preparación', 'En camino'])
+      .in('estado', ['Confirmado', 'En preparación', 'Listo', 'En camino'])
       .order('creado_a', { ascending: true });
 
     if (data) {
@@ -256,13 +256,21 @@ export default function RepartoPage() {
 
                 {/* Operational status toggle */}
                 <div className="bg-surface-container-low p-1 rounded-xl flex gap-1 mt-sm relative h-11 border border-outline-variant/40">
-                  {o.estado !== 'En camino' ? (
+                  {o.estado !== 'Listo' && o.estado !== 'En camino' ? (
                     <button
                       disabled
                       className="w-full bg-surface-container-high text-on-surface-variant/60 rounded-lg text-xs font-bold flex justify-center items-center gap-1 opacity-70 cursor-not-allowed border border-outline-variant/40"
                     >
                       <span className="material-symbols-outlined text-sm animate-pulse">skillet</span>
                       En Cocina (Esperando preparación)
+                    </button>
+                  ) : o.estado === 'Listo' ? (
+                    <button
+                      onClick={() => handleUpdateStatus(o.codigo, 'En camino')}
+                      className="w-full bg-primary text-on-primary rounded-lg text-xs font-bold flex justify-center items-center gap-1 hover:opacity-90 transition-all cursor-pointer shadow-sm"
+                    >
+                      <span className="material-symbols-outlined text-sm">local_shipping</span>
+                      Iniciar Reparto (Confirmar salida)
                     </button>
                   ) : (
                     <button

@@ -252,6 +252,7 @@ export default function PedidoEstadoPage() {
       case 'Confirmado':
         return 1;
       case 'En preparación':
+      case 'Listo':
         return 2;
       case 'En camino':
         return 3;

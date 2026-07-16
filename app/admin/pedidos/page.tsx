@@ -272,13 +272,24 @@ export default function AdminPedidosPage() {
   };
 
   // KPIs
+  const isToday = (dateStr: string) => {
+    const orderDate = new Date(dateStr);
+    const today = new Date();
+    return (
+      orderDate.getDate() === today.getDate() &&
+      orderDate.getMonth() === today.getMonth() &&
+      orderDate.getFullYear() === today.getFullYear()
+    );
+  };
+
   const kpis = {
     pendientes: orders.filter((o) => o.estado === 'Pendiente de confirmación').length,
-    preparacion: orders.filter((o) => o.estado === 'En preparación').length,
+    preparacion: orders.filter((o) => o.estado === 'En preparación' || o.estado === 'Confirmado').length,
     camino: orders.filter((o) => o.estado === 'En camino').length,
     ventasHoy: orders
-      .filter((o) => o.estado === 'Entregado')
-      .reduce((sum, o) => sum + o.total, 0)
+      .filter((o) => o.estado === 'Entregado' && isToday(o.creado_a))
+      .reduce((sum, o) => sum + o.total, 0),
+    total: orders.length
   };
 
   return (
@@ -304,6 +315,64 @@ export default function AdminPedidosPage() {
           </div>
         </div>
       </header>
+
+      {/* KPIs Summary Bar */}
+      <section className="bg-surface-container-low/40 px-lg py-3 border-b border-outline-variant/30 flex gap-4 overflow-x-auto flex-shrink-0">
+        {/* Card: Recaudado Hoy */}
+        <div className="flex-1 min-w-[200px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-success-container/30 text-success flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-2xl font-bold">payments</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">Recaudado Hoy</span>
+            <span className="text-xl font-extrabold text-on-background font-mono">${kpis.ventasHoy.toLocaleString('es-CO')}</span>
+          </div>
+        </div>
+
+        {/* Card: Pedidos Pendientes */}
+        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-error-container/30 text-error flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-2xl font-bold">pending_actions</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">Pendientes</span>
+            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.pendientes}</span>
+          </div>
+        </div>
+
+        {/* Card: En Cocina */}
+        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary-container/30 text-primary flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-2xl font-bold">skillet</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">En Cocina</span>
+            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.preparacion}</span>
+          </div>
+        </div>
+
+        {/* Card: En Camino */}
+        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-secondary-container/30 text-secondary flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-2xl font-bold">two_wheeler</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">En Camino</span>
+            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.camino}</span>
+          </div>
+        </div>
+
+        {/* Card: Total Pedidos */}
+        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-surface-container-high/60 text-on-surface flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-2xl font-bold">receipt_long</span>
+          </div>
+          <div>
+            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">Total Pedidos</span>
+            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.total}</span>
+          </div>
+        </div>
+      </section>
 
       {/* Workspace Area split into columns + Details Side Panel */}
       <div className="flex-1 flex overflow-hidden">

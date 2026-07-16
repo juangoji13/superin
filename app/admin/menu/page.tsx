@@ -42,6 +42,21 @@ export default function AdminMenuPage() {
   const [showAddProdModal, setShowAddProdModal] = useState(false);
   const [showAddOptModal, setShowAddOptModal] = useState(false);
 
+  // Edit states
+  const [editingProduct, setEditingProduct] = useState<Producto | null>(null);
+  const [editProdNombre, setEditProdNombre] = useState('');
+  const [editProdDesc, setEditProdDesc] = useState('');
+  const [editProdPrecio, setEditProdPrecio] = useState('');
+  const [editProdStock, setEditProdStock] = useState('');
+  const [editProdCat, setEditProdCat] = useState('');
+  const [editProdFoto, setEditProdFoto] = useState('');
+
+  const [editingOption, setEditingOption] = useState<OpcionPlato | null>(null);
+  const [editOptNombre, setEditOptNombre] = useState('');
+  const [editOptGrupo, setEditOptGrupo] = useState('Proteína');
+  const [editOptPrecio, setEditOptPrecio] = useState('');
+  const [editOptStock, setEditOptStock] = useState('');
+
   // New product inputs
   const [newProdNombre, setNewProdNombre] = useState('');
   const [newProdDesc, setNewProdDesc] = useState('');
@@ -244,6 +259,90 @@ export default function AdminMenuPage() {
     }
   };
 
+  // Start editing a product
+  const startEditProduct = (p: Producto) => {
+    setEditingProduct(p);
+    setEditProdNombre(p.nombre);
+    setEditProdDesc(p.descripcion || '');
+    setEditProdPrecio(p.precio.toString());
+    setEditProdStock(p.stock.toString());
+    setEditProdCat(p.categoria_id ? p.categoria_id.toString() : '');
+    setEditProdFoto(p.foto || '');
+  };
+
+  // Save edited product
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct || !editProdNombre.trim() || !editProdPrecio.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('productos')
+        .update({
+          nombre: editProdNombre,
+          descripcion: editProdDesc,
+          precio: parseInt(editProdPrecio, 10),
+          stock: parseInt(editProdStock, 10) || 0,
+          categoria_id: editProdCat ? parseInt(editProdCat, 10) : null,
+          foto: editProdFoto || null
+        })
+        .eq('id', editingProduct.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setProductos((prev) =>
+          prev.map((p) => (p.id === editingProduct.id ? (data as Producto) : p))
+        );
+        setEditingProduct(null);
+      }
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  // Start editing an option
+  const startEditOption = (o: OpcionPlato) => {
+    setEditingOption(o);
+    setEditOptNombre(o.nombre);
+    setEditOptGrupo(o.grupo);
+    setEditOptPrecio(o.precio_adicional.toString());
+    setEditOptStock(o.stock.toString());
+  };
+
+  // Save edited option
+  const handleUpdateOption = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOption || !editOptNombre.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('opciones_plato')
+        .update({
+          nombre: editOptNombre,
+          grupo: editOptGrupo,
+          precio_adicional: parseInt(editOptPrecio, 10) || 0,
+          stock: parseInt(editOptStock, 10) || 0
+        })
+        .eq('id', editingOption.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setOpciones((prev) =>
+          prev.map((o) => (o.id === editingOption.id ? (data as OpcionPlato) : o))
+        );
+        setEditingOption(null);
+      }
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   // Delete product
   const handleDeleteProduct = async (id: string) => {
     const conf = confirm('¿Estás seguro de que deseas eliminar este producto?');
@@ -399,7 +498,7 @@ export default function AdminMenuPage() {
                       </span>
                     </td>
                     <td className="p-md text-center">
-                      <div className="flex justify-center gap-md">
+                      <div className="flex justify-center items-center gap-md">
                         <button
                           onClick={() => handleToggleProductActive(p.id, p.activo)}
                           className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer border ${
@@ -411,8 +510,16 @@ export default function AdminMenuPage() {
                           {p.activo ? 'Desactivar' : 'Activar'}
                         </button>
                         <button
+                          onClick={() => startEditProduct(p)}
+                          className="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center"
+                          title="Editar"
+                        >
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button
                           onClick={() => handleDeleteProduct(p.id)}
-                          className="text-on-surface-variant hover:text-error transition-colors"
+                          className="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center"
+                          title="Eliminar"
                         >
                           <span className="material-symbols-outlined text-sm">delete</span>
                         </button>
@@ -477,7 +584,7 @@ export default function AdminMenuPage() {
                       </span>
                     </td>
                     <td className="p-md text-center">
-                      <div className="flex justify-center gap-md">
+                      <div className="flex justify-center items-center gap-md">
                         <button
                           onClick={() => handleToggleOptionActive(o.id, o.activo)}
                           className={`text-xs font-semibold px-3 py-1 rounded-full cursor-pointer border ${
@@ -489,8 +596,16 @@ export default function AdminMenuPage() {
                           {o.activo ? 'Desactivar' : 'Activar'}
                         </button>
                         <button
+                          onClick={() => startEditOption(o)}
+                          className="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center"
+                          title="Editar"
+                        >
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button
                           onClick={() => handleDeleteOption(o.id)}
-                          className="text-on-surface-variant hover:text-error transition-colors"
+                          className="text-on-surface-variant hover:text-error transition-colors flex items-center justify-center"
+                          title="Eliminar"
                         >
                           <span className="material-symbols-outlined text-sm">delete</span>
                         </button>
@@ -668,6 +783,182 @@ export default function AdminMenuPage() {
                 className="flex-1 bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container"
               >
                 Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {/* Edit Product Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form
+            onSubmit={handleUpdateProduct}
+            className="bg-surface-container-lowest max-w-sm w-full p-lg rounded-2xl border border-outline-variant shadow-xl flex flex-col gap-md text-xs"
+          >
+            <h3 className="font-title-md text-primary font-bold text-sm">Editar Plato</h3>
+
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Nombre del plato</label>
+              <input
+                required
+                type="text"
+                value={editProdNombre}
+                onChange={(e) => setEditProdNombre(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+              />
+            </div>
+
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Descripción</label>
+              <textarea
+                placeholder="Sin descripción"
+                value={editProdDesc}
+                onChange={(e) => setEditProdDesc(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-sm">
+              <div className="flex flex-col gap-xs">
+                <label className="font-bold text-on-surface">Precio (COP)</label>
+                <input
+                  required
+                  type="number"
+                  value={editProdPrecio}
+                  onChange={(e) => setEditProdPrecio(e.target.value)}
+                  className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+                />
+              </div>
+
+              <div className="flex flex-col gap-xs">
+                <label className="font-bold text-on-surface">Stock</label>
+                <input
+                  type="number"
+                  value={editProdStock}
+                  onChange={(e) => setEditProdStock(e.target.value)}
+                  className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Categoría</label>
+              <select
+                value={editProdCat}
+                onChange={(e) => setEditProdCat(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-surface"
+              >
+                <option value="">Selecciona una categoría...</option>
+                {categorias.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">URL de Foto (opcional)</label>
+              <input
+                type="text"
+                placeholder="Ej: https://.../foto.jpg"
+                value={editProdFoto}
+                onChange={(e) => setEditProdFoto(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+              />
+            </div>
+
+            <div className="flex gap-sm mt-lg">
+              <button
+                type="button"
+                onClick={() => setEditingProduct(null)}
+                className="flex-1 border border-outline text-on-surface text-xs font-bold py-3 rounded-full hover:bg-surface-container-high"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="flex-1 bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container"
+              >
+                Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Edit Option Modal */}
+      {editingOption && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form
+            onSubmit={handleUpdateOption}
+            className="bg-surface-container-lowest max-w-sm w-full p-lg rounded-2xl border border-outline-variant shadow-xl flex flex-col gap-md text-xs"
+          >
+            <h3 className="font-title-md text-primary font-bold text-sm">Editar Opción de Plato</h3>
+
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Nombre del ingrediente</label>
+              <input
+                required
+                type="text"
+                value={editOptNombre}
+                onChange={(e) => setEditOptNombre(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+              />
+            </div>
+
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Grupo / Categoría de ingrediente</label>
+              <select
+                value={editOptGrupo}
+                onChange={(e) => setEditOptGrupo(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-surface"
+              >
+                <option value="Proteína">Proteína</option>
+                <option value="Arroz">Arroz</option>
+                <option value="Acompañamiento">Acompañamiento</option>
+                <option value="Ensalada">Ensalada</option>
+                <option value="Sopa">Sopa</option>
+                <option value="Postre">Postre</option>
+                <option value="Bebida">Bebida</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-sm">
+              <div className="flex flex-col gap-xs">
+                <label className="font-bold text-on-surface">Precio Adicional</label>
+                <input
+                  type="number"
+                  value={editOptPrecio}
+                  onChange={(e) => setEditOptPrecio(e.target.value)}
+                  className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+                />
+              </div>
+
+              <div className="flex flex-col gap-xs">
+                <label className="font-bold text-on-surface">Stock</label>
+                <input
+                  type="number"
+                  value={editOptStock}
+                  onChange={(e) => setEditOptStock(e.target.value)}
+                  className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-sm mt-lg">
+              <button
+                type="button"
+                onClick={() => setEditingOption(null)}
+                className="flex-1 border border-outline text-on-surface text-xs font-bold py-3 rounded-full hover:bg-surface-container-high"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="flex-1 bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container"
+              >
+                Guardar Cambios
               </button>
             </div>
           </form>

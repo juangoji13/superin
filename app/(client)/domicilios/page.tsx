@@ -345,9 +345,10 @@ export default function DomiciliosPage() {
                 <article
                   key={dish.id}
                   onClick={() => isAvailable && handleAddPrepared(dish)}
-                  className={`bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col relative border border-outline-variant/30 soft-lift shadow-sm ${
+                  className={`bg-surface-container-lowest rounded-2xl overflow-hidden flex flex-col relative border border-outline-variant/30 soft-lift shadow-sm animate-card-in ${
                     isAvailable ? 'cursor-pointer' : 'opacity-85 grayscale-[20%]'
                   }`}
+                  style={{ animationDelay: `${preparedDishes.indexOf(dish) * 80}ms` }}
                 >
                   <div className="h-48 w-full relative">
                     <img
@@ -473,7 +474,12 @@ export default function DomiciliosPage() {
                             )}
                           </span>
                           <span className={`font-caption mt-1 ${isSelected ? 'text-white/80' : 'text-on-surface-variant'}`}>
-                            {!hasStock ? 'Agotado' : `${extraCost || 'Sin costo adicional'}`}
+                            {!hasStock 
+                              ? '❌ Agotado' 
+                              : opt.stock > 0 && opt.stock <= 5 && opt.nombre !== 'Sin ensalada' && opt.nombre !== 'Sin sopa' && opt.nombre !== 'Sin postre'
+                                ? `⚠️ ¡Solo ${opt.stock}!${extraCost || ' Sin costo adicional'}`
+                                : `${extraCost || 'Sin costo adicional'}`
+                            }
                           </span>
                         </button>
                       );

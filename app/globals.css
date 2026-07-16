@@ -128,3 +128,53 @@ body {
 .animate-toast-in {
   animation: slideUpFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Chart bar grow-up animation */
+@keyframes growUp {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+}
+
+/* Panel slide-down animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card fade-in entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-card-in {
+  animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Subtle badge glow pulse */
+@keyframes badgeGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(1, 45, 29, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(1, 45, 29, 0); }
+}
+
+.animate-badge-glow {
+  animation: badgeGlow 2s ease-in-out infinite;
+}

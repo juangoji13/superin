@@ -25,6 +25,32 @@ export default function RepartoPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmOrderCode, setConfirmOrderCode] = useState<string | null>(null);
 
+  // Audio notification for new delivery assignments
+  const playDeliveryChime = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const playTone = (freq: number, start: number, dur: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.2, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + dur);
+      };
+      playTone(784, ctx.currentTime, 0.2);       // G5
+      playTone(988, ctx.currentTime + 0.15, 0.2); // B5
+      playTone(1175, ctx.currentTime + 0.3, 0.35); // D6
+    } catch (e) {
+      console.warn('Audio play blocked', e);
+    }
+  };
+
   // Authenticate / Role check
   useEffect(() => {
     async function checkRole() {
@@ -80,7 +106,14 @@ export default function RepartoPage() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'pedidos' },
-        () => {
+        (payload) => {
+          // Play chime when an order becomes 'Listo' (ready for delivery)
+          if (payload.eventType === 'UPDATE' && payload.new && (payload.new as any).estado === 'Listo') {
+            playDeliveryChime();
+          }
+          if (payload.eventType === 'INSERT') {
+            playDeliveryChime();
+          }
           fetchDeliveries();
         }
       )
@@ -171,17 +204,24 @@ export default function RepartoPage() {
             No tienes entregas programadas en este momento.
           </div>
         ) : (
-          orders.map((o) => {
+          orders.map((o, idx) => {
             const queryAddress = `${o.direccion}, ${o.barrio}, Barranquilla`;
             const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryAddress)}`;
-            const waUrl = `https://wa.me/${o.celular.replace(/\+/g, '')}?text=${encodeURIComponent(
-              `Hola ${o.cliente}, soy el domiciliario de Super IN. Estoy en camino con tu almuerzo.`
-            )}`;
+            // Dynamic WhatsApp template based on order state
+            const waTemplates: Record<string, string> = {
+              'Confirmado': `Hola ${o.cliente} 👋, soy el domiciliario de *Super IN*. Tu pedido *${o.codigo}* está siendo preparado, te avisaré cuando salga de cocina.`,
+              'En preparación': `Hola ${o.cliente} 👨‍🍳, tu pedido *${o.codigo}* está en preparación. Te notificaré cuando esté listo para recogerlo.`,
+              'Listo': `¡${o.cliente}! 🚀 Tu pedido *${o.codigo}* está listo. Estoy saliendo del restaurante en este momento. ¡Ya casi llego!`,
+              'En camino': `¡${o.cliente}! 🛵💨 Soy el domiciliario de *Super IN*. Voy en camino con tu pedido *${o.codigo}* a ${o.direccion}. Llego en pocos minutos.`
+            };
+            const waMsg = waTemplates[o.estado] || `Hola ${o.cliente}, soy el domiciliario de Super IN. Estoy en camino con tu almuerzo.`;
+            const waUrl = `https://wa.me/${o.celular.replace(/\+/g, '')}?text=${encodeURIComponent(waMsg)}`;
 
             return (
               <article
                 key={o.codigo}
-                className="bg-surface-container-lowest rounded-2xl p-md shadow-sm border border-outline-variant/70 flex flex-col gap-md"
+                className="bg-surface-container-lowest rounded-2xl p-md shadow-sm border border-outline-variant/70 flex flex-col gap-md animate-card-in"
+                style={{ animationDelay: `${idx * 60}ms` }}
               >
                 {/* Top Status Bar */}
                 <div className="flex justify-between items-center pb-sm border-b border-outline-variant/45">

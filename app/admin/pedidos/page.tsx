@@ -549,86 +549,235 @@ export default function AdminPedidosPage() {
 
       {/* Collapsible Stats Dashboard */}
       {showStats && (
-        <div className="bg-surface-container-low/60 px-md py-4 border-b border-outline-variant/70 grid grid-cols-1 md:grid-cols-2 gap-md flex-shrink-0 transition-all duration-300">
-          {/* Sales chart card */}
-          <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col">
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
-              <span className="material-symbols-outlined text-primary text-sm">trending_up</span>
-              Ventas de los Últimos 7 Días (Entregados)
-            </h3>
-            
-            <div className="flex-1 min-h-[100px] flex items-end gap-2 pt-2 px-1 border-b border-outline-variant/70 pb-1">
-              {getLast7DaysSales().map((day) => {
-                const maxVal = Math.max(...getLast7DaysSales().map(d => d.total), 1);
-                const percent = (day.total / maxVal) * 100;
-                
+        <div className="bg-surface-container-low/60 px-md py-4 border-b border-outline-variant/70 flex-shrink-0 transition-all duration-300 animate-[slideDown_0.3s_ease-out]">
+          {/* Row 1: Sales Chart + Order Distribution Donut */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-md mb-md">
+            {/* Sales chart card - 2 cols */}
+            <div className="lg:col-span-2 bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+                  <span className="material-symbols-outlined text-primary text-sm">trending_up</span>
+                  Ventas Últimos 7 Días
+                </h3>
+                <span className="text-[9px] font-mono text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full">
+                  ${getLast7DaysSales().reduce((s, d) => s + d.total, 0).toLocaleString('es-CO')} acumulado
+                </span>
+              </div>
+              
+              <div className="flex-1 min-h-[110px] flex items-end gap-2 pt-2 px-1 border-b border-outline-variant/40 pb-1">
+                {getLast7DaysSales().map((day, i) => {
+                  const maxVal = Math.max(...getLast7DaysSales().map(d => d.total), 1);
+                  const percent = (day.total / maxVal) * 100;
+                  const isToday2 = i === 6;
+                  
+                  return (
+                    <div key={day.dateStr} className="flex-1 flex flex-col items-center gap-1 group relative">
+                      <div className="absolute bottom-full mb-1.5 bg-on-surface text-surface text-[9px] font-bold px-2 py-0.5 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                        ${day.total.toLocaleString('es-CO')}
+                      </div>
+                      <div className="w-full bg-surface-container-high rounded-t-md overflow-hidden flex items-end min-h-[5px] h-[90px]">
+                        <div 
+                          style={{ height: `${percent}%`, animationDelay: `${i * 80}ms` }}
+                          className={`w-full rounded-t-md transition-all duration-700 animate-[growUp_0.6s_ease-out_both] ${
+                            isToday2 
+                              ? 'bg-gradient-to-t from-primary to-primary/60 shadow-sm' 
+                              : day.total > 0 
+                                ? 'bg-gradient-to-t from-primary/70 to-primary/30 hover:from-primary hover:to-primary/50' 
+                                : 'bg-outline-variant/20'
+                          }`}
+                        />
+                      </div>
+                      <span className={`text-[9px] font-bold capitalize select-none text-center ${
+                        isToday2 ? 'text-primary' : 'text-on-surface-variant'
+                      }`}>
+                        {isToday2 ? 'Hoy' : day.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Order Distribution Donut Chart */}
+            <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col items-center justify-center">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-3 flex items-center gap-1 self-start">
+                <span className="material-symbols-outlined text-primary text-sm">pie_chart</span>
+                Distribución de Pedidos
+              </h3>
+              {(() => {
+                const stateColors = [
+                  { label: 'Pendientes', count: kpis.pendientes, color: '#d32f2f' },
+                  { label: 'En Cocina', count: kpis.preparacion, color: '#7c4dff' },
+                  { label: 'En Reparto', count: kpis.camino, color: '#1565c0' },
+                  { label: 'Entregados', count: orders.filter(o => o.estado === 'Entregado').length, color: '#2e7d32' },
+                ];
+                const totalDonut = stateColors.reduce((s, c) => s + c.count, 0) || 1;
+                let cumOffset = 0;
+
                 return (
-                  <div key={day.dateStr} className="flex-1 flex flex-col items-center gap-1 group relative">
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full mb-1.5 bg-on-surface text-surface text-[9px] font-bold px-2 py-0.5 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                      ${day.total.toLocaleString('es-CO')}
+                  <div className="flex items-center gap-3 w-full">
+                    <svg viewBox="0 0 36 36" className="w-20 h-20 flex-shrink-0">
+                      <circle cx="18" cy="18" r="15.915" fill="none" stroke="#e0e0e0" strokeWidth="3.5" />
+                      {stateColors.map((seg) => {
+                        const pct = (seg.count / totalDonut) * 100;
+                        const dashArray = `${pct} ${100 - pct}`;
+                        const offset = 25 - cumOffset;
+                        cumOffset += pct;
+                        return (
+                          <circle
+                            key={seg.label}
+                            cx="18" cy="18" r="15.915"
+                            fill="none"
+                            stroke={seg.color}
+                            strokeWidth="3.5"
+                            strokeDasharray={dashArray}
+                            strokeDashoffset={offset}
+                            strokeLinecap="round"
+                            className="transition-all duration-700"
+                          />
+                        );
+                      })}
+                      <text x="18" y="18" textAnchor="middle" dominantBaseline="central" className="fill-on-surface" fontSize="6" fontWeight="800">
+                        {totalDonut === 1 && kpis.total === 0 ? '0' : kpis.total}
+                      </text>
+                    </svg>
+                    <div className="flex flex-col gap-1.5 flex-1">
+                      {stateColors.map((seg) => (
+                        <div key={seg.label} className="flex items-center justify-between text-[9px]">
+                          <div className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: seg.color }} />
+                            <span className="text-on-surface-variant font-semibold">{seg.label}</span>
+                          </div>
+                          <span className="font-bold text-on-surface font-mono">{seg.count}</span>
+                        </div>
+                      ))}
                     </div>
-                    
-                    {/* Bar */}
-                    <div className="w-full bg-surface-container-high rounded-t-sm overflow-hidden flex items-end min-h-[5px] h-[75px]">
-                      <div 
-                        style={{ height: `${percent}%` }}
-                        className={`w-full rounded-t-sm transition-all duration-500 ${
-                          day.total > 0 ? 'bg-primary hover:bg-primary/80' : 'bg-outline-variant/30'
-                        }`}
-                      />
-                    </div>
-                    
-                    {/* Label */}
-                    <span className="text-[9px] text-on-surface-variant font-bold capitalize select-none text-center">
-                      {day.label}
-                    </span>
                   </div>
                 );
-              })}
+              })()}
             </div>
           </div>
 
-          {/* Top Products card */}
-          <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col justify-between">
-            <div>
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
-                <span className="material-symbols-outlined text-primary text-sm">workspace_premium</span>
-                Platos Estrella (Top Pedidos)
-              </h3>
-              
-              <div className="flex flex-col gap-2">
-                {topDishes.length === 0 ? (
-                  <p className="text-[10px] text-on-surface-variant italic py-2">No hay datos de pedidos registrados aún.</p>
-                ) : (
-                  topDishes.map((dish, index) => {
-                    const colors = ['text-yellow-500', 'text-slate-400', 'text-amber-600'];
-                    const rankBgs = ['bg-yellow-500/10', 'bg-slate-400/10', 'bg-amber-600/10'];
-                    
-                    return (
-                      <div key={dish.nombre} className="flex items-center justify-between p-2 rounded-lg bg-surface-container-low border border-outline-variant/40 font-sans">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${rankBgs[index]} ${colors[index]}`}>
-                            #{index + 1}
+          {/* Row 2: Top Products + Extra Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+            {/* Top Products card */}
+            <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-primary text-sm">workspace_premium</span>
+                  Platos Estrella (Top 3)
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {topDishes.length === 0 ? (
+                    <p className="text-[10px] text-on-surface-variant italic py-2">No hay datos registrados aún.</p>
+                  ) : (
+                    topDishes.map((dish, index) => {
+                      const medals = ['🥇', '🥈', '🥉'];
+                      const barColors = ['bg-yellow-400', 'bg-slate-300', 'bg-amber-500'];
+                      const maxDish = topDishes[0]?.cantidad || 1;
+                      return (
+                        <div key={dish.nombre} className="flex items-center gap-2 p-2 rounded-lg bg-surface-container-low border border-outline-variant/40">
+                          <span className="text-base">{medals[index]}</span>
+                          <div className="flex-1">
+                            <span className="text-[10px] font-bold text-on-background block leading-tight">{dish.nombre}</span>
+                            <div className="w-full bg-surface-container-high rounded-full h-1.5 mt-1">
+                              <div className={`h-full rounded-full ${barColors[index]} transition-all duration-700`} style={{ width: `${(dish.cantidad / maxDish) * 100}%` }} />
+                            </div>
                           </div>
-                          <div>
-                            <span className="text-[10px] font-bold text-on-background block leading-none">{dish.nombre}</span>
-                            <span className="text-[8px] text-on-surface-variant">Total ordenado</span>
-                          </div>
+                          <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded-full text-[9px] font-bold">{dish.cantidad}</span>
                         </div>
-                        <div className="flex items-center gap-0.5 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[9px] font-bold">
-                          {dish.cantidad} uds
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
+                      );
+                    })
+                  )}
+                </div>
               </div>
             </div>
-            
-            <p className="text-[8px] text-on-surface-variant/70 italic mt-2 pt-1 border-t border-outline-variant/40">
-              Calculado automáticamente sobre todos los registros históricos.
-            </p>
+
+            {/* Avg Ticket + Completion Rate */}
+            <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col gap-3">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-1">
+                <span className="material-symbols-outlined text-primary text-sm">analytics</span>
+                Métricas Clave
+              </h3>
+              {(() => {
+                const entregados = orders.filter(o => o.estado === 'Entregado');
+                const todayEntregados = entregados.filter(o => isToday(o.creado_a));
+                const avgTicket = todayEntregados.length > 0 
+                  ? Math.round(todayEntregados.reduce((s, o) => s + o.total, 0) / todayEntregados.length) 
+                  : 0;
+                const completionRate = orders.length > 0 
+                  ? Math.round((entregados.length / orders.filter(o => o.estado !== 'Cancelado' && o.estado !== 'Expirado').length) * 100) || 0
+                  : 0;
+                return (
+                  <>
+                    <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-outline-variant/40">
+                      <div>
+                        <span className="text-[9px] text-on-surface-variant font-bold uppercase block">Ticket Promedio Hoy</span>
+                        <span className="text-lg font-extrabold text-on-background font-mono">${avgTicket.toLocaleString('es-CO')}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                        <span className="material-symbols-outlined">receipt</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-outline-variant/40">
+                      <div>
+                        <span className="text-[9px] text-on-surface-variant font-bold uppercase block">Tasa de Completado</span>
+                        <span className="text-lg font-extrabold text-on-background font-mono">{completionRate}%</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-lg bg-[#2e7d32]/10 text-[#2e7d32] flex items-center justify-center">
+                        <span className="material-symbols-outlined">check_circle</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg border border-outline-variant/40">
+                      <div>
+                        <span className="text-[9px] text-on-surface-variant font-bold uppercase block">Entregados Hoy</span>
+                        <span className="text-lg font-extrabold text-on-background font-mono">{todayEntregados.length}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+                        <span className="material-symbols-outlined">local_shipping</span>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Hourly Heatmap */}
+            <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col">
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
+                <span className="material-symbols-outlined text-primary text-sm">schedule</span>
+                Franjas Más Populares
+              </h3>
+              {(() => {
+                const franjaMap: Record<string, number> = {};
+                orders.filter(o => o.estado === 'Entregado').forEach(o => {
+                  franjaMap[o.franja] = (franjaMap[o.franja] || 0) + 1;
+                });
+                const sorted = Object.entries(franjaMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
+                const maxFranja = sorted[0]?.[1] || 1;
+                return sorted.length === 0 ? (
+                  <p className="text-[10px] text-on-surface-variant italic py-2">Sin datos de entregas aún.</p>
+                ) : (
+                  <div className="flex flex-col gap-1.5">
+                    {sorted.map(([franja, count]) => (
+                      <div key={franja} className="flex items-center gap-2">
+                        <span className="text-[9px] font-mono text-on-surface-variant w-14 text-right font-semibold">{franja}</span>
+                        <div className="flex-1 bg-surface-container-high rounded-full h-2.5">
+                          <div 
+                            className="h-full rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-700" 
+                            style={{ width: `${(count / maxFranja) * 100}%` }} 
+                          />
+                        </div>
+                        <span className="text-[9px] font-bold text-on-surface font-mono w-6">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+              <p className="text-[8px] text-on-surface-variant/70 italic mt-auto pt-2 border-t border-outline-variant/40">
+                Basado en entregas completadas.
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -1149,18 +1298,29 @@ export default function AdminPedidosPage() {
               </div>
 
               <div className="flex gap-1">
-                {/* Contact via WhatsApp */}
-                <a
-                  href={`https://wa.me/${selectedOrder.celular.replace(/\+/g, '')}?text=${encodeURIComponent(
-                    `Hola ${selectedOrder.cliente}, me contacto del restaurante Super IN sobre tu pedido ${selectedOrder.codigo}...`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-grow bg-[#25D366] text-white text-[10px] font-bold py-2 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-all"
-                >
-                  <span className="material-symbols-outlined text-[14px]">chat</span>
-                  WhatsApp
-                </a>
+                {/* Contact via WhatsApp with Dynamic Templates */}
+                {(() => {
+                  const waTemplates: Record<string, string> = {
+                    'Pendiente de confirmación': `Hola ${selectedOrder.cliente} 👋, te contactamos de *Super IN* para confirmar tu pedido *${selectedOrder.codigo}*. En breve validamos disponibilidad. ¡Gracias por tu preferencia! 🍽️`,
+                    'Confirmado': `¡Hola ${selectedOrder.cliente}! ✅ Tu pedido *${selectedOrder.codigo}* ha sido confirmado y está entrando a la cocina. Tiempo estimado: *${selectedOrder.tiempo_estimado || 45} min*. Te avisaremos cuando salga. 🔥`,
+                    'En preparación': `Hola ${selectedOrder.cliente} 👨‍🍳, tu pedido *${selectedOrder.codigo}* está siendo preparado con cariño. Pronto saldrá de nuestra cocina. ¡Paciencia, ya casi! 🍲`,
+                    'Listo': `¡${selectedOrder.cliente}! 🎉 Tu pedido *${selectedOrder.codigo}* ya está listo y va a ser despachado. El repartidor saldrá en breve con tu almuerzo. 🛵`,
+                    'En camino': `¡${selectedOrder.cliente}, tu pedido *${selectedOrder.codigo}* va en camino! 🛵💨 El repartidor se dirige a ${selectedOrder.direccion}. Puedes seguir tu pedido aquí: ${typeof window !== 'undefined' ? window.location.origin : ''}/pedido/${selectedOrder.codigo}`,
+                    'Entregado': `¡Hola ${selectedOrder.cliente}! ✅ Tu pedido *${selectedOrder.codigo}* fue entregado exitosamente. ¡Esperamos que disfrutes tu almuerzo! Gracias por elegir *Super IN* 🤩💛`
+                  };
+                  const msg = waTemplates[selectedOrder.estado] || `Hola ${selectedOrder.cliente}, me contacto de Super IN sobre tu pedido ${selectedOrder.codigo}.`;
+                  return (
+                    <a
+                      href={`https://wa.me/${selectedOrder.celular.replace(/\+/g, '')}?text=${encodeURIComponent(msg)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-grow bg-[#25D366] text-white text-[10px] font-bold py-2 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">chat</span>
+                      WhatsApp
+                    </a>
+                  );
+                })()}
 
                 {/* State Transition Button */}
                 {selectedOrder.estado === 'Pendiente de confirmación' && (

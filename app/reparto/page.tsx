@@ -22,6 +22,8 @@ export default function RepartoPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmOrderCode, setConfirmOrderCode] = useState<string | null>(null);
 
   // Authenticate / Role check
   useEffect(() => {
@@ -108,6 +110,13 @@ export default function RepartoPage() {
       alert(`Error al actualizar estado: ${err.message}`);
     }
   };
+  
+  const executeConfirmDelivery = async () => {
+    if (!confirmOrderCode) return;
+    await handleUpdateStatus(confirmOrderCode, 'Entregado');
+    setShowConfirmModal(false);
+    setConfirmOrderCode(null);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('superin_demo_role');
@@ -127,7 +136,7 @@ export default function RepartoPage() {
   return (
     <div className="bg-background text-on-background min-h-screen w-full flex flex-col font-body-md antialiased pb-12">
       {/* Mobile Navigation Header */}
-      <header className="bg-surface sticky top-0 z-40 border-b border-outline-variant/30 px-container-margin h-16 flex items-center justify-between shadow-sm">
+      <header className="bg-surface sticky top-0 z-40 border-b border-outline-variant/70 px-container-margin h-16 flex items-center justify-between shadow-sm">
         <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold tracking-tight">Super IN</h1>
         <div className="flex items-center gap-md">
           <button
@@ -158,7 +167,7 @@ export default function RepartoPage() {
 
         {/* Deliveries list */}
         {orders.length === 0 ? (
-          <div className="text-center py-xl text-on-surface-variant/40 text-xs italic bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/30">
+          <div className="text-center py-xl text-on-surface-variant/40 text-xs italic bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant/70">
             No tienes entregas programadas en este momento.
           </div>
         ) : (
@@ -172,10 +181,10 @@ export default function RepartoPage() {
             return (
               <article
                 key={o.codigo}
-                className="bg-surface-container-lowest rounded-2xl p-md shadow-sm border border-outline-variant/30 flex flex-col gap-md"
+                className="bg-surface-container-lowest rounded-2xl p-md shadow-sm border border-outline-variant/70 flex flex-col gap-md"
               >
                 {/* Top Status Bar */}
-                <div className="flex justify-between items-center pb-sm border-b border-outline-variant/10">
+                <div className="flex justify-between items-center pb-sm border-b border-outline-variant/45">
                   <div>
                     <span className="font-mono font-bold text-primary">{o.codigo}</span>
                     <span className="block text-[10px] text-on-surface-variant mt-0.5">
@@ -217,19 +226,19 @@ export default function RepartoPage() {
                 </div>
 
                 {/* Communication buttons */}
-                <div className="grid grid-cols-3 gap-sm pt-sm border-t border-outline-variant/10">
+                <div className="grid grid-cols-3 gap-sm pt-sm border-t border-outline-variant/40">
                   <a
                     href={mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex justify-center items-center gap-1 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface transition-colors"
+                    className="flex justify-center items-center gap-1 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface border border-outline-variant/40 transition-colors"
                   >
                     <span className="material-symbols-outlined text-xs">map</span>
                     Ver Mapa
                   </a>
                   <a
                     href={`tel:${o.celular}`}
-                    className="flex justify-center items-center gap-1 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface transition-colors"
+                    className="flex justify-center items-center gap-1 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface border border-outline-variant/40 transition-colors"
                   >
                     <span className="material-symbols-outlined text-xs">call</span>
                     Llamar
@@ -238,7 +247,7 @@ export default function RepartoPage() {
                     href={waUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex justify-center items-center gap-1 py-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 rounded-lg text-[11px] font-bold text-[#1EBE5C] transition-colors"
+                    className="flex justify-center items-center gap-1 py-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 rounded-lg text-[11px] font-bold text-[#1EBE5C] border border-[#25D366]/30 transition-colors"
                   >
                     <span className="material-symbols-outlined text-xs">chat</span>
                     WhatsApp
@@ -246,19 +255,22 @@ export default function RepartoPage() {
                 </div>
 
                 {/* Operational status toggle */}
-                <div className="bg-surface-container-low p-1 rounded-xl flex gap-1 mt-sm relative h-11 border border-outline-variant/10">
+                <div className="bg-surface-container-low p-1 rounded-xl flex gap-1 mt-sm relative h-11 border border-outline-variant/40">
                   {o.estado !== 'En camino' ? (
                     <button
-                      onClick={() => handleUpdateStatus(o.codigo, 'En camino')}
-                      className="w-full bg-primary text-on-primary rounded-lg text-xs font-bold flex justify-center items-center gap-1 hover:opacity-95 transition-all cursor-pointer"
+                      disabled
+                      className="w-full bg-surface-container-high text-on-surface-variant/60 rounded-lg text-xs font-bold flex justify-center items-center gap-1 opacity-70 cursor-not-allowed border border-outline-variant/40"
                     >
-                      <span className="material-symbols-outlined text-sm">local_shipping</span>
-                      Iniciar Reparto (Marcar En Camino)
+                      <span className="material-symbols-outlined text-sm animate-pulse">skillet</span>
+                      En Cocina (Esperando preparación)
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleUpdateStatus(o.codigo, 'Entregado')}
-                      className="w-full bg-secondary text-on-secondary rounded-lg text-xs font-bold flex justify-center items-center gap-1 hover:opacity-95 transition-all cursor-pointer"
+                      onClick={() => {
+                        setConfirmOrderCode(o.codigo);
+                        setShowConfirmModal(true);
+                      }}
+                      className="w-full bg-[#2e7d32] text-white rounded-lg text-xs font-bold flex justify-center items-center gap-1 hover:opacity-90 transition-all cursor-pointer shadow-sm"
                     >
                       <span className="material-symbols-outlined text-sm">check_circle</span>
                       Entregado (Finalizar pedido)
@@ -270,6 +282,39 @@ export default function RepartoPage() {
           })
         )}
       </main>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-surface-container-lowest max-w-sm w-full p-lg rounded-2xl border border-outline-variant/70 shadow-2xl flex flex-col gap-md">
+            <h3 className="font-title-md text-[#2e7d32] font-bold flex items-center gap-sm">
+              <span className="material-symbols-outlined text-[#2e7d32] text-xl">check_circle</span>
+              Confirmar Entrega
+            </h3>
+            <p className="text-xs text-on-surface-variant">
+              ¿Estás seguro de que deseas marcar el pedido <strong className="font-mono text-on-surface font-extrabold">{confirmOrderCode}</strong> como entregado? Esto finalizará la orden en el sistema.
+            </p>
+
+            <div className="flex gap-sm mt-lg">
+              <button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setConfirmOrderCode(null);
+                }}
+                className="flex-1 border border-outline text-on-surface text-xs font-bold py-2.5 rounded-full hover:bg-surface-container-high transition-all cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={executeConfirmDelivery}
+                className="flex-1 bg-[#2e7d32] text-white text-xs font-bold py-2.5 rounded-full hover:opacity-90 transition-all cursor-pointer shadow-md"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

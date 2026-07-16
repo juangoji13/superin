@@ -477,13 +477,13 @@ export default function AdminPedidosPage() {
     ventasHoy: orders
       .filter((o) => o.estado === 'Entregado' && isToday(o.creado_a))
       .reduce((sum, o) => sum + o.total, 0),
-    total: orders.length
+    total: orders.filter((o) => o.estado !== 'Cancelado' && o.estado !== 'Expirado').length
   };
 
   return (
     <div className="flex-1 flex flex-col h-full bg-background overflow-hidden relative">
       {/* Header */}
-      <header className="min-h-[4rem] py-2 lg:py-0 lg:h-16 px-md flex flex-col lg:flex-row lg:items-center justify-between gap-sm border-b border-outline-variant/30 bg-surface/80 backdrop-blur-md z-10 flex-shrink-0">
+      <header className="min-h-[4rem] py-2 lg:py-0 lg:h-16 px-md flex flex-col lg:flex-row lg:items-center justify-between gap-sm border-b border-outline-variant/70 bg-surface/80 backdrop-blur-md z-10 flex-shrink-0">
         <div>
           <h2 className="text-sm lg:text-base text-on-surface font-extrabold tracking-tight">Resumen de Pedidos</h2>
           <p className="text-[10px] text-on-surface-variant font-medium">Operación en tiempo real</p>
@@ -546,15 +546,15 @@ export default function AdminPedidosPage() {
 
       {/* Collapsible Stats Dashboard */}
       {showStats && (
-        <div className="bg-surface-container-low/60 px-md py-4 border-b border-outline-variant/30 grid grid-cols-1 md:grid-cols-2 gap-md flex-shrink-0 transition-all duration-300">
+        <div className="bg-surface-container-low/60 px-md py-4 border-b border-outline-variant/70 grid grid-cols-1 md:grid-cols-2 gap-md flex-shrink-0 transition-all duration-300">
           {/* Sales chart card */}
-          <div className="bg-surface p-4 rounded-xl border border-outline-variant/30 shadow-sm flex flex-col">
+          <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col">
             <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
               <span className="material-symbols-outlined text-primary text-sm">trending_up</span>
               Ventas de los Últimos 7 Días (Entregados)
             </h3>
             
-            <div className="flex-1 min-h-[100px] flex items-end gap-2 pt-2 px-1 border-b border-outline-variant/30 pb-1">
+            <div className="flex-1 min-h-[100px] flex items-end gap-2 pt-2 px-1 border-b border-outline-variant/70 pb-1">
               {getLast7DaysSales().map((day) => {
                 const maxVal = Math.max(...getLast7DaysSales().map(d => d.total), 1);
                 const percent = (day.total / maxVal) * 100;
@@ -587,7 +587,7 @@ export default function AdminPedidosPage() {
           </div>
 
           {/* Top Products card */}
-          <div className="bg-surface p-4 rounded-xl border border-outline-variant/30 shadow-sm flex flex-col justify-between">
+          <div className="bg-surface p-4 rounded-xl border border-outline-variant/70 shadow-sm flex flex-col justify-between">
             <div>
               <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
                 <span className="material-symbols-outlined text-primary text-sm">workspace_premium</span>
@@ -603,7 +603,7 @@ export default function AdminPedidosPage() {
                     const rankBgs = ['bg-yellow-500/10', 'bg-slate-400/10', 'bg-amber-600/10'];
                     
                     return (
-                      <div key={dish.nombre} className="flex items-center justify-between p-2 rounded-lg bg-surface-container-low border border-outline-variant/10 font-sans">
+                      <div key={dish.nombre} className="flex items-center justify-between p-2 rounded-lg bg-surface-container-low border border-outline-variant/40 font-sans">
                         <div className="flex items-center gap-2">
                           <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${rankBgs[index]} ${colors[index]}`}>
                             #{index + 1}
@@ -623,7 +623,7 @@ export default function AdminPedidosPage() {
               </div>
             </div>
             
-            <p className="text-[8px] text-on-surface-variant/70 italic mt-2 pt-1 border-t border-outline-variant/10">
+            <p className="text-[8px] text-on-surface-variant/70 italic mt-2 pt-1 border-t border-outline-variant/40">
               Calculado automáticamente sobre todos los registros históricos.
             </p>
           </div>
@@ -631,9 +631,9 @@ export default function AdminPedidosPage() {
       )}
 
       {/* KPIs Summary Bar */}
-      <section className="bg-surface-container-low/40 px-md py-2 border-b border-outline-variant/30 flex gap-2 overflow-x-auto flex-shrink-0">
+      <section className="bg-surface-container-low/40 px-md py-2 border-b border-outline-variant/70 flex gap-2 overflow-x-auto flex-shrink-0">
         {/* Card: Recaudado Hoy */}
-        <div className="flex-1 min-w-[140px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+        <div className="flex-1 min-w-[140px] bg-surface p-2.5 rounded-xl border border-outline-variant/70 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-success-container/30 text-success flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-lg font-bold">payments</span>
           </div>
@@ -644,7 +644,7 @@ export default function AdminPedidosPage() {
         </div>
 
         {/* Card: Pedidos Pendientes */}
-        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/70 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-error-container/30 text-error flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-lg font-bold">pending_actions</span>
           </div>
@@ -655,7 +655,7 @@ export default function AdminPedidosPage() {
         </div>
 
         {/* Card: En Cocina */}
-        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/70 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-primary-container/30 text-primary flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-lg font-bold">skillet</span>
           </div>
@@ -666,7 +666,7 @@ export default function AdminPedidosPage() {
         </div>
 
         {/* Card: En Camino */}
-        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/70 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-secondary-container/30 text-secondary flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-lg font-bold">two_wheeler</span>
           </div>
@@ -677,7 +677,7 @@ export default function AdminPedidosPage() {
         </div>
 
         {/* Card: Total Pedidos */}
-        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/70 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-surface-container-high/60 text-on-surface flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-lg font-bold">receipt_long</span>
           </div>
@@ -689,7 +689,7 @@ export default function AdminPedidosPage() {
       </section>
 
       {/* Mobile Column Tabs Switcher */}
-      <div className="lg:hidden flex bg-surface-container px-md border-b border-outline-variant/30 flex-shrink-0 overflow-x-auto gap-1">
+      <div className="lg:hidden flex bg-surface-container px-md border-b border-outline-variant/70 flex-shrink-0 overflow-x-auto gap-1">
         {[
           { label: 'Pendientes', state: 'Pendiente de confirmación', count: getOrdersByState('Pendiente de confirmación').length, color: 'bg-error' },
           { label: 'Confirmados', state: 'Confirmado', count: getOrdersByState('Confirmado').length, color: 'bg-secondary' },
@@ -736,7 +736,7 @@ export default function AdminPedidosPage() {
                       className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
                           ? 'border-primary ring-1.5 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-xs'
+                          : 'border-outline-variant/70 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-1.5">
@@ -750,7 +750,7 @@ export default function AdminPedidosPage() {
                         <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/40">
                         <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
@@ -804,7 +804,7 @@ export default function AdminPedidosPage() {
                       className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
                           ? 'border-primary ring-1.5 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-xs'
+                          : 'border-outline-variant/70 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-1.5">
@@ -820,7 +820,7 @@ export default function AdminPedidosPage() {
                         <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/40">
                         <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
@@ -864,7 +864,7 @@ export default function AdminPedidosPage() {
                       className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
                           ? 'border-primary ring-1.5 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-xs'
+                          : 'border-outline-variant/70 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-1.5">
@@ -875,7 +875,7 @@ export default function AdminPedidosPage() {
                         <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/40">
                         <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
@@ -919,7 +919,7 @@ export default function AdminPedidosPage() {
                       className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
                           ? 'border-primary ring-1.5 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-xs'
+                          : 'border-outline-variant/70 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-1.5">
@@ -930,7 +930,7 @@ export default function AdminPedidosPage() {
                         <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/40">
                         <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
@@ -974,7 +974,7 @@ export default function AdminPedidosPage() {
                       className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
                           ? 'border-primary ring-1.5 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-xs'
+                          : 'border-outline-variant/70 hover:shadow-xs'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-1.5">
@@ -988,7 +988,7 @@ export default function AdminPedidosPage() {
                         <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/40">
                         <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
@@ -1013,8 +1013,8 @@ export default function AdminPedidosPage() {
 
         {/* Side Details Panel */}
         {selectedOrder && (
-          <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[350px] lg:relative lg:inset-auto lg:z-10 lg:w-[350px] border-l border-outline-variant/30 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none transition-all duration-300">
-            <div className="p-md border-b border-outline-variant/30 flex justify-between items-center">
+          <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[350px] lg:relative lg:inset-auto lg:z-10 lg:w-[350px] border-l border-outline-variant/70 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none transition-all duration-300">
+            <div className="p-md border-b border-outline-variant/70 flex justify-between items-center">
               <div>
                 <h3 className="text-xs text-primary font-bold font-mono">{selectedOrder.codigo}</h3>
                 <p className="text-[10px] text-on-surface-variant">Creado: {new Date(selectedOrder.creado_a).toLocaleTimeString('es-CO')}</p>
@@ -1060,7 +1060,7 @@ export default function AdminPedidosPage() {
                     Comprobante
                   </h4>
                   {selectedComprobante ? (
-                    <div className="border border-outline-variant/30 rounded-lg overflow-hidden mt-1">
+                    <div className="border border-outline-variant/70 rounded-lg overflow-hidden mt-1">
                       <a href={selectedComprobante.url_archivo} target="_blank" rel="noopener noreferrer">
                         <img
                           src={selectedComprobante.url_archivo}
@@ -1116,7 +1116,7 @@ export default function AdminPedidosPage() {
             </div>
 
             {/* Side Drawer Actions Footer */}
-            <div className="p-md border-t border-outline-variant/30 bg-surface flex flex-col gap-1.5">
+            <div className="p-md border-t border-outline-variant/70 bg-surface flex flex-col gap-1.5">
               <div className="flex justify-between items-center mb-1">
                 <span className="font-bold text-xs">Total del Pedido:</span>
                 <span className="text-sm text-primary font-bold">

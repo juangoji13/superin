@@ -26,6 +26,34 @@ export default function CocinaPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [details, setDetails] = useState<Record<string, OrderDetail[]>>({});
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'confirmados' | 'preparacion'>('confirmados');
+
+  const playChimeSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      // Synthesis of kitchen ding/chime bell
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(987.77, ctx.currentTime); // B5 note
+      osc.frequency.exponentialRampToValueAtTime(1318.51, ctx.currentTime + 0.1); // Slide up to E6
+      
+      gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 1.0);
+    } catch (e) {
+      console.warn('Could not play chime', e);
+    }
+  };
 
   // Authenticate / Role check
   useEffect(() => {
@@ -102,7 +130,13 @@ export default function CocinaPage() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'pedidos' },
-        () => {
+        (payload) => {
+          // Play a sound if a new order is 'Confirmado'
+          if (payload.eventType === 'INSERT' && payload.new?.estado === 'Confirmado') {
+            playChimeSound();
+          } else if (payload.eventType === 'UPDATE' && payload.new?.estado === 'Confirmado' && payload.old?.estado !== 'Confirmado') {
+            playChimeSound();
+          }
           fetchKitchenData();
         }
       )
@@ -150,10 +184,10 @@ export default function CocinaPage() {
   return (
     <div className="bg-surface text-on-surface h-screen w-screen overflow-hidden flex flex-col antialiased">
       {/* Header */}
-      <header className="bg-surface border-b border-outline-variant shadow-sm w-full z-50 flex justify-between items-center px-container-margin h-16 shrink-0">
+      <header className="bg-surface border-b border-outline-variant/70 shadow-sm w-full z-50 flex justify-between items-center px-container-margin h-16 shrink-0">
         <div className="flex items-center gap-md">
           <span className="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold tracking-tight">Super IN</span>
-          <div className="h-6 w-[1px] bg-outline-variant/30 mx-2"></div>
+          <div className="h-6 w-[1px] bg-outline-variant/70 mx-2"></div>
           <span className="font-title-md text-title-md text-on-surface-variant font-bold">Pantalla de Cocina</span>
         </div>
         <div className="flex items-center gap-lg">
@@ -171,11 +205,31 @@ export default function CocinaPage() {
         </div>
       </header>
 
+      {/* Mobile Tab Switcher */}
+      <div className="md:hidden flex bg-surface-container border-b border-outline-variant/70 flex-shrink-0 gap-1 px-md">
+        <button
+          onClick={() => setActiveTab('confirmados')}
+          className={`flex-1 py-3 text-center text-xs font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === 'confirmados' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant'
+          }`}
+        >
+          Nuevos ({confirmados.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('preparacion')}
+          className={`flex-1 py-3 text-center text-xs font-bold border-b-2 transition-all cursor-pointer ${
+            activeTab === 'preparacion' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant'
+          }`}
+        >
+          En Preparación ({enPreparacion.length})
+        </button>
+      </div>
+
       {/* Columns */}
       <main className="flex-1 flex overflow-hidden bg-background">
         {/* Column 1: Confirmados */}
-        <section className="flex-1 flex flex-col border-r border-outline-variant/30 min-w-[300px] overflow-hidden">
-          <header className="bg-surface-container px-lg py-md flex justify-between items-center border-b border-outline-variant/30 flex-shrink-0">
+        <section className={`flex-1 flex flex-col border-r border-outline-variant/70 min-w-[300px] overflow-hidden ${activeTab === 'confirmados' ? 'flex' : 'hidden md:flex'}`}>
+          <header className="bg-surface-container px-lg py-md flex justify-between items-center border-b border-outline-variant/70 flex-shrink-0">
             <h2 className="font-title-md text-title-md text-on-surface flex items-center gap-sm font-bold">
               Nuevos por Preparar
               <span className="bg-error text-on-error rounded-full px-2 py-0.5 font-caption text-xs font-bold">
@@ -193,7 +247,7 @@ export default function CocinaPage() {
               confirmados.map((o) => (
                 <article
                   key={o.codigo}
-                  className="bg-surface-container-lowest rounded-2xl p-md border border-outline-variant/30 shadow-sm"
+                  className="bg-surface-container-lowest rounded-2xl p-md border border-outline-variant/70 shadow-sm"
                 >
                   <div className="flex justify-between items-start mb-sm">
                     <div>
@@ -205,16 +259,16 @@ export default function CocinaPage() {
                       </span>
                     </div>
                     {o.tiempo_estimado && (
-                      <span className="bg-surface-container px-2.5 py-0.5 rounded font-mono text-[10px] text-on-surface-variant font-bold">
+                      <span className="bg-surface-container px-2.5 py-0.5 rounded font-mono text-[10px] text-on-surface-variant font-bold border border-outline-variant/45">
                         {o.tiempo_estimado} min
                       </span>
                     )}
                   </div>
                   
                   {/* Items */}
-                  <div className="bg-surface-container-low rounded-xl p-sm mb-md space-y-2">
+                  <div className="bg-surface-container-low rounded-xl p-sm mb-md space-y-2 border border-outline-variant/45">
                     {details[o.codigo]?.map((item) => (
-                      <div key={item.id} className="flex items-start gap-2 border-b border-outline-variant/10 last:border-0 pb-2 last:pb-0">
+                      <div key={item.id} className="flex items-start gap-2 border-b border-outline-variant/40 last:border-0 pb-2 last:pb-0">
                         <span className="font-title-md text-primary font-bold text-sm">
                           {item.cantidad}x
                         </span>
@@ -243,7 +297,7 @@ export default function CocinaPage() {
 
                   <button
                     onClick={() => handleUpdateStatus(o.codigo, 'En preparación')}
-                    className="w-full bg-primary text-on-primary font-label-sm py-3 rounded-full hover:bg-primary-container transition-colors flex justify-center items-center gap-2 active:scale-95 text-xs font-bold cursor-pointer"
+                    className="w-full bg-primary text-on-primary font-label-sm py-3 rounded-full hover:bg-primary-container transition-colors flex justify-center items-center gap-2 active:scale-95 text-xs font-bold cursor-pointer shadow-sm"
                   >
                     Iniciar preparación
                     <span className="material-symbols-outlined text-sm">play_arrow</span>
@@ -255,8 +309,8 @@ export default function CocinaPage() {
         </section>
 
         {/* Column 2: En preparación */}
-        <section className="flex-1 flex flex-col bg-surface-container-low/20 min-w-[300px] overflow-hidden">
-          <header className="bg-surface-container-highest px-lg py-md flex justify-between items-center border-b border-outline-variant/30 flex-shrink-0">
+        <section className={`flex-1 flex flex-col bg-surface-container-low/20 min-w-[300px] overflow-hidden ${activeTab === 'preparacion' ? 'flex' : 'hidden md:flex'}`}>
+          <header className="bg-surface-container-highest px-lg py-md flex justify-between items-center border-b border-outline-variant/70 flex-shrink-0">
             <h2 className="font-title-md text-title-md text-on-surface flex items-center gap-sm font-bold">
               En Preparación
               <span className="bg-secondary-container text-on-secondary-container rounded-full px-2 py-0.5 font-caption text-xs font-bold">
@@ -290,9 +344,9 @@ export default function CocinaPage() {
                   </div>
 
                   {/* Items */}
-                  <div className="bg-surface-container-low rounded-xl p-sm mb-md space-y-2">
+                  <div className="bg-surface-container-low rounded-xl p-sm mb-md space-y-2 border border-outline-variant/45">
                     {details[o.codigo]?.map((item) => (
-                      <div key={item.id} className="flex items-start gap-2 border-b border-outline-variant/10 last:border-0 pb-2 last:pb-0">
+                      <div key={item.id} className="flex items-start gap-2 border-b border-outline-variant/40 last:border-0 pb-2 last:pb-0">
                         <span className="font-title-md text-primary font-bold text-sm">
                           {item.cantidad}x
                         </span>
@@ -321,7 +375,7 @@ export default function CocinaPage() {
 
                   <button
                     onClick={() => handleUpdateStatus(o.codigo, 'En camino')}
-                    className="w-full bg-surface-container border border-primary text-primary font-label-sm py-3 rounded-full hover:bg-primary-container/10 transition-colors flex justify-center items-center gap-2 active:scale-95 text-xs font-bold cursor-pointer"
+                    className="w-full bg-surface-container border border-primary text-primary font-label-sm py-3 rounded-full hover:bg-primary-container/10 transition-colors flex justify-center items-center gap-2 active:scale-95 text-xs font-bold cursor-pointer shadow-xs"
                   >
                     Marcar como listo
                     <span className="material-symbols-outlined text-primary text-sm">check_circle</span>

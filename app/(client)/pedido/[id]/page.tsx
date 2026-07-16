@@ -52,6 +52,50 @@ export default function PedidoEstadoPage() {
   // Timer countdown
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [whatsappContact, setWhatsappContact] = useState('573001234567');
+  const [progress, setProgress] = useState<number>(0);
+  const [remainingMinutes, setRemainingMinutes] = useState<number>(0);
+
+  const playStatusUpdateEffects = (newStatus: string) => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContext) {
+        const ctx = new AudioContext();
+        const playToneNode = (freq: number, startTime: number, duration: number) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+          gain.gain.setValueAtTime(0.15, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + duration);
+        };
+        playToneNode(523.25, ctx.currentTime, 0.4); // C5
+        playToneNode(659.25, ctx.currentTime + 0.15, 0.5); // E5
+      }
+    } catch (e) {
+      console.warn('Audio play blocked or failed', e);
+    }
+
+    let originalTitle = document.title;
+    let isFlashed = false;
+    const interval = setInterval(() => {
+      if (document.hidden) {
+        document.title = isFlashed ? `🛵 ¡Pedido ${newStatus}!` : originalTitle;
+        isFlashed = !isFlashed;
+      } else {
+        document.title = `Pedido ${newStatus} - Super IN`;
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      document.title = `Pedido ${newStatus} - Super IN`;
+    }, 20000);
+  };
 
   // Fetch configs
   useEffect(() => {
@@ -121,7 +165,13 @@ export default function PedidoEstadoPage() {
           filter: `codigo=eq.${orderCode}`
         },
         (payload) => {
-          setOrder(payload.new as Order);
+          const newOrder = payload.new as Order;
+          setOrder((prev) => {
+            if (prev && prev.estado !== newOrder.estado) {
+              playStatusUpdateEffects(newOrder.estado);
+            }
+            return newOrder;
+          });
         }
       )
       .subscribe();
@@ -157,6 +207,42 @@ export default function PedidoEstadoPage() {
 
     return () => clearInterval(interval);
   }, [order, orderCode, router]);
+
+  // Progress bar & time remaining logic based on tiempo_estimado
+  useEffect(() => {
+    if (!order || !order.tiempo_estimado || order.estado === 'Cancelado' || order.estado === 'Expirado') {
+      return;
+    }
+
+    if (order.estado === 'Entregado') {
+      setProgress(100);
+      setRemainingMinutes(0);
+      return;
+    }
+
+    if (order.estado === 'Pendiente de confirmación') {
+      setProgress(5);
+      setRemainingMinutes(order.tiempo_estimado);
+      return;
+    }
+
+    const updateProgress = () => {
+      const createdTime = new Date(order.creado_a).getTime();
+      const durationMs = order.tiempo_estimado! * 60 * 1000;
+      const now = new Date().getTime();
+      const elapsedMs = now - createdTime;
+
+      const pct = Math.min(95, Math.max(10, (elapsedMs / durationMs) * 100));
+      setProgress(pct);
+
+      const leftMs = Math.max(0, durationMs - elapsedMs);
+      setRemainingMinutes(Math.ceil(leftMs / (60 * 1000)));
+    };
+
+    updateProgress();
+    const interval = setInterval(updateProgress, 15000);
+    return () => clearInterval(interval);
+  }, [order]);
 
   // Map state string to timeline step index
   const getActiveStepIndex = (estado: string) => {
@@ -232,7 +318,7 @@ export default function PedidoEstadoPage() {
   const activeIndex = getActiveStepIndex(order.estado);
 
   return (
-    <div className="pt-4 pb-24 px-container-margin md:px-xl max-w-4xl mx-auto w-full flex flex-col gap-lg">
+    <div className="pt-4 pb-24 px-container-margin md:px-xl max-w-4xl mx-auto w-full flex flex-col gap-lg animate-fade-in">
       <div className="flex items-center gap-sm md:hidden">
         <Link href="/" className="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-on-surface">arrow_back</span>
@@ -241,7 +327,7 @@ export default function PedidoEstadoPage() {
       </div>
 
       {/* Status Hero */}
-      <section className="flex flex-col items-center justify-center text-center py-lg bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/30 p-lg relative overflow-hidden">
+      <section className="flex flex-col items-center justify-center text-center py-lg bg-surface-container-lowest rounded-2xl shadow-[0_4px_12px_rgba(27,67,50,0.08)] border border-outline-variant/70 p-lg relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary-container rounded-full opacity-10 blur-2xl"></div>
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary-container rounded-full opacity-10 blur-2xl"></div>
         
@@ -275,7 +361,7 @@ export default function PedidoEstadoPage() {
 
       {/* Alert Banner / Countdown Timer */}
       {order.estado === 'Pendiente de confirmación' && timeLeft && (
-        <div className="bg-secondary-container/20 border-l-4 border-secondary-container p-md rounded-r-lg flex items-start gap-md">
+        <div className="bg-secondary-container/20 border-l-4 border-secondary-container p-md rounded-r-lg flex items-start gap-md border border-y-outline-variant/70 border-r-outline-variant/70">
           <span className="material-symbols-outlined text-secondary mt-1">info</span>
           <div>
             <p className="font-label-sm text-label-sm text-on-secondary-container font-semibold">
@@ -289,7 +375,7 @@ export default function PedidoEstadoPage() {
       )}
 
       {order.estado === 'Cancelado' && (
-        <div className="bg-error-container/20 border-l-4 border-error p-md rounded-r-lg flex items-start gap-md">
+        <div className="bg-error-container/20 border-l-4 border-error p-md rounded-r-lg flex items-start gap-md border border-y-outline-variant/70 border-r-outline-variant/70">
           <span className="material-symbols-outlined text-error mt-1">cancel</span>
           <div>
             <p className="font-label-sm text-label-sm text-on-error-container font-semibold">
@@ -302,52 +388,82 @@ export default function PedidoEstadoPage() {
         </div>
       )}
 
+      {/* Estimated Time Progress Bar */}
+      {order.tiempo_estimado && order.estado !== 'Cancelado' && order.estado !== 'Expirado' && (
+        <article className="bg-surface-container-lowest rounded-2xl p-md shadow-sm border border-outline-variant/70 flex flex-col gap-sm">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-label-sm text-xs text-on-background font-bold">Tiempo Estimado de Entrega</h3>
+              <p className="font-caption text-[11px] text-on-surface-variant mt-0.5">
+                {order.estado === 'Entregado' 
+                  ? '¡Tu pedido ha sido entregado!' 
+                  : `Restan aproximadamente ${remainingMinutes} minutos`}
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-primary text-sm">schedule</span>
+          </div>
+
+          <div className="w-full bg-surface-container-high rounded-full h-2.5 p-[1px] border border-outline-variant/40 overflow-hidden mt-1">
+            <div
+              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          <div className="flex justify-between text-[9px] font-extrabold text-on-surface-variant/80 px-1 mt-0.5">
+            <span>Pedido Recibido</span>
+            <span>En Preparación</span>
+            <span>Entregado</span>
+          </div>
+        </article>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
         {/* Left Column: Details & Items */}
         <div className="flex flex-col gap-lg">
           {/* Summary */}
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
-            <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/30 pb-sm font-bold">
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
+            <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold">
               Detalles de Entrega
             </h2>
             <div className="flex flex-col gap-sm">
               <div className="flex justify-between items-center py-1">
-                <span className="text-on-surface-variant font-medium">Cliente</span>
-                <span className="font-semibold text-on-background">{order.cliente}</span>
+                <span className="text-on-surface-variant font-medium text-xs">Cliente</span>
+                <span className="font-semibold text-on-background text-xs">{order.cliente}</span>
               </div>
               <div className="flex justify-between items-start py-1">
-                <span className="text-on-surface-variant font-medium">Dirección</span>
-                <span className="font-semibold text-on-background text-right">
+                <span className="text-on-surface-variant font-medium text-xs">Dirección</span>
+                <span className="font-semibold text-on-background text-right text-xs">
                   {order.direccion}<br />Barrio {order.barrio}
                 </span>
               </div>
               <div className="flex justify-between items-center py-1">
-                <span className="text-on-surface-variant font-medium">Franja Horaria</span>
+                <span className="text-on-surface-variant font-medium text-xs">Franja Horaria</span>
                 <span className="font-semibold text-on-background bg-surface-variant px-3 py-0.5 rounded-full text-xs">
                   {order.franja}
                 </span>
               </div>
               <div className="flex justify-between items-center py-1">
-                <span className="text-on-surface-variant font-medium">Método de Pago</span>
-                <span className="font-semibold text-on-background">{order.metodo_pago}</span>
+                <span className="text-on-surface-variant font-medium text-xs">Método de Pago</span>
+                <span className="font-semibold text-on-background text-xs">{order.metodo_pago}</span>
               </div>
               {order.tiempo_estimado && (
-                <div className="flex justify-between items-center py-1 bg-primary-container/10 p-sm rounded-lg">
-                  <span className="text-primary font-bold">Tiempo estimado</span>
-                  <span className="font-bold text-primary">{order.tiempo_estimado} minutos</span>
+                <div className="flex justify-between items-center py-1 bg-primary-container/10 p-sm rounded-lg border border-outline-variant/40">
+                  <span className="text-primary font-bold text-xs">Tiempo estimado</span>
+                  <span className="font-bold text-primary text-xs">{order.tiempo_estimado} minutos</span>
                 </div>
               )}
             </div>
           </article>
 
           {/* Items List */}
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
-            <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/30 pb-sm font-bold">
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
+            <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold">
               Productos Solicitados
             </h2>
             <div className="flex flex-col gap-md">
               {details.map((item) => (
-                <div key={item.id} className="flex justify-between items-start pb-sm border-b border-outline-variant/10 last:border-0 last:pb-0">
+                <div key={item.id} className="flex justify-between items-start pb-sm border-b border-outline-variant/40 last:border-0 last:pb-0">
                   <div>
                     <h4 className="font-label-sm text-on-background font-bold">
                       {item.nombre} <span className="text-primary font-normal">x{item.cantidad}</span>
@@ -373,7 +489,7 @@ export default function PedidoEstadoPage() {
                 </div>
               ))}
             </div>
-            <div className="border-t border-outline-variant/20 pt-md flex justify-between items-center mt-sm">
+            <div className="border-t border-outline-variant/40 pt-md flex justify-between items-center mt-sm">
               <span className="font-title-md text-on-background font-bold">Total</span>
               <span className="font-title-md text-primary font-bold">
                 ${order.total.toLocaleString('es-CO')} COP
@@ -382,7 +498,7 @@ export default function PedidoEstadoPage() {
           </article>
 
           {/* Actions */}
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col items-center text-center gap-md">
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col items-center text-center gap-md">
             <p className="font-body-md text-on-surface-variant">
               ¿Quieres realizar un cambio o resolver dudas sobre tu pedido?
             </p>
@@ -390,7 +506,7 @@ export default function PedidoEstadoPage() {
               href={`https://wa.me/${whatsappContact}?text=${encodeURIComponent(`Hola, tengo una pregunta sobre mi pedido ${order.codigo}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-[#25D366] text-white font-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold"
+              className="w-full bg-[#25D366] text-white font-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold border border-[#25D366]/30"
             >
               <span className="material-symbols-outlined">chat</span>
               Chatear por WhatsApp
@@ -407,8 +523,8 @@ export default function PedidoEstadoPage() {
         </div>
 
         {/* Right Column: Timeline */}
-        <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
-          <h2 className="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/30 pb-sm font-bold">
+        <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
+          <h2 className="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/70 pb-sm font-bold">
             Seguimiento de Entrega
           </h2>
           {order.estado === 'Cancelado' ? (
@@ -427,7 +543,7 @@ export default function PedidoEstadoPage() {
                     {index < STEPS.length - 1 && (
                       <div
                         className={`absolute left-[22px] top-[24px] bottom-0 w-[2px] z-0 ${
-                          index < activeIndex ? 'bg-primary' : 'bg-outline-variant/30'
+                          index < activeIndex ? 'bg-primary' : 'bg-outline-variant/70'
                         }`}
                       />
                     )}

@@ -483,62 +483,62 @@ export default function AdminPedidosPage() {
   return (
     <div className="flex-1 flex flex-col h-full bg-background overflow-hidden relative">
       {/* Header */}
-      <header className="h-20 px-lg flex items-center justify-between border-b border-outline-variant/30 bg-surface/80 backdrop-blur-md z-10 flex-shrink-0">
+      <header className="min-h-[4rem] py-2 lg:py-0 lg:h-16 px-md flex flex-col lg:flex-row lg:items-center justify-between gap-sm border-b border-outline-variant/30 bg-surface/80 backdrop-blur-md z-10 flex-shrink-0">
         <div>
-          <h2 className="font-title-md text-title-md text-on-surface font-bold">Resumen de Pedidos</h2>
-          <p className="font-caption text-caption text-on-surface-variant">Operación en tiempo real</p>
+          <h2 className="text-sm lg:text-base text-on-surface font-extrabold tracking-tight">Resumen de Pedidos</h2>
+          <p className="text-[10px] text-on-surface-variant font-medium">Operación en tiempo real</p>
         </div>
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto justify-end">
           {/* Emergency Stop Button */}
           <button
             onClick={handleToggleLocalStatus}
             disabled={loadingLocalStatus}
-            className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all border cursor-pointer ${
+            className={`px-3 py-1.5 rounded-full font-extrabold text-[10px] flex items-center gap-1 shadow-sm transition-all border cursor-pointer ${
               localAbierto
                 ? 'bg-success-container/20 border-success/30 text-[#2e7d32] hover:bg-success-container/40'
                 : 'bg-error-container/20 border-error/30 text-error hover:bg-error-container/40 animate-pulse'
             }`}
             title={localAbierto ? 'Haga clic para cerrar el recibo de pedidos' : 'Haga clic para abrir el recibo de pedidos'}
           >
-            <span className={`w-2.5 h-2.5 rounded-full ${localAbierto ? 'bg-[#2e7d32]' : 'bg-error'}`}></span>
+            <span className={`w-2 h-2 rounded-full ${localAbierto ? 'bg-[#2e7d32]' : 'bg-error'}`}></span>
             {localAbierto ? 'Local Abierto' : 'Local Cerrado'}
           </button>
 
           {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 bg-surface-container-lowest border border-outline text-on-surface hover:bg-surface-container-low transition-all cursor-pointer shadow-sm"
+            className="px-3 py-1.5 rounded-full font-extrabold text-[10px] flex items-center gap-1 bg-surface-container-lowest border border-outline text-on-surface hover:bg-surface-container-low transition-all cursor-pointer shadow-sm"
             title="Exportar ventas a archivo CSV"
           >
-            <span className="material-symbols-outlined text-[16px]">download</span>
+            <span className="material-symbols-outlined text-[14px]">download</span>
             Exportar Reporte
           </button>
 
           {/* Toggle Stats Button */}
           <button
             onClick={() => setShowStats(!showStats)}
-            className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 border transition-all cursor-pointer shadow-sm ${
+            className={`px-3 py-1.5 rounded-full font-extrabold text-[10px] flex items-center gap-1 border transition-all cursor-pointer shadow-sm ${
               showStats
                 ? 'bg-primary text-on-primary border-primary'
                 : 'bg-surface-container-lowest border border-outline text-on-surface hover:bg-surface-container-low'
             }`}
             title="Ver estadísticas de los últimos 7 días y platos estrella"
           >
-            <span className="material-symbols-outlined text-[16px]">bar_chart</span>
+            <span className="material-symbols-outlined text-[14px]">bar_chart</span>
             {showStats ? 'Ocultar Estadísticas' : 'Ver Estadísticas'}
           </button>
 
           {/* Search bar */}
-          <div className="relative w-64">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">
+          <div className="relative w-full lg:w-48">
+            <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-xs">
               search
             </span>
             <input
               type="text"
-              placeholder="Buscar por código o cliente..."
+              placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline rounded-full font-body-md text-sm focus:border-primary focus:outline-none placeholder:text-outline-variant"
+              className="w-full pl-8 pr-3 py-1 bg-surface-container-lowest border border-outline rounded-full text-xs focus:border-primary focus:outline-none placeholder:text-outline-variant"
             />
           </div>
         </div>
@@ -546,38 +546,38 @@ export default function AdminPedidosPage() {
 
       {/* Collapsible Stats Dashboard */}
       {showStats && (
-        <div className="bg-surface-container-low/60 px-lg py-6 border-b border-outline-variant/30 grid grid-cols-1 md:grid-cols-2 gap-lg flex-shrink-0 transition-all duration-300">
+        <div className="bg-surface-container-low/60 px-md py-4 border-b border-outline-variant/30 grid grid-cols-1 md:grid-cols-2 gap-md flex-shrink-0 transition-all duration-300">
           {/* Sales chart card */}
-          <div className="bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-primary text-lg">trending_up</span>
+          <div className="bg-surface p-4 rounded-xl border border-outline-variant/30 shadow-sm flex flex-col">
+            <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
+              <span className="material-symbols-outlined text-primary text-sm">trending_up</span>
               Ventas de los Últimos 7 Días (Entregados)
             </h3>
             
-            <div className="flex-1 min-h-[160px] flex items-end gap-3 pt-4 px-2 border-b border-outline-variant/30 pb-2">
+            <div className="flex-1 min-h-[100px] flex items-end gap-2 pt-2 px-1 border-b border-outline-variant/30 pb-1">
               {getLast7DaysSales().map((day) => {
                 const maxVal = Math.max(...getLast7DaysSales().map(d => d.total), 1);
                 const percent = (day.total / maxVal) * 100;
                 
                 return (
-                  <div key={day.dateStr} className="flex-1 flex flex-col items-center gap-2 group relative">
+                  <div key={day.dateStr} className="flex-1 flex flex-col items-center gap-1 group relative">
                     {/* Tooltip */}
-                    <div className="absolute bottom-full mb-2 bg-on-surface text-surface text-[10px] font-bold px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none z-10">
+                    <div className="absolute bottom-full mb-1.5 bg-on-surface text-surface text-[9px] font-bold px-2 py-0.5 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                       ${day.total.toLocaleString('es-CO')}
                     </div>
                     
                     {/* Bar */}
-                    <div className="w-full bg-surface-container-high rounded-t-md overflow-hidden flex items-end min-h-[10px] h-[120px]">
+                    <div className="w-full bg-surface-container-high rounded-t-sm overflow-hidden flex items-end min-h-[5px] h-[75px]">
                       <div 
                         style={{ height: `${percent}%` }}
-                        className={`w-full rounded-t-md transition-all duration-500 ${
+                        className={`w-full rounded-t-sm transition-all duration-500 ${
                           day.total > 0 ? 'bg-primary hover:bg-primary/80' : 'bg-outline-variant/30'
                         }`}
                       />
                     </div>
                     
                     {/* Label */}
-                    <span className="text-[10px] text-on-surface-variant font-bold capitalize select-none text-center">
+                    <span className="text-[9px] text-on-surface-variant font-bold capitalize select-none text-center">
                       {day.label}
                     </span>
                   </div>
@@ -587,34 +587,34 @@ export default function AdminPedidosPage() {
           </div>
 
           {/* Top Products card */}
-          <div className="bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col justify-between">
+          <div className="bg-surface p-4 rounded-xl border border-outline-variant/30 shadow-sm flex flex-col justify-between">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-primary text-lg">workspace_premium</span>
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2 flex items-center gap-1">
+                <span className="material-symbols-outlined text-primary text-sm">workspace_premium</span>
                 Platos Estrella (Top Pedidos)
               </h3>
               
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 {topDishes.length === 0 ? (
-                  <p className="text-xs text-on-surface-variant italic py-4">No hay datos de pedidos registrados aún.</p>
+                  <p className="text-[10px] text-on-surface-variant italic py-2">No hay datos de pedidos registrados aún.</p>
                 ) : (
                   topDishes.map((dish, index) => {
                     const colors = ['text-yellow-500', 'text-slate-400', 'text-amber-600'];
                     const rankBgs = ['bg-yellow-500/10', 'bg-slate-400/10', 'bg-amber-600/10'];
                     
                     return (
-                      <div key={dish.nombre} className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-outline-variant/10 font-sans">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${rankBgs[index]} ${colors[index]}`}>
+                      <div key={dish.nombre} className="flex items-center justify-between p-2 rounded-lg bg-surface-container-low border border-outline-variant/10 font-sans">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${rankBgs[index]} ${colors[index]}`}>
                             #{index + 1}
                           </div>
                           <div>
-                            <span className="text-xs font-bold text-on-background block">{dish.nombre}</span>
-                            <span className="text-[10px] text-on-surface-variant">Total ordenado</span>
+                            <span className="text-[10px] font-bold text-on-background block leading-none">{dish.nombre}</span>
+                            <span className="text-[8px] text-on-surface-variant">Total ordenado</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
-                          {dish.cantidad} unidades
+                        <div className="flex items-center gap-0.5 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[9px] font-bold">
+                          {dish.cantidad} uds
                         </div>
                       </div>
                     );
@@ -623,73 +623,73 @@ export default function AdminPedidosPage() {
               </div>
             </div>
             
-            <p className="text-[10px] text-on-surface-variant/70 italic mt-4 pt-2 border-t border-outline-variant/10">
-              Calculado automáticamente sobre todos los registros históricos de pedidos.
+            <p className="text-[8px] text-on-surface-variant/70 italic mt-2 pt-1 border-t border-outline-variant/10">
+              Calculado automáticamente sobre todos los registros históricos.
             </p>
           </div>
         </div>
       )}
 
       {/* KPIs Summary Bar */}
-      <section className="bg-surface-container-low/40 px-lg py-3 border-b border-outline-variant/30 flex gap-4 overflow-x-auto flex-shrink-0">
+      <section className="bg-surface-container-low/40 px-md py-2 border-b border-outline-variant/30 flex gap-2 overflow-x-auto flex-shrink-0">
         {/* Card: Recaudado Hoy */}
-        <div className="flex-1 min-w-[200px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-success-container/30 text-success flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-2xl font-bold">payments</span>
+        <div className="flex-1 min-w-[140px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-success-container/30 text-success flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-lg font-bold">payments</span>
           </div>
           <div>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">Recaudado Hoy</span>
-            <span className="text-xl font-extrabold text-on-background font-mono">${kpis.ventasHoy.toLocaleString('es-CO')}</span>
+            <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">Recaudado</span>
+            <span className="text-sm font-extrabold text-on-background font-mono">${kpis.ventasHoy.toLocaleString('es-CO')}</span>
           </div>
         </div>
 
         {/* Card: Pedidos Pendientes */}
-        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-error-container/30 text-error flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-2xl font-bold">pending_actions</span>
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-error-container/30 text-error flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-lg font-bold">pending_actions</span>
           </div>
           <div>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">Pendientes</span>
-            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.pendientes}</span>
+            <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">Pendientes</span>
+            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.pendientes}</span>
           </div>
         </div>
 
         {/* Card: En Cocina */}
-        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary-container/30 text-primary flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-2xl font-bold">skillet</span>
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary-container/30 text-primary flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-lg font-bold">skillet</span>
           </div>
           <div>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">En Cocina</span>
-            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.preparacion}</span>
+            <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">En Cocina</span>
+            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.preparacion}</span>
           </div>
         </div>
 
         {/* Card: En Camino */}
-        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-secondary-container/30 text-secondary flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-2xl font-bold">two_wheeler</span>
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-secondary-container/30 text-secondary flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-lg font-bold">two_wheeler</span>
           </div>
           <div>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">En Camino</span>
-            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.camino}</span>
+            <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">En Camino</span>
+            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.camino}</span>
           </div>
         </div>
 
         {/* Card: Total Pedidos */}
-        <div className="flex-1 min-w-[180px] bg-surface p-4 rounded-2xl border border-outline-variant/30 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-surface-container-high/60 text-on-surface flex items-center justify-center flex-shrink-0">
-            <span className="material-symbols-outlined text-2xl font-bold">receipt_long</span>
+        <div className="flex-1 min-w-[120px] bg-surface p-2.5 rounded-xl border border-outline-variant/30 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-surface-container-high/60 text-on-surface flex items-center justify-center flex-shrink-0">
+            <span className="material-symbols-outlined text-lg font-bold">receipt_long</span>
           </div>
           <div>
-            <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider block">Total Pedidos</span>
-            <span className="text-xl font-extrabold text-on-background font-mono">{kpis.total}</span>
+            <span className="text-[9px] text-on-surface-variant font-bold uppercase tracking-wider block">Total</span>
+            <span className="text-sm font-extrabold text-on-background font-mono">{kpis.total}</span>
           </div>
         </div>
       </section>
 
       {/* Mobile Column Tabs Switcher */}
-      <div className="lg:hidden flex bg-surface-container px-lg border-b border-outline-variant/30 flex-shrink-0 overflow-x-auto gap-2">
+      <div className="lg:hidden flex bg-surface-container px-md border-b border-outline-variant/30 flex-shrink-0 overflow-x-auto gap-1">
         {[
           { label: 'Pendientes', state: 'Pendiente de confirmación', count: getOrdersByState('Pendiente de confirmación').length, color: 'bg-error' },
           { label: 'Confirmados', state: 'Confirmado', count: getOrdersByState('Confirmado').length, color: 'bg-secondary' },
@@ -700,11 +700,11 @@ export default function AdminPedidosPage() {
           <button
             key={tab.state}
             onClick={() => setActiveMobileCol(tab.state)}
-            className={`py-3 px-3 text-xs font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            className={`py-2 px-2 text-[11px] font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap ${
               activeMobileCol === tab.state ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant'
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${tab.color}`}></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${tab.color}`}></span>
             {tab.label} ({tab.count})
           </button>
         ))}
@@ -713,19 +713,19 @@ export default function AdminPedidosPage() {
       {/* Workspace Area split into columns + Details Side Panel */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Kanban Board */}
-        <div className="flex-1 overflow-x-auto p-lg bg-surface-container-low/20">
-          <div className="min-w-0 lg:min-w-[1400px] h-full flex flex-col lg:flex-row gap-lg justify-start">
+        <div className="flex-1 overflow-x-auto p-md bg-surface-container-low/20">
+          <div className="w-full h-full flex flex-col lg:grid lg:grid-cols-5 gap-3 justify-start lg:min-w-0">
             {/* Column: Pendientes */}
-            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'Pendiente de confirmación' ? 'flex' : 'hidden lg:flex'}`}>
-              <div className="flex items-center justify-between pb-2 border-b border-error/30">
-                <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
-                  <span className="w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span>
+            <div className={`flex-1 min-w-[160px] flex flex-col gap-xs ${activeMobileCol === 'Pendiente de confirmación' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-1.5 border-b border-error/30">
+                <h3 className="text-xs text-on-surface flex items-center gap-1.5 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-error animate-pulse"></span>
                   Pendientes ({getOrdersByState('Pendiente de confirmación').length})
                 </h3>
               </div>
-              <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
+              <div className="flex-grow flex flex-col gap-sm overflow-y-auto pr-0.5 pt-1">
                 {getOrdersByState('Pendiente de confirmación').length === 0 ? (
-                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                  <div className="text-center py-md text-on-surface-variant/40 text-[11px] italic">
                     Sin pedidos pendientes
                   </div>
                 ) : (
@@ -733,37 +733,37 @@ export default function AdminPedidosPage() {
                     <div
                       key={o.codigo}
                       onClick={() => setSelectedOrder(o)}
-                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                      className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
-                          ? 'border-primary ring-2 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-md'
+                          ? 'border-primary ring-1.5 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-xs'
                       }`}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
-                        <span className="text-[10px] text-error font-semibold bg-error-container/20 px-2 py-0.5 rounded-full">
+                      <div className="flex justify-between items-start mb-1.5">
+                        <span className="font-bold text-primary font-mono text-[11px]">{o.codigo}</span>
+                        <span className="text-[8px] text-error font-bold bg-error-container/20 px-1.5 py-0.25 rounded-full">
                           NUEVO
                         </span>
                       </div>
-                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">location_on</span>
+                      <h4 className="font-bold text-on-background text-[11px] mb-0.5 truncate">{o.cliente}</h4>
+                      <p className="text-[10px] text-on-surface-variant mb-1.5 truncate flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
-                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                        <span className="text-primary font-bold text-[10px]">${o.total.toLocaleString('es-CO')}</span>
                       </div>
-                      <div className="flex gap-2 mt-3 pt-2">
+                      <div className="flex gap-1 mt-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setConfirmOrderTarget(o);
                             setShowConfirmModal(true);
                           }}
-                          className="flex-1 bg-primary text-on-primary text-xs font-bold py-1.5 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                          className="flex-1 bg-primary text-on-primary text-[10px] font-bold py-1 rounded-full hover:bg-primary-container cursor-pointer transition-all"
                         >
                           Confirmar
                         </button>
@@ -772,7 +772,7 @@ export default function AdminPedidosPage() {
                             e.stopPropagation();
                             handleRejectOrder(o.codigo);
                           }}
-                          className="border border-error text-error text-xs font-bold px-3 py-1.5 rounded-full hover:bg-error-container/10 cursor-pointer transition-all"
+                          className="border border-error text-error text-[10px] font-bold px-2 py-1 rounded-full hover:bg-error-container/10 cursor-pointer transition-all"
                         >
                           Rechazar
                         </button>
@@ -784,16 +784,16 @@ export default function AdminPedidosPage() {
             </div>
 
             {/* Column: Confirmados */}
-            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'Confirmado' ? 'flex' : 'hidden lg:flex'}`}>
-              <div className="flex items-center justify-between pb-2 border-b border-secondary/30">
-                <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
-                  <span className="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+            <div className={`flex-1 min-w-[160px] flex flex-col gap-xs ${activeMobileCol === 'Confirmado' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-1.5 border-b border-secondary/30">
+                <h3 className="text-xs text-on-surface flex items-center gap-1.5 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-secondary"></span>
                   Confirmados ({getOrdersByState('Confirmado').length})
                 </h3>
               </div>
-              <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
+              <div className="flex-grow flex flex-col gap-sm overflow-y-auto pr-0.5 pt-1">
                 {getOrdersByState('Confirmado').length === 0 ? (
-                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                  <div className="text-center py-md text-on-surface-variant/40 text-[11px] italic">
                     Sin pedidos confirmados
                   </div>
                 ) : (
@@ -801,38 +801,38 @@ export default function AdminPedidosPage() {
                     <div
                       key={o.codigo}
                       onClick={() => setSelectedOrder(o)}
-                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                      className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
-                          ? 'border-primary ring-2 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-md'
+                          ? 'border-primary ring-1.5 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-xs'
                       }`}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                      <div className="flex justify-between items-start mb-1.5">
+                        <span className="font-bold text-primary font-mono text-[11px]">{o.codigo}</span>
                         {o.tiempo_estimado && (
-                          <span className="text-[10px] text-primary font-bold bg-primary-container/10 px-2 py-0.5 rounded-full">
+                          <span className="text-[8px] text-primary font-bold bg-primary-container/10 px-1.5 py-0.25 rounded-full">
                             {o.tiempo_estimado} min
                           </span>
                         )}
                       </div>
-                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">location_on</span>
+                      <h4 className="font-bold text-on-background text-[11px] mb-0.5 truncate">{o.cliente}</h4>
+                      <p className="text-[10px] text-on-surface-variant mb-1.5 truncate flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
-                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                        <span className="text-primary font-bold text-[10px]">${o.total.toLocaleString('es-CO')}</span>
                       </div>
-                      <div className="flex gap-2 mt-3 pt-2">
+                      <div className="flex gap-1 mt-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleUpdateStatus(o.codigo, 'En preparación');
                           }}
-                          className="w-full bg-secondary text-on-secondary text-xs font-bold py-1.5 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                          className="w-full bg-secondary text-on-secondary text-[10px] font-bold py-1 rounded-full hover:opacity-90 cursor-pointer transition-all"
                         >
                           Enviar a Cocina
                         </button>
@@ -844,16 +844,16 @@ export default function AdminPedidosPage() {
             </div>
 
             {/* Column: En Cocina */}
-            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'En preparación' ? 'flex' : 'hidden lg:flex'}`}>
-              <div className="flex items-center justify-between pb-2 border-b border-primary-container/30">
-                <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
-                  <span className="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+            <div className={`flex-1 min-w-[160px] flex flex-col gap-xs ${activeMobileCol === 'En preparación' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-1.5 border-b border-primary-container/30">
+                <h3 className="text-xs text-on-surface flex items-center gap-1.5 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-primary-container"></span>
                   En Cocina ({getOrdersByState('En preparación').length})
                 </h3>
               </div>
-              <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
+              <div className="flex-grow flex flex-col gap-sm overflow-y-auto pr-0.5 pt-1">
                 {getOrdersByState('En preparación').length === 0 ? (
-                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                  <div className="text-center py-md text-on-surface-variant/40 text-[11px] italic">
                     Sin pedidos en cocina
                   </div>
                 ) : (
@@ -861,33 +861,33 @@ export default function AdminPedidosPage() {
                     <div
                       key={o.codigo}
                       onClick={() => setSelectedOrder(o)}
-                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                      className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
-                          ? 'border-primary ring-2 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-md'
+                          ? 'border-primary ring-1.5 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-xs'
                       }`}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                      <div className="flex justify-between items-start mb-1.5">
+                        <span className="font-bold text-primary font-mono text-[11px]">{o.codigo}</span>
                       </div>
-                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">location_on</span>
+                      <h4 className="font-bold text-on-background text-[11px] mb-0.5 truncate">{o.cliente}</h4>
+                      <p className="text-[10px] text-on-surface-variant mb-1.5 truncate flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
-                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                        <span className="text-primary font-bold text-[10px]">${o.total.toLocaleString('es-CO')}</span>
                       </div>
-                      <div className="flex gap-2 mt-3 pt-2">
+                      <div className="flex gap-1 mt-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleUpdateStatus(o.codigo, 'En camino');
                           }}
-                          className="w-full bg-primary-container text-on-primary text-xs font-bold py-1.5 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                          className="w-full bg-primary-container text-on-primary-container text-[10px] font-bold py-1 rounded-full hover:opacity-90 cursor-pointer transition-all"
                         >
                           Listo / Despachar
                         </button>
@@ -899,16 +899,16 @@ export default function AdminPedidosPage() {
             </div>
 
             {/* Column: En Reparto */}
-            <div className={`flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'En camino' ? 'flex' : 'hidden lg:flex'}`}>
-              <div className="flex items-center justify-between pb-2 border-b border-primary/30">
-                <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
+            <div className={`flex-1 min-w-[160px] flex flex-col gap-xs ${activeMobileCol === 'En camino' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-1.5 border-b border-primary/30">
+                <h3 className="text-xs text-on-surface flex items-center gap-1.5 font-bold">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
                   En Reparto ({getOrdersByState('En camino').length})
                 </h3>
               </div>
-              <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
+              <div className="flex-grow flex flex-col gap-sm overflow-y-auto pr-0.5 pt-1">
                 {getOrdersByState('En camino').length === 0 ? (
-                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                  <div className="text-center py-md text-on-surface-variant/40 text-[11px] italic">
                     Sin pedidos en reparto
                   </div>
                 ) : (
@@ -916,33 +916,33 @@ export default function AdminPedidosPage() {
                     <div
                       key={o.codigo}
                       onClick={() => setSelectedOrder(o)}
-                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                      className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
-                          ? 'border-primary ring-2 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-md'
+                          ? 'border-primary ring-1.5 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-xs'
                       }`}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
+                      <div className="flex justify-between items-start mb-1.5">
+                        <span className="font-bold text-primary font-mono text-[11px]">{o.codigo}</span>
                       </div>
-                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">location_on</span>
+                      <h4 className="font-bold text-on-background text-[11px] mb-0.5 truncate">{o.cliente}</h4>
+                      <p className="text-[10px] text-on-surface-variant mb-1.5 truncate flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
-                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                        <span className="text-primary font-bold text-[10px]">${o.total.toLocaleString('es-CO')}</span>
                       </div>
-                      <div className="flex gap-2 mt-3 pt-2">
+                      <div className="flex gap-1 mt-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleUpdateStatus(o.codigo, 'Entregado');
                           }}
-                          className="w-full bg-primary text-on-primary text-xs font-bold py-1.5 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                          className="w-full bg-primary text-on-primary text-[10px] font-bold py-1 rounded-full hover:bg-primary-container cursor-pointer transition-all"
                         >
                           Marcar Entregado
                         </button>
@@ -954,16 +954,16 @@ export default function AdminPedidosPage() {
             </div>
 
             {/* Column: Entregados */}
-            <div className={`flex-grow flex-shrink flex-1 flex flex-col gap-sm lg:max-w-xs ${activeMobileCol === 'Entregado' ? 'flex' : 'hidden lg:flex'}`}>
-              <div className="flex items-center justify-between pb-2 border-b border-[#2e7d32]/30">
-                <h3 className="font-label-sm text-sm text-on-surface flex items-center gap-2 font-bold">
+            <div className={`flex-1 min-w-[160px] flex flex-col gap-xs ${activeMobileCol === 'Entregado' ? 'flex' : 'hidden lg:flex'}`}>
+              <div className="flex items-center justify-between pb-1.5 border-b border-[#2e7d32]/30">
+                <h3 className="text-xs text-on-surface flex items-center gap-1.5 font-bold">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#2e7d32]"></span>
                   Entregados ({getOrdersByState('Entregado').length})
                 </h3>
               </div>
-              <div className="flex-grow flex flex-col gap-md overflow-y-auto pr-1">
+              <div className="flex-grow flex flex-col gap-sm overflow-y-auto pr-0.5 pt-1">
                 {getOrdersByState('Entregado').length === 0 ? (
-                  <div className="text-center py-lg text-on-surface-variant/40 text-xs italic">
+                  <div className="text-center py-md text-on-surface-variant/40 text-[11px] italic">
                     Sin pedidos entregados
                   </div>
                 ) : (
@@ -971,28 +971,28 @@ export default function AdminPedidosPage() {
                     <div
                       key={o.codigo}
                       onClick={() => setSelectedOrder(o)}
-                      className={`bg-surface-container-lowest p-4 rounded-xl border transition-all cursor-pointer shadow-sm ${
+                      className={`bg-surface-container-lowest p-2.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                         selectedOrder?.codigo === o.codigo
-                          ? 'border-primary ring-2 ring-primary-container/20'
-                          : 'border-outline-variant/30 hover:shadow-md'
+                          ? 'border-primary ring-1.5 ring-primary-container/20'
+                          : 'border-outline-variant/30 hover:shadow-xs'
                       }`}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-bold text-primary font-mono">{o.codigo}</span>
-                        <span className="text-[10px] text-[#2e7d32] font-semibold bg-[#2e7d32]/10 px-2 py-0.5 rounded-full">
+                      <div className="flex justify-between items-start mb-1.5">
+                        <span className="font-bold text-primary font-mono text-[11px]">{o.codigo}</span>
+                        <span className="text-[8px] text-[#2e7d32] font-bold bg-[#2e7d32]/10 px-1.5 py-0.25 rounded-full">
                           ENTREGADO
                         </span>
                       </div>
-                      <h4 className="font-semibold text-on-background text-sm mb-1">{o.cliente}</h4>
-                      <p className="text-xs text-on-surface-variant mb-2 truncate flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">location_on</span>
+                      <h4 className="font-bold text-on-background text-[11px] mb-0.5 truncate">{o.cliente}</h4>
+                      <p className="text-[10px] text-on-surface-variant mb-1.5 truncate flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[10px]">location_on</span>
                         {o.direccion} ({o.barrio})
                       </p>
-                      <div className="flex justify-between items-center text-xs font-semibold pt-2 border-t border-outline-variant/10">
-                        <span className="bg-surface-variant px-2.5 py-0.5 rounded-full text-[10px]">
+                      <div className="flex justify-between items-center text-[10px] font-semibold pt-1.5 border-t border-outline-variant/10">
+                        <span className="bg-surface-variant px-2 py-0.25 rounded-full text-[9px]">
                           {o.franja}
                         </span>
-                        <span className="text-primary font-bold">${o.total.toLocaleString('es-CO')}</span>
+                        <span className="text-primary font-bold text-[10px]">${o.total.toLocaleString('es-CO')}</span>
                       </div>
                     </div>
                   ))
@@ -1013,27 +1013,27 @@ export default function AdminPedidosPage() {
 
         {/* Side Details Panel */}
         {selectedOrder && (
-          <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[420px] lg:relative lg:inset-auto lg:z-10 lg:w-[420px] border-l border-outline-variant/30 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none transition-all duration-300">
-            <div className="p-lg border-b border-outline-variant/30 flex justify-between items-center">
+          <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[350px] lg:relative lg:inset-auto lg:z-10 lg:w-[350px] border-l border-outline-variant/30 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none transition-all duration-300">
+            <div className="p-md border-b border-outline-variant/30 flex justify-between items-center">
               <div>
-                <h3 className="font-title-md text-primary font-bold font-mono">{selectedOrder.codigo}</h3>
-                <p className="text-xs text-on-surface-variant">Creado: {new Date(selectedOrder.creado_a).toLocaleTimeString('es-CO')}</p>
+                <h3 className="text-xs text-primary font-bold font-mono">{selectedOrder.codigo}</h3>
+                <p className="text-[10px] text-on-surface-variant">Creado: {new Date(selectedOrder.creado_a).toLocaleTimeString('es-CO')}</p>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
                 className="p-1 rounded-full hover:bg-surface-container-high"
               >
-                <span className="material-symbols-outlined text-on-surface">close</span>
+                <span className="material-symbols-outlined text-on-surface text-sm">close</span>
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-lg flex flex-col gap-md">
+            <div className="flex-1 overflow-y-auto p-md flex flex-col gap-sm">
               {/* Cliente */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
                   Datos del Cliente
                 </h4>
-                <div className="bg-surface-container-low p-md rounded-xl text-xs flex flex-col gap-2">
+                <div className="bg-surface-container-low p-sm rounded-lg text-[11px] flex flex-col gap-1.5">
                   <p><strong>Nombre:</strong> {selectedOrder.cliente}</p>
                   <p><strong>Celular:</strong> {selectedOrder.celular}</p>
                   <p><strong>Dirección:</strong> {selectedOrder.direccion} ({selectedOrder.barrio})</p>
@@ -1043,54 +1043,54 @@ export default function AdminPedidosPage() {
 
               {/* Entrega y Pago */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
                   Entrega y Pago
                 </h4>
-                <div className="bg-surface-container-low p-md rounded-xl text-xs flex flex-col gap-2">
-                  <p><strong>Franja Horaria:</strong> {selectedOrder.franja}</p>
-                  <p><strong>Método de Pago:</strong> {selectedOrder.metodo_pago}</p>
-                  <p><strong>Estado Actual:</strong> <span className="font-bold text-primary">{selectedOrder.estado}</span></p>
+                <div className="bg-surface-container-low p-sm rounded-lg text-[11px] flex flex-col gap-1.5">
+                  <p><strong>Franja:</strong> {selectedOrder.franja}</p>
+                  <p><strong>Pago:</strong> {selectedOrder.metodo_pago}</p>
+                  <p><strong>Estado:</strong> <span className="font-bold text-primary">{selectedOrder.estado}</span></p>
                 </div>
               </div>
 
               {/* Comprobante de Pago */}
               {selectedOrder.metodo_pago === 'Transferencia' && (
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
-                    Comprobante de Transferencia
+                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                    Comprobante
                   </h4>
                   {selectedComprobante ? (
-                    <div className="border border-outline-variant/30 rounded-xl overflow-hidden mt-1">
+                    <div className="border border-outline-variant/30 rounded-lg overflow-hidden mt-1">
                       <a href={selectedComprobante.url_archivo} target="_blank" rel="noopener noreferrer">
                         <img
                           src={selectedComprobante.url_archivo}
                           alt="Comprobante Nequi/Bancolombia"
-                          className="w-full h-40 object-contain bg-black/5 hover:opacity-90 cursor-pointer"
+                          className="w-full h-32 object-contain bg-black/5 hover:opacity-90 cursor-pointer"
                         />
                       </a>
-                      <p className="text-[10px] text-center text-on-surface-variant py-1 bg-surface-container-low">
-                        Click para ver en tamaño completo
+                      <p className="text-[9px] text-center text-on-surface-variant py-0.5 bg-surface-container-low">
+                        Click para ver completo
                       </p>
                     </div>
                   ) : (
-                    <p className="text-xs text-error italic">Aún no se ha cargado el comprobante.</p>
+                    <p className="text-[11px] text-error italic">Aún no se ha cargado el comprobante.</p>
                   )}
                 </div>
               )}
 
               {/* Productos */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1">
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1">
                   Productos
                 </h4>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   {loadingDetails ? (
-                    <div className="text-center py-sm">
-                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-primary mx-auto"></div>
+                    <div className="text-center py-xs">
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-primary mx-auto"></div>
                     </div>
                   ) : (
                     selectedDetails.map((item) => (
-                      <div key={item.id} className="bg-surface-container-low p-sm rounded-lg flex flex-col text-xs">
+                      <div key={item.id} className="bg-surface-container-low p-2 rounded-lg flex flex-col text-[11px]">
                         <div className="flex justify-between font-bold">
                           <span>
                             {item.nombre} <span className="text-primary font-normal">x{item.cantidad}</span>
@@ -1098,7 +1098,7 @@ export default function AdminPedidosPage() {
                           <span>${(item.precio * item.cantidad).toLocaleString('es-CO')}</span>
                         </div>
                         {item.componentes && (
-                          <div className="mt-1 text-[11px] text-on-surface-variant">
+                          <div className="mt-0.5 text-[10px] text-on-surface-variant">
                             {Object.entries(item.componentes)
                               .map(([_, comp]: any) => comp?.nombre)
                               .filter(Boolean)
@@ -1106,7 +1106,7 @@ export default function AdminPedidosPage() {
                           </div>
                         )}
                         {item.observaciones && (
-                          <p className="mt-1 text-[11px] text-error italic">Obs: {item.observaciones}</p>
+                          <p className="mt-0.5 text-[10px] text-error italic">Obs: {item.observaciones}</p>
                         )}
                       </div>
                     ))
@@ -1116,15 +1116,15 @@ export default function AdminPedidosPage() {
             </div>
 
             {/* Side Drawer Actions Footer */}
-            <div className="p-lg border-t border-outline-variant/30 bg-surface flex flex-col gap-sm">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-bold text-sm">Total del Pedido:</span>
-                <span className="font-headline-lg-mobile text-primary font-bold">
+            <div className="p-md border-t border-outline-variant/30 bg-surface flex flex-col gap-1.5">
+              <div className="flex justify-between items-center mb-1">
+                <span className="font-bold text-xs">Total del Pedido:</span>
+                <span className="text-sm text-primary font-bold">
                   ${selectedOrder.total.toLocaleString('es-CO')}
                 </span>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 {/* Contact via WhatsApp */}
                 <a
                   href={`https://wa.me/${selectedOrder.celular.replace(/\+/g, '')}?text=${encodeURIComponent(
@@ -1132,9 +1132,9 @@ export default function AdminPedidosPage() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-grow bg-[#25D366] text-white text-xs font-bold py-3 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-all"
+                  className="flex-grow bg-[#25D366] text-white text-[10px] font-bold py-2 rounded-full flex items-center justify-center gap-1 hover:bg-[#1EBE5C] transition-all"
                 >
-                  <span className="material-symbols-outlined text-[16px]">chat</span>
+                  <span className="material-symbols-outlined text-[14px]">chat</span>
                   WhatsApp
                 </a>
 
@@ -1146,13 +1146,13 @@ export default function AdminPedidosPage() {
                         setConfirmOrderTarget(selectedOrder);
                         setShowConfirmModal(true);
                       }}
-                      className="flex-grow bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                      className="flex-grow bg-primary text-on-primary text-[10px] font-bold py-2 rounded-full hover:bg-primary-container cursor-pointer transition-all"
                     >
                       Confirmar
                     </button>
                     <button
                       onClick={() => handleRejectOrder(selectedOrder.codigo)}
-                      className="bg-error-container text-error text-xs font-bold px-4 py-3 rounded-full hover:bg-error-container/80 cursor-pointer transition-all"
+                      className="bg-error-container text-error text-[10px] font-bold px-3 py-2 rounded-full hover:bg-error-container/80 cursor-pointer transition-all"
                       title="Rechazar Pedido"
                     >
                       Rechazar
@@ -1163,7 +1163,7 @@ export default function AdminPedidosPage() {
                 {selectedOrder.estado === 'Confirmado' && (
                   <button
                     onClick={() => handleUpdateStatus(selectedOrder.codigo, 'En preparación')}
-                    className="flex-grow bg-secondary text-on-secondary text-xs font-bold py-3 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                    className="flex-grow bg-secondary text-on-secondary text-[10px] font-bold py-2 rounded-full hover:opacity-90 cursor-pointer transition-all"
                   >
                     Enviar a Cocina
                   </button>
@@ -1172,7 +1172,7 @@ export default function AdminPedidosPage() {
                 {selectedOrder.estado === 'En preparación' && (
                   <button
                     onClick={() => handleUpdateStatus(selectedOrder.codigo, 'En camino')}
-                    className="flex-grow bg-primary-container text-on-primary-container text-xs font-bold py-3 rounded-full hover:opacity-90 cursor-pointer transition-all"
+                    className="flex-grow bg-primary-container text-on-primary-container text-[10px] font-bold py-2 rounded-full hover:opacity-90 cursor-pointer transition-all"
                   >
                     Despachar
                   </button>
@@ -1181,7 +1181,7 @@ export default function AdminPedidosPage() {
                 {selectedOrder.estado === 'En camino' && (
                   <button
                     onClick={() => handleUpdateStatus(selectedOrder.codigo, 'Entregado')}
-                    className="flex-grow bg-primary text-on-primary text-xs font-bold py-3 rounded-full hover:bg-primary-container cursor-pointer transition-all"
+                    className="flex-grow bg-primary text-on-primary text-[10px] font-bold py-2 rounded-full hover:bg-primary-container cursor-pointer transition-all"
                   >
                     Entregado
                   </button>
@@ -1189,8 +1189,8 @@ export default function AdminPedidosPage() {
               </div>
 
               {selectedOrder.estado === 'Entregado' && (
-                <div className="bg-success-container/20 text-[#2e7d32] p-md rounded-xl text-center text-xs font-bold flex items-center justify-center gap-1.5">
-                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                <div className="bg-success-container/20 text-[#2e7d32] p-2 rounded-lg text-center text-[10px] font-bold flex items-center justify-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">check_circle</span>
                   Pedido Entregado con Éxito
                 </div>
               )}

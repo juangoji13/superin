@@ -34,6 +34,11 @@ interface Comprobante {
   url_archivo: string;
 }
 
+interface TopDish {
+  nombre: string;
+  cantidad: number;
+}
+
 export default function AdminPedidosPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -52,6 +57,46 @@ export default function AdminPedidosPage() {
   // Mobile active column state
   const [activeMobileCol, setActiveMobileCol] = useState<string>('Pendiente de confirmación');
 
+  // Local status (abierto/cerrado)
+  const [localAbierto, setLocalAbierto] = useState(true);
+  const [loadingLocalStatus, setLoadingLocalStatus] = useState(false);
+
+  // Stats collapsible view
+  const [showStats, setShowStats] = useState(false);
+  const [topDishes, setTopDishes] = useState<TopDish[]>([]);
+
+  // Sound play helper (Synthesizes dual tone bell sound)
+  const playNotificationSound = () => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+      gain1.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start();
+      osc1.stop(ctx.currentTime + 0.15);
+
+      setTimeout(() => {
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        gain2.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start();
+        osc2.stop(ctx.currentTime + 0.45);
+      }, 120);
+    } catch (e) {
+      console.error('Audio play blocked or unsupported:', e);
+    }
+  };
+
   // Fetch orders initially
   useEffect(() => {
     async function fetchOrders() {
@@ -65,7 +110,45 @@ export default function AdminPedidosPage() {
       }
     }
 
+    async function fetchLocalStatus() {
+      try {
+        const { data } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'horarios_servicio')
+          .single();
+        if (data && data.valor && typeof data.valor === 'object' && 'abierto' in data.valor) {
+          setLocalAbierto((data.valor as any).abierto);
+        }
+      } catch (err) {
+        console.error('Error fetching local status:', err);
+      }
+    }
+
+    async function fetchTopDishes() {
+      try {
+        const { data } = await supabase
+          .from('detalles_pedido')
+          .select('nombre, cantidad');
+        if (data) {
+          const dishMap: { [name: string]: number } = {};
+          data.forEach((item: any) => {
+            dishMap[item.nombre] = (dishMap[item.nombre] || 0) + item.cantidad;
+          });
+          const sorted = Object.entries(dishMap)
+            .map(([nombre, cantidad]) => ({ nombre, cantidad }))
+            .sort((a, b) => b.cantidad - a.cantidad)
+            .slice(0, 3);
+          setTopDishes(sorted);
+        }
+      } catch (e) {
+        console.error('Error fetching top dishes:', e);
+      }
+    }
+
     fetchOrders();
+    fetchLocalStatus();
+    fetchTopDishes();
 
     // Subscribe to realtime orders updates
     const channel = supabase
@@ -76,6 +159,9 @@ export default function AdminPedidosPage() {
         (payload) => {
           if (payload.eventType === 'INSERT') {
             setOrders((prev) => [payload.new as Order, ...prev]);
+            if (payload.new.estado === 'Pendiente de confirmación') {
+              playNotificationSound();
+            }
           } else if (payload.eventType === 'UPDATE') {
             setOrders((prev) =>
               prev.map((o) => (o.codigo === payload.new.codigo ? (payload.new as Order) : o))
@@ -261,6 +347,105 @@ export default function AdminPedidosPage() {
     }
   };
 
+  const handleToggleLocalStatus = async () => {
+    setLoadingLocalStatus(true);
+    const newStatus = !localAbierto;
+    try {
+      const { data } = await supabase
+        .from('configuracion')
+        .select('valor')
+        .eq('clave', 'horarios_servicio')
+        .single();
+      const currentVal = data?.valor as any || { hora_inicio: '10:00', hora_fin: '15:00' };
+      const newVal = { ...currentVal, abierto: newStatus };
+      
+      const { error } = await supabase
+        .from('configuracion')
+        .upsert({ clave: 'horarios_servicio', valor: newVal });
+        
+      if (error) throw error;
+      setLocalAbierto(newStatus);
+    } catch (err: any) {
+      alert('Error al actualizar estado del local: ' + err.message);
+    } finally {
+      setLoadingLocalStatus(false);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const { data: allOrders, error } = await supabase
+        .from('pedidos')
+        .select('*')
+        .order('creado_a', { ascending: false });
+
+      if (error || !allOrders) throw new Error('Error al obtener pedidos');
+
+      let csvContent = '\uFEFF'; // UTF-8 BOM
+      csvContent += 'Código,Cliente,Celular,Dirección,Barrio,Fecha,Franja,Estado,Subtotal,Domicilio,Total,Método de Pago,Fecha Creación\n';
+
+      allOrders.forEach((o) => {
+        const row = [
+          o.codigo,
+          `"${o.cliente.replace(/"/g, '""')}"`,
+          o.celular,
+          `"${o.direccion.replace(/"/g, '""')}"`,
+          `"${o.barrio.replace(/"/g, '""')}"`,
+          o.fecha,
+          o.franja,
+          o.estado,
+          o.subtotal,
+          o.domicilio,
+          o.total,
+          o.metodo_pago,
+          new Date(o.creado_a).toLocaleString('es-CO')
+        ].join(',');
+        csvContent += row + '\n';
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `reporte_ventas_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err: any) {
+      alert('Error al exportar reporte: ' + err.message);
+    }
+  };
+
+  const getLast7DaysSales = () => {
+    const salesMap: { [dateStr: string]: number } = {};
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      salesMap[dateStr] = 0;
+      days.push({
+        dateStr,
+        label: d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' }),
+      });
+    }
+
+    orders.forEach((o) => {
+      if (o.estado === 'Entregado') {
+        const orderDateStr = o.creado_a.split('T')[0];
+        if (orderDateStr in salesMap) {
+          salesMap[orderDateStr] += o.total;
+        }
+      }
+    });
+
+    return days.map(day => ({
+      ...day,
+      total: salesMap[day.dateStr] || 0
+    }));
+  };
+
   // Filter orders by search
   const filteredOrders = orders.filter(
     (o) =>
@@ -303,7 +488,47 @@ export default function AdminPedidosPage() {
           <h2 className="font-title-md text-title-md text-on-surface font-bold">Resumen de Pedidos</h2>
           <p className="font-caption text-caption text-on-surface-variant">Operación en tiempo real</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* Emergency Stop Button */}
+          <button
+            onClick={handleToggleLocalStatus}
+            disabled={loadingLocalStatus}
+            className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all border cursor-pointer ${
+              localAbierto
+                ? 'bg-success-container/20 border-success/30 text-[#2e7d32] hover:bg-success-container/40'
+                : 'bg-error-container/20 border-error/30 text-error hover:bg-error-container/40 animate-pulse'
+            }`}
+            title={localAbierto ? 'Haga clic para cerrar el recibo de pedidos' : 'Haga clic para abrir el recibo de pedidos'}
+          >
+            <span className={`w-2.5 h-2.5 rounded-full ${localAbierto ? 'bg-[#2e7d32]' : 'bg-error'}`}></span>
+            {localAbierto ? 'Local Abierto' : 'Local Cerrado'}
+          </button>
+
+          {/* Export CSV Button */}
+          <button
+            onClick={handleExportCSV}
+            className="px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 bg-surface-container-lowest border border-outline text-on-surface hover:bg-surface-container-low transition-all cursor-pointer shadow-sm"
+            title="Exportar ventas a archivo CSV"
+          >
+            <span className="material-symbols-outlined text-[16px]">download</span>
+            Exportar Reporte
+          </button>
+
+          {/* Toggle Stats Button */}
+          <button
+            onClick={() => setShowStats(!showStats)}
+            className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 border transition-all cursor-pointer shadow-sm ${
+              showStats
+                ? 'bg-primary text-on-primary border-primary'
+                : 'bg-surface-container-lowest border border-outline text-on-surface hover:bg-surface-container-low'
+            }`}
+            title="Ver estadísticas de los últimos 7 días y platos estrella"
+          >
+            <span className="material-symbols-outlined text-[16px]">bar_chart</span>
+            {showStats ? 'Ocultar Estadísticas' : 'Ver Estadísticas'}
+          </button>
+
+          {/* Search bar */}
           <div className="relative w-64">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">
               search
@@ -318,6 +543,92 @@ export default function AdminPedidosPage() {
           </div>
         </div>
       </header>
+
+      {/* Collapsible Stats Dashboard */}
+      {showStats && (
+        <div className="bg-surface-container-low/60 px-lg py-6 border-b border-outline-variant/30 grid grid-cols-1 md:grid-cols-2 gap-lg flex-shrink-0 transition-all duration-300">
+          {/* Sales chart card */}
+          <div className="bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-primary text-lg">trending_up</span>
+              Ventas de los Últimos 7 Días (Entregados)
+            </h3>
+            
+            <div className="flex-1 min-h-[160px] flex items-end gap-3 pt-4 px-2 border-b border-outline-variant/30 pb-2">
+              {getLast7DaysSales().map((day) => {
+                const maxVal = Math.max(...getLast7DaysSales().map(d => d.total), 1);
+                const percent = (day.total / maxVal) * 100;
+                
+                return (
+                  <div key={day.dateStr} className="flex-1 flex flex-col items-center gap-2 group relative">
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full mb-2 bg-on-surface text-surface text-[10px] font-bold px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none z-10">
+                      ${day.total.toLocaleString('es-CO')}
+                    </div>
+                    
+                    {/* Bar */}
+                    <div className="w-full bg-surface-container-high rounded-t-md overflow-hidden flex items-end min-h-[10px] h-[120px]">
+                      <div 
+                        style={{ height: `${percent}%` }}
+                        className={`w-full rounded-t-md transition-all duration-500 ${
+                          day.total > 0 ? 'bg-primary hover:bg-primary/80' : 'bg-outline-variant/30'
+                        }`}
+                      />
+                    </div>
+                    
+                    {/* Label */}
+                    <span className="text-[10px] text-on-surface-variant font-bold capitalize select-none text-center">
+                      {day.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Top Products card */}
+          <div className="bg-surface p-6 rounded-2xl border border-outline-variant/30 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-primary text-lg">workspace_premium</span>
+                Platos Estrella (Top Pedidos)
+              </h3>
+              
+              <div className="flex flex-col gap-3">
+                {topDishes.length === 0 ? (
+                  <p className="text-xs text-on-surface-variant italic py-4">No hay datos de pedidos registrados aún.</p>
+                ) : (
+                  topDishes.map((dish, index) => {
+                    const colors = ['text-yellow-500', 'text-slate-400', 'text-amber-600'];
+                    const rankBgs = ['bg-yellow-500/10', 'bg-slate-400/10', 'bg-amber-600/10'];
+                    
+                    return (
+                      <div key={dish.nombre} className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-outline-variant/10 font-sans">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${rankBgs[index]} ${colors[index]}`}>
+                            #{index + 1}
+                          </div>
+                          <div>
+                            <span className="text-xs font-bold text-on-background block">{dish.nombre}</span>
+                            <span className="text-[10px] text-on-surface-variant">Total ordenado</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
+                          {dish.cantidad} unidades
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+            
+            <p className="text-[10px] text-on-surface-variant/70 italic mt-4 pt-2 border-t border-outline-variant/10">
+              Calculado automáticamente sobre todos los registros históricos de pedidos.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* KPIs Summary Bar */}
       <section className="bg-surface-container-low/40 px-lg py-3 border-b border-outline-variant/30 flex gap-4 overflow-x-auto flex-shrink-0">

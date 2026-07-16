@@ -36,11 +36,21 @@ export default function CarritoPage() {
   const [timeSlots, setTimeSlots] = useState<string[]>(DEFAULT_TIME_SLOTS);
   const [whatsappContact, setWhatsappContact] = useState('573001234567');
   const [bancos, setBancos] = useState<any[]>([]);
+  const [isLocalOpen, setIsLocalOpen] = useState(true);
 
   // Fetch configs
   useEffect(() => {
     async function fetchConfig() {
       try {
+        const { data: openData } = await supabase
+          .from('configuracion')
+          .select('valor')
+          .eq('clave', 'horarios_servicio')
+          .single();
+        if (openData?.valor && typeof openData.valor === 'object' && 'abierto' in openData.valor) {
+          setIsLocalOpen((openData.valor as any).abierto);
+        }
+
         const { data: costData } = await supabase
           .from('configuracion')
           .select('valor')
@@ -629,8 +639,14 @@ Pago: ${paymentMethod}`;
         {/* Floating Action Button Area (Bottom Anchor) */}
         <div className="fixed bottom-0 left-0 w-full p-4 bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 shadow-[0_-4px_12px_rgba(27,67,50,0.05)] pb-safe z-40">
           <div className="max-w-lg mx-auto">
+            {!isLocalOpen && (
+              <div className="bg-error-container/20 text-error p-3 mb-3 rounded-xl text-center text-xs font-bold flex items-center justify-center gap-1.5 border border-error/20">
+                <span className="material-symbols-outlined text-[18px]">block</span>
+                El local está cerrado temporalmente en este momento. No se aceptan nuevos pedidos.
+              </div>
+            )}
             <button
-              disabled={submitting}
+              disabled={submitting || !isLocalOpen}
               type="submit"
               className="w-full bg-primary text-on-primary py-4 rounded-full font-label-sm text-label-sm shadow-soft-lift active:scale-[0.98] transition-transform flex justify-center items-center gap-2 disabled:opacity-50 cursor-pointer"
             >

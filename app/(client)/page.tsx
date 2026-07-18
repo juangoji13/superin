@@ -91,7 +91,7 @@ export default function LandingPage() {
               <img
                 src="/logo.png"
                 alt="Super IN Logo"
-                className="w-full h-full object-contain relative z-10 drop-shadow-md animate-toast-in"
+                className="w-full h-full object-contain relative z-10 drop-shadow-md animate-card-in"
               />
             </div>
           </div>

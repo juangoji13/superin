@@ -588,7 +588,7 @@ Pago: ${paymentMethod}`;
           </div>
 
           {deliveryType === 'programado' && (
-            <div className="flex flex-col gap-md border-t border-outline-variant/10 pt-md animate-toast-in">
+            <div className="flex flex-col gap-md border-t border-outline-variant/10 pt-md animate-card-in">
               {/* Fecha */}
               <div>
                 <p className="font-caption text-caption text-on-surface-variant mb-xs">Fecha de entrega</p>

@@ -23,6 +23,11 @@ export default function AdminAjustesPage() {
   const [newNumero, setNewNumero] = useState('');
   const [newTitular, setNewTitular] = useState('');
 
+  // Costo domicilio state
+  const [costoDomicilio, setCostoDomicilio] = useState(5000);
+  const [savingDomicilio, setSavingDomicilio] = useState(false);
+  const [msgDomicilio, setMsgDomicilio] = useState({ text: '', type: '' });
+
   useEffect(() => {
     fetchSettings();
   }, []);
@@ -58,6 +63,16 @@ export default function AdminAjustesPage() {
         ];
         setBancos(defaultBancos);
       }
+      // 3. Fetch Costo Domicilio
+      const { data: costData } = await supabase
+        .from('configuracion')
+        .select('valor')
+        .eq('clave', 'costo_domicilio')
+        .single();
+      
+      if (costData?.valor && typeof costData.valor === 'object' && 'valor' in costData.valor) {
+        setCostoDomicilio((costData.valor as any).valor || 5000);
+      }
     } catch (err) {
       console.error('Error fetching settings:', err);
     } finally {
@@ -86,6 +101,28 @@ export default function AdminAjustesPage() {
       setMsgWa({ text: `Error: ${err.message}`, type: 'error' });
     } finally {
       setSavingWa(false);
+    }
+  };
+
+  const handleSaveDomicilio = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingDomicilio(true);
+    setMsgDomicilio({ text: '', type: '' });
+
+    try {
+      const { error } = await supabase
+        .from('configuracion')
+        .upsert({
+          clave: 'costo_domicilio',
+          valor: { valor: costoDomicilio }
+        });
+
+      if (error) throw error;
+      setMsgDomicilio({ text: 'Costo de domicilio guardado con éxito.', type: 'success' });
+    } catch (err: any) {
+      setMsgDomicilio({ text: `Error: ${err.message}`, type: 'error' });
+    } finally {
+      setSavingDomicilio(false);
     }
   };
 
@@ -188,6 +225,47 @@ export default function AdminAjustesPage() {
                   msgWa.type === 'success' ? 'bg-primary-container/20 text-primary' : 'bg-error-container/20 text-error'
                 }`}>
                   {msgWa.text}
+                </div>
+              )}
+            </section>
+
+            {/* Costo Domicilio Card */}
+            <section className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-lg shadow-sm flex flex-col gap-md">
+              <div className="flex items-center gap-sm">
+                <span className="material-symbols-outlined text-primary text-xl">delivery_dining</span>
+                <h3 className="font-bold text-on-background text-sm">Costo del Domicilio</h3>
+              </div>
+              <p className="text-xs text-on-surface-variant font-medium">
+                Define el costo estándar de envío que se aplicará automáticamente a los pedidos de los clientes al momento del checkout.
+              </p>
+
+              <form onSubmit={handleSaveDomicilio} className="flex gap-md items-end max-w-md mt-sm">
+                <div className="flex-1 flex flex-col gap-xs">
+                  <label className="text-xs font-semibold text-on-surface">Precio de Envío (COP)</label>
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    placeholder="Ej: 5000"
+                    value={costoDomicilio}
+                    onChange={(e) => setCostoDomicilio(parseInt(e.target.value, 10) || 0)}
+                    className="bg-surface border border-outline rounded-lg px-4 py-2.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={savingDomicilio}
+                  className="bg-primary text-on-primary text-xs font-bold py-2.5 px-6 rounded-full hover:bg-primary-container disabled:opacity-50 transition-all cursor-pointer"
+                >
+                  {savingDomicilio ? 'Guardando...' : 'Guardar'}
+                </button>
+              </form>
+
+              {msgDomicilio.text && (
+                <div className={`text-xs font-bold mt-sm p-sm rounded-lg ${
+                  msgDomicilio.type === 'success' ? 'bg-primary-container/20 text-primary' : 'bg-error-container/20 text-error'
+                }`}>
+                  {msgDomicilio.text}
                 </div>
               )}
             </section>

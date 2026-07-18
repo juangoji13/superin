@@ -18,7 +18,10 @@ interface Producto {
   foto: string | null;
   stock: number;
   activo: boolean;
+  dias?: string[];
 }
+
+const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 interface OpcionPlato {
   id: string;
@@ -37,6 +40,15 @@ export default function AdminMenuPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+
+  // New day filtering states
+  const [selectedDayFilter, setSelectedDayFilter] = useState<string>('Todos');
+
+  // New photo upload and day assignment states
+  const [newProdFoto, setNewProdFoto] = useState('');
+  const [newProdDias, setNewProdDias] = useState<string[]>([]);
+  const [editProdDias, setEditProdDias] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   // Modal states
   const [showAddProdModal, setShowAddProdModal] = useState(false);
@@ -204,7 +216,9 @@ export default function AdminMenuPage() {
           precio: parseInt(newProdPrecio, 10),
           stock: parseInt(newProdStock, 10) || 0,
           categoria_id: newProdCat ? parseInt(newProdCat, 10) : null,
-          activo: true
+          activo: true,
+          foto: newProdFoto || null,
+          dias: newProdDias
         })
         .select()
         .single();
@@ -219,6 +233,8 @@ export default function AdminMenuPage() {
         setNewProdPrecio('');
         setNewProdStock('20');
         setNewProdCat('');
+        setNewProdFoto('');
+        setNewProdDias([]);
       }
     } catch (err: any) {
       alert(err.message);
@@ -259,6 +275,38 @@ export default function AdminMenuPage() {
     }
   };
 
+  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>, isEdit: boolean) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `plato-${Date.now()}.${fileExt}`;
+      const filePath = fileName;
+
+      const { error: uploadError } = await supabase.storage
+        .from('imagenes-menu')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('imagenes-menu')
+        .getPublicUrl(filePath);
+
+      if (isEdit) {
+        setEditProdFoto(data.publicUrl);
+      } else {
+        setNewProdFoto(data.publicUrl);
+      }
+    } catch (err: any) {
+      alert('Error subiendo imagen: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // Start editing a product
   const startEditProduct = (p: Producto) => {
     setEditingProduct(p);
@@ -268,6 +316,7 @@ export default function AdminMenuPage() {
     setEditProdStock(p.stock.toString());
     setEditProdCat(p.categoria_id ? p.categoria_id.toString() : '');
     setEditProdFoto(p.foto || '');
+    setEditProdDias(p.dias || []);
   };
 
   // Save edited product
@@ -284,7 +333,8 @@ export default function AdminMenuPage() {
           precio: parseInt(editProdPrecio, 10),
           stock: parseInt(editProdStock, 10) || 0,
           categoria_id: editProdCat ? parseInt(editProdCat, 10) : null,
-          foto: editProdFoto || null
+          foto: editProdFoto || null,
+          dias: editProdDias
         })
         .eq('id', editingProduct.id)
         .select()
@@ -371,10 +421,15 @@ export default function AdminMenuPage() {
     }
   };
 
-  // Search filter
-  const filteredProducts = productos.filter((p) =>
-    p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search and day filter
+  const filteredProducts = productos.filter((p) => {
+    const matchesSearch = p.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!matchesSearch) return false;
+
+    if (selectedDayFilter === 'Todos') return true;
+    if (selectedDayFilter === 'Sin asignar') return !p.dias || p.dias.length === 0;
+    return p.dias && p.dias.includes(selectedDayFilter);
+  });
 
   const filteredOpciones = opciones.filter((o) =>
     o.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -443,6 +498,24 @@ export default function AdminMenuPage() {
         </button>
       </div>
 
+      {activeTab === 'productos' && (
+        <div className="flex flex-wrap gap-xs bg-surface-container-low px-lg py-2 border-b border-outline-variant/30 flex-shrink-0">
+          {['Todos', ...DIAS_SEMANA, 'Sin asignar'].map((day) => (
+            <button
+              key={day}
+              onClick={() => setSelectedDayFilter(day)}
+              className={`px-3 py-1.5 text-[10px] font-bold rounded-full transition-all cursor-pointer ${
+                selectedDayFilter === day
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface hover:bg-surface-variant text-on-surface-variant'
+              }`}
+            >
+              {day}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Table Area */}
       <div className="flex-1 p-lg overflow-y-auto bg-surface-container-low/20">
         {loading ? (
@@ -467,6 +540,15 @@ export default function AdminMenuPage() {
                     <td className="p-md">
                       <p className="font-bold text-sm text-on-background">{p.nombre}</p>
                       <p className="text-[10px] text-on-surface-variant mt-0.5">{p.descripcion || 'Sin descripción'}</p>
+                      {p.dias && p.dias.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {p.dias.map((d) => (
+                            <span key={d} className="bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded-full border border-primary/20">
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </td>
                     <td className="p-md font-bold text-primary">${p.precio.toLocaleString('es-CO')}</td>
                     <td className="p-md text-center">
@@ -690,6 +772,77 @@ export default function AdminMenuPage() {
               </select>
             </div>
 
+            {/* Days Assignment */}
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Días de disponibilidad</label>
+              <div className="grid grid-cols-4 gap-xs mt-1">
+                {DIAS_SEMANA.map((day) => {
+                  const isChecked = newProdDias.includes(day);
+                  return (
+                    <label key={day} className={`flex items-center justify-center p-1 rounded-md text-[10px] font-bold border cursor-pointer select-none ${
+                      isChecked ? 'bg-primary/10 border-primary text-primary' : 'bg-surface border-outline text-on-surface-variant'
+                    }`}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          if (isChecked) {
+                            setNewProdDias(prev => prev.filter(d => d !== day));
+                          } else {
+                            setNewProdDias(prev => [...prev, day]);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      {day.substring(0, 3)}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Photo Upload with Preview */}
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Foto del plato</label>
+              <div className="flex items-center gap-sm">
+                {newProdFoto ? (
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-outline-variant flex-shrink-0">
+                    <img src={newProdFoto} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setNewProdFoto('')}
+                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-0.5 flex items-center justify-center"
+                    >
+                      <span className="material-symbols-outlined text-[8px]">close</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 bg-surface-container rounded-lg border border-dashed border-outline flex items-center justify-center text-on-surface-variant flex-shrink-0">
+                    <span className="material-symbols-outlined text-sm">image</span>
+                  </div>
+                )}
+                <div className="flex-grow">
+                  <label className="bg-surface hover:bg-surface-variant border border-outline rounded-lg px-2.5 py-1.5 text-[10px] font-bold cursor-pointer inline-block text-on-surface">
+                    {uploading ? 'Subiendo...' : 'Subir Foto'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleUploadImage(e, false)}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+              </div>
+              <input
+                type="text"
+                placeholder="O pega URL de la imagen aquí..."
+                value={newProdFoto}
+                onChange={(e) => setNewProdFoto(e.target.value)}
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background mt-1"
+              />
+            </div>
+
             <div className="flex gap-sm mt-lg">
               <button
                 type="button"
@@ -857,14 +1010,74 @@ export default function AdminMenuPage() {
               </select>
             </div>
 
+            {/* Days Assignment */}
             <div className="flex flex-col gap-xs">
-              <label className="font-bold text-on-surface">URL de Foto (opcional)</label>
+              <label className="font-bold text-on-surface">Días de disponibilidad</label>
+              <div className="grid grid-cols-4 gap-xs mt-1">
+                {DIAS_SEMANA.map((day) => {
+                  const isChecked = editProdDias.includes(day);
+                  return (
+                    <label key={day} className={`flex items-center justify-center p-1 rounded-md text-[10px] font-bold border cursor-pointer select-none ${
+                      isChecked ? 'bg-primary/10 border-primary text-primary' : 'bg-surface border-outline text-on-surface-variant'
+                    }`}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {
+                          if (isChecked) {
+                            setEditProdDias(prev => prev.filter(d => d !== day));
+                          } else {
+                            setEditProdDias(prev => [...prev, day]);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      {day.substring(0, 3)}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Photo Upload with Preview */}
+            <div className="flex flex-col gap-xs">
+              <label className="font-bold text-on-surface">Foto del plato</label>
+              <div className="flex items-center gap-sm">
+                {editProdFoto ? (
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-outline-variant flex-shrink-0">
+                    <img src={editProdFoto} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setEditProdFoto('')}
+                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-0.5 flex items-center justify-center"
+                    >
+                      <span className="material-symbols-outlined text-[8px]">close</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 bg-surface-container rounded-lg border border-dashed border-outline flex items-center justify-center text-on-surface-variant flex-shrink-0">
+                    <span className="material-symbols-outlined text-sm">image</span>
+                  </div>
+                )}
+                <div className="flex-grow">
+                  <label className="bg-surface hover:bg-surface-variant border border-outline rounded-lg px-2.5 py-1.5 text-[10px] font-bold cursor-pointer inline-block text-on-surface">
+                    {uploading ? 'Subiendo...' : 'Subir Foto'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleUploadImage(e, true)}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+              </div>
               <input
                 type="text"
-                placeholder="Ej: https://.../foto.jpg"
+                placeholder="O pega URL de la imagen aquí..."
                 value={editProdFoto}
                 onChange={(e) => setEditProdFoto(e.target.value)}
-                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background"
+                className="bg-surface border border-outline rounded-lg px-3 py-2 text-xs text-on-background mt-1"
               />
             </div>
 

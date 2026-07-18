@@ -78,6 +78,22 @@ export default function DomiciliosPage() {
   const [preparedDishes, setPreparedDishes] = useState<any[]>(MOCK_PREPARED_DISHES);
   const [customOptions, setCustomOptions] = useState<any[]>(MOCK_CUSTOM_OPTIONS);
 
+  // Day filter state (default to current day)
+  const [selectedDay, setSelectedDay] = useState<string>('');
+
+  useEffect(() => {
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const todayIndex = new Date().getDay();
+    setSelectedDay(days[todayIndex]);
+  }, []);
+
+  // Filter prepared dishes by selected day
+  const displayedDishes = preparedDishes.filter((dish) => {
+    if (selectedDay === 'Todos' || !selectedDay) return true;
+    if (!dish.dias || dish.dias.length === 0) return true; // default everyday fallback
+    return dish.dias.includes(selectedDay);
+  });
+
   // Modal State for Prepared Dish
   const [selectedDish, setSelectedDish] = useState<any | null>(null);
   const [dishQuantity, setDishQuantity] = useState(1);
@@ -326,6 +342,32 @@ export default function DomiciliosPage() {
       {/* Main Tab Content */}
       {activeTab === 'prepared' ? (
         <div>
+          {/* Day selection scrollbar */}
+          <div className="flex flex-col gap-xs mb-8">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider">
+              <span className="material-symbols-outlined text-sm">calendar_month</span>
+              Menú disponible por día
+            </span>
+            <div className="flex gap-sm overflow-x-auto pb-2 scrollbar-thin mt-1.5">
+              {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo', 'Todos'].map((day) => {
+                const isSelected = selectedDay === day;
+                return (
+                  <button
+                    key={day}
+                    onClick={() => setSelectedDay(day)}
+                    className={`px-5 py-2.5 text-xs font-bold rounded-full transition-all flex-shrink-0 cursor-pointer ${
+                      isSelected
+                        ? 'bg-primary text-on-primary shadow-soft-lift scale-105'
+                        : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Dish Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
             {loading ? (
@@ -346,8 +388,16 @@ export default function DomiciliosPage() {
                   </div>
                 </div>
               ))
+            ) : displayedDishes.length === 0 ? (
+              <div className="col-span-full text-center py-16 bg-surface-container-lowest rounded-3xl border border-outline-variant/30 shadow-sm flex flex-col items-center justify-center gap-sm">
+                <span className="material-symbols-outlined text-5xl text-primary/40 animate-bounce">restaurant</span>
+                <h3 className="font-bold text-on-surface text-lg">No hay platos programados para el {selectedDay}</h3>
+                <p className="text-xs text-on-surface-variant max-w-xs">
+                  Intenta seleccionar otro día de la semana en la barra superior para ver las opciones disponibles.
+                </p>
+              </div>
             ) : (
-              preparedDishes.map((dish) => {
+              displayedDishes.map((dish) => {
                 const isAvailable = dish.stock > 0;
               const isLowStock = dish.stock > 0 && dish.stock <= 5;
               

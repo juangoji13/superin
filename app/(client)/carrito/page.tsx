@@ -23,8 +23,10 @@ export default function CarritoPage() {
   const [barrio, setBarrio] = useState('');
   const [referencia, setReferencia] = useState('');
   const [deliveryDate, setDeliveryDate] = useState<'hoy' | 'manana'>('hoy');
-  const [selectedSlot, setSelectedSlot] = useState('');
+  const [deliveryType, setDeliveryType] = useState<'inmediato' | 'programado'>('inmediato');
+  const [selectedSlot, setSelectedSlot] = useState('Inmediato');
   const [paymentMethod, setPaymentMethod] = useState<'Efectivo' | 'Transferencia'>('Efectivo');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   
   // File upload state
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
@@ -119,17 +121,58 @@ export default function CarritoPage() {
     }
   };
 
+  const validateForm = () => {
+    const tempErrors: { [key: string]: string } = {};
+    
+    // Name validation: min 3 chars, letters and spaces only
+    if (!nombre.trim()) {
+      tempErrors.nombre = 'El nombre completo es obligatorio.';
+    } else if (nombre.trim().length < 3) {
+      tempErrors.nombre = 'El nombre debe tener al menos 3 caracteres.';
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre.trim())) {
+      tempErrors.nombre = 'El nombre solo debe contener letras.';
+    }
+
+    // Celular validation (clean it first)
+    const cleanedCel = celular.replace(/\D/g, '');
+    if (!celular.trim()) {
+      tempErrors.celular = 'El celular es obligatorio.';
+    } else if (cleanedCel.length !== 10 && cleanedCel.length !== 12) {
+      tempErrors.celular = 'El celular debe tener 10 dígitos (ej. 3001234567).';
+    } else if (cleanedCel.length === 10 && !cleanedCel.startsWith('3')) {
+      tempErrors.celular = 'El celular debe empezar por 3.';
+    } else if (cleanedCel.length === 12 && !cleanedCel.startsWith('573')) {
+      tempErrors.celular = 'El celular con indicativo de Colombia debe iniciar con 573.';
+    }
+
+    // Dirección validation: min 5 chars
+    if (!direccion.trim()) {
+      tempErrors.direccion = 'La dirección es obligatoria.';
+    } else if (direccion.trim().length < 5) {
+      tempErrors.direccion = 'La dirección debe tener al menos 5 caracteres.';
+    }
+
+    // Barrio validation: min 3 chars
+    if (!barrio.trim()) {
+      tempErrors.barrio = 'El barrio es obligatorio.';
+    } else if (barrio.trim().length < 3) {
+      tempErrors.barrio = 'El barrio debe tener al menos 3 caracteres.';
+    }
+
+    // Slots validation if programado
+    if (deliveryType === 'programado' && !selectedSlot) {
+      tempErrors.selectedSlot = 'Por favor selecciona una franja horaria de entrega.';
+    }
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cart.length === 0) return;
 
-    if (!nombre.trim() || !celular.trim() || !direccion.trim() || !barrio.trim()) {
-      alert('Por favor completa todos los campos obligatorios.');
-      return;
-    }
-
-    if (!selectedSlot) {
-      alert('Por favor selecciona una franja horaria de entrega.');
+    if (!validateForm()) {
       return;
     }
 
@@ -141,6 +184,18 @@ export default function CarritoPage() {
     setSubmitting(true);
 
     try {
+      // Sanitize inputs to prevent basic XSS / code injection
+      const cleanNombre = nombre.trim().replace(/<[^>]*>/g, '');
+      const cleanDireccion = direccion.trim().replace(/<[^>]*>/g, '');
+      const cleanBarrio = barrio.trim().replace(/<[^>]*>/g, '');
+      const cleanReferencia = referencia.trim().replace(/<[^>]*>/g, '');
+
+      // Clean phone number and auto-prepend 57 if 10 digits
+      let cleanCelular = celular.replace(/\D/g, '');
+      if (cleanCelular.length === 10) {
+        cleanCelular = '57' + cleanCelular;
+      }
+
       // 1. Generate unique order code (e.g. SUP-XXXX)
       const orderCode = `SUP-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -153,6 +208,9 @@ export default function CarritoPage() {
         deliveryDateObj.setDate(deliveryDateObj.getDate() + 1);
       }
       const formattedDateString = deliveryDateObj.toISOString().split('T')[0];
+
+      // Determine final slot value
+      const finalSlot = deliveryType === 'inmediato' ? 'Inmediato' : selectedSlot;
 
       // 2. Upload file to Supabase Storage if applicable
       let receiptUrl = '';
@@ -184,13 +242,13 @@ export default function CarritoPage() {
         .from('pedidos')
         .insert({
           codigo: orderCode,
-          cliente: nombre,
-          celular: celular,
-          direccion: direccion,
-          barrio: barrio,
-          referencia: referencia,
+          cliente: cleanNombre,
+          celular: cleanCelular,
+          direccion: cleanDireccion,
+          barrio: cleanBarrio,
+          referencia: cleanReferencia,
           fecha: formattedDateString,
-          franja: selectedSlot,
+          franja: finalSlot,
           estado: 'Pendiente de confirmación',
           subtotal: cartTotal,
           domicilio: deliveryCost,
@@ -398,11 +456,17 @@ Pago: ${paymentMethod}`;
               <input
                 required
                 value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full bg-surface border border-outline rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:outline-none placeholder:text-on-surface-variant/40"
+                onChange={(e) => {
+                  setNombre(e.target.value);
+                  if (errors.nombre) setErrors(prev => ({ ...prev, nombre: '' }));
+                }}
+                className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
+                  errors.nombre ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
+                }`}
                 placeholder="Ej. María Pérez"
                 type="text"
               />
+              {errors.nombre && <p className="text-xs text-error mt-1 font-semibold">{errors.nombre}</p>}
             </div>
             <div>
               <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
@@ -411,24 +475,36 @@ Pago: ${paymentMethod}`;
               <input
                 required
                 value={celular}
-                onChange={(e) => setCelular(e.target.value)}
-                className="w-full bg-surface border border-outline rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:outline-none placeholder:text-on-surface-variant/40"
+                onChange={(e) => {
+                  setCelular(e.target.value);
+                  if (errors.celular) setErrors(prev => ({ ...prev, celular: '' }));
+                }}
+                className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
+                  errors.celular ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
+                }`}
                 placeholder="Ej. 300 123 4567"
                 type="tel"
               />
+              {errors.celular && <p className="text-xs text-error mt-1 font-semibold">{errors.celular}</p>}
             </div>
             <div>
               <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
-                Dirección (Barranquilla) <span className="text-error">*</span>
+                Dirección (Barranquilla / Soledad) <span className="text-error">*</span>
               </label>
               <input
                 required
                 value={direccion}
-                onChange={(e) => setDireccion(e.target.value)}
-                className="w-full bg-surface border border-outline rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:outline-none placeholder:text-on-surface-variant/40"
+                onChange={(e) => {
+                  setDireccion(e.target.value);
+                  if (errors.direccion) setErrors(prev => ({ ...prev, direccion: '' }));
+                }}
+                className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
+                  errors.direccion ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
+                }`}
                 placeholder="Ej. Cra 51B # 80 - 12"
                 type="text"
               />
+              {errors.direccion && <p className="text-xs text-error mt-1 font-semibold">{errors.direccion}</p>}
             </div>
             <div className="grid grid-cols-2 gap-sm">
               <div>
@@ -438,11 +514,17 @@ Pago: ${paymentMethod}`;
                 <input
                   required
                   value={barrio}
-                  onChange={(e) => setBarrio(e.target.value)}
-                  className="w-full bg-surface border border-outline rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:outline-none placeholder:text-on-surface-variant/40"
+                  onChange={(e) => {
+                    setBarrio(e.target.value);
+                    if (errors.barrio) setErrors(prev => ({ ...prev, barrio: '' }));
+                  }}
+                  className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
+                    errors.barrio ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
+                  }`}
                   placeholder="Ej. El Prado"
                   type="text"
                 />
+                {errors.barrio && <p className="text-xs text-error mt-1 font-semibold">{errors.barrio}</p>}
               </div>
               <div>
                 <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
@@ -470,66 +552,110 @@ Pago: ${paymentMethod}`;
               Momento de Entrega
             </h2>
           </div>
-          {/* Fecha */}
+          
           <div className="flex gap-sm">
             <label className="flex-1 cursor-pointer">
               <input
-                checked={deliveryDate === 'hoy'}
-                onChange={() => setDeliveryDate('hoy')}
+                checked={deliveryType === 'inmediato'}
+                onChange={() => {
+                  setDeliveryType('inmediato');
+                  setDeliveryDate('hoy');
+                  setSelectedSlot('Inmediato');
+                }}
                 className="peer sr-only"
-                name="delivery_date"
+                name="delivery_type"
                 type="radio"
               />
               <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
-                Hoy
+                Lo antes posible
               </div>
             </label>
             <label className="flex-1 cursor-pointer">
               <input
-                checked={deliveryDate === 'manana'}
-                onChange={() => setDeliveryDate('manana')}
+                checked={deliveryType === 'programado'}
+                onChange={() => {
+                  setDeliveryType('programado');
+                  setSelectedSlot('');
+                }}
                 className="peer sr-only"
-                name="delivery_date"
+                name="delivery_type"
                 type="radio"
               />
               <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
-                Mañana
+                Pedir para después
               </div>
             </label>
           </div>
-          {/* Franjas */}
-          <div className="mt-sm">
-            <p className="font-caption text-caption text-on-surface-variant mb-xs">
-              Horario de entrega (Franjas de 15 min) <span className="text-error">*</span>
-            </p>
-            <div className="flex flex-wrap gap-xs">
-              {timeSlots.map((slot) => {
-                // Mock checking if slot is available (for visual completeness)
-                // In a production system, we'd query capacity per slot.
-                // Let's make "10:45" disabled as a design cue.
-                const isBlocked = slot === '10:45';
-                const isSelected = selectedSlot === slot;
 
-                return (
-                  <button
-                    key={slot}
-                    disabled={isBlocked}
-                    type="button"
-                    onClick={() => setSelectedSlot(slot)}
-                    className={`px-4 py-2 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
-                      isBlocked
-                        ? 'border-outline-variant/30 text-on-surface-variant/30 bg-surface-container-low cursor-not-allowed line-through'
-                        : isSelected
-                        ? 'border-primary bg-primary text-on-primary shadow-sm'
-                        : 'border-outline text-on-surface-variant hover:border-primary hover:text-primary bg-surface'
-                    }`}
-                  >
-                    {slot}
-                  </button>
-                );
-              })}
+          {deliveryType === 'programado' && (
+            <div className="flex flex-col gap-md border-t border-outline-variant/10 pt-md animate-toast-in">
+              {/* Fecha */}
+              <div>
+                <p className="font-caption text-caption text-on-surface-variant mb-xs">Fecha de entrega</p>
+                <div className="flex gap-sm">
+                  <label className="flex-1 cursor-pointer">
+                    <input
+                      checked={deliveryDate === 'hoy'}
+                      onChange={() => setDeliveryDate('hoy')}
+                      className="peer sr-only"
+                      name="delivery_date"
+                      type="radio"
+                    />
+                    <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
+                      Hoy
+                    </div>
+                  </label>
+                  <label className="flex-1 cursor-pointer">
+                    <input
+                      checked={deliveryDate === 'manana'}
+                      onChange={() => setDeliveryDate('manana')}
+                      className="peer sr-only"
+                      name="delivery_date"
+                      type="radio"
+                    />
+                    <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
+                      Mañana
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Franjas */}
+              <div>
+                <p className="font-caption text-caption text-on-surface-variant mb-xs">
+                  Horario de entrega (Franjas de 15 min) <span className="text-error">*</span>
+                </p>
+                <div className="flex flex-wrap gap-xs">
+                  {timeSlots.map((slot) => {
+                    const isBlocked = slot === '10:45';
+                    const isSelected = selectedSlot === slot;
+
+                    return (
+                      <button
+                        key={slot}
+                        disabled={isBlocked}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSlot(slot);
+                          if (errors.selectedSlot) setErrors(prev => ({ ...prev, selectedSlot: '' }));
+                        }}
+                        className={`px-4 py-2 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                          isBlocked
+                            ? 'border-outline-variant/30 text-on-surface-variant/30 bg-surface-container-low cursor-not-allowed line-through'
+                            : isSelected
+                            ? 'border-primary bg-primary text-on-primary shadow-sm'
+                            : 'border-outline text-on-surface-variant hover:border-primary hover:text-primary bg-surface'
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
+                </div>
+                {errors.selectedSlot && <p className="text-xs text-error mt-1.5 font-semibold">{errors.selectedSlot}</p>}
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Método de Pago */}

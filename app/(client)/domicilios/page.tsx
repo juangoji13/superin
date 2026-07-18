@@ -236,7 +236,12 @@ export default function DomiciliosPage() {
   };
 
   const getOptionsByGroup = (group: string) => {
-    return customOptions.filter(option => option.grupo === group);
+    return customOptions.filter(option => {
+      if (option.grupo !== group) return false;
+      if (selectedDay === 'Todos' || !selectedDay) return true;
+      if (!option.dias || option.dias.length === 0) return true; // default everyday fallback
+      return option.dias.includes(selectedDay);
+    });
   };
 
   return (

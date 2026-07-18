@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS public.opciones_plato (
     stock INT NOT NULL DEFAULT 0 CHECK (stock >= 0),
     activo BOOLEAN DEFAULT true NOT NULL,
     orden INT DEFAULT 0 NOT NULL,
+    dias TEXT[] DEFAULT '{}',
     creado_a TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.pedidos (
     barrio VARCHAR(100) NOT NULL,
     referencia TEXT,
     fecha DATE NOT NULL,
-    franja VARCHAR(10) NOT NULL, -- e.g., '12:30 p.m.'
+    franja VARCHAR(30) NOT NULL, -- e.g., '12:30 p.m.' or 'Inmediato'
     estado VARCHAR(50) DEFAULT 'Pendiente de confirmación' NOT NULL,
     subtotal INT NOT NULL CHECK (subtotal >= 0),
     domicilio INT NOT NULL CHECK (domicilio >= 0),

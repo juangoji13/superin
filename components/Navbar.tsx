@@ -41,8 +41,7 @@ export default function Navbar() {
       {/* TopNavBar (Web / Desktop) */}
       <header className="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-container-margin h-20 bg-surface/90 backdrop-blur-md shadow-sm border-b border-outline-variant">
         <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <img src="/icon-512x512.png" alt="Super IN Logo" className="w-10 h-10 object-contain" />
-          <span className="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">Super IN</span>
+          <img src="/logo.png" alt="Super IN Logo" className="h-12 w-auto object-contain" />
         </Link>
         <nav className="flex gap-[40px]">
           <Link

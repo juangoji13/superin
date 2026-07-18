@@ -195,8 +195,8 @@ CREATE POLICY "Permitir actualización de perfil propio" ON public.usuarios
 -- - Solo personal autenticado puede ver.
 CREATE POLICY "Permitir inserción de comprobante a clientes" ON public.comprobantes
     FOR INSERT WITH CHECK (true);
-CREATE POLICY "Permitir ver comprobantes a personal autenticado" ON public.comprobantes
-    FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Permitir ver comprobantes a todos" ON public.comprobantes
+    FOR SELECT USING (true);
 
 -- 7. Configuración: Lectura pública, escritura privada.
 CREATE POLICY "Permitir lectura pública de configuración" ON public.configuracion

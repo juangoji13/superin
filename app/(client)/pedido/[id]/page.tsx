@@ -3,17 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { supabase } from '@/lib/supabase';
-
-const DeliveryMap = dynamic(() => import('@/components/DeliveryMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[300px] md:h-[400px] bg-surface-container-high rounded-2xl skeleton flex items-center justify-center border border-outline-variant/40">
-      <span className="material-symbols-outlined text-4xl text-outline">map</span>
-    </div>
-  )
-});
 
 interface OrderDetail {
   id: string;
@@ -604,16 +594,6 @@ export default function PedidoEstadoPage() {
             )}
           </article>
 
-          {/* Delivery Map */}
-          {(activeIndex >= 3 || order.estado === 'Entregado') && order.estado !== 'Cancelado' && order.estado !== 'Expirado' && (
-            <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md animate-fade-in">
-              <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">pin_drop</span>
-                Mapa de Seguimiento
-              </h2>
-              <DeliveryMap status={order.estado} />
-            </article>
-          )}
         </div>
       </div>
     </div>

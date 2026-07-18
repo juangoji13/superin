@@ -85,13 +85,13 @@ export default function LandingPage() {
 
           {/* Hero Logo Card (Right Column) */}
           <div className="flex justify-center items-center">
-            <div className="relative p-8 bg-white/80 backdrop-blur-md rounded-3xl border border-outline-variant/40 shadow-soft-lift overflow-hidden max-w-md w-full transition-transform duration-500 hover:scale-[1.02] flex justify-center items-center min-h-[300px]">
+            <div className="relative p-6 bg-white/90 backdrop-blur-md rounded-3xl border border-outline-variant/40 shadow-soft-lift overflow-hidden max-w-sm aspect-square w-full transition-transform duration-500 hover:scale-[1.02] flex justify-center items-center">
               <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
               <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-secondary/15 rounded-full blur-2xl"></div>
               <img
                 src="/logo.png"
                 alt="Super IN Logo"
-                className="w-full h-auto object-contain max-h-[220px] relative z-10 drop-shadow-md animate-toast-in"
+                className="w-full h-full object-contain relative z-10 drop-shadow-md animate-toast-in"
               />
             </div>
           </div>

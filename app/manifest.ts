@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'La mejor comida casera, a tu puerta.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#E8FBFF',
-    theme_color: '#E3037F',
+    background_color: '#f9f9ff',
+    theme_color: '#b60065',
     icons: [
       {
         src: '/icon-512x512.png',

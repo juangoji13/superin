@@ -348,7 +348,7 @@ export default function PedidoEstadoPage() {
               style={{
                 left: `${Math.random() * 100}vw`,
                 animationDelay: `${Math.random() * 3}s`,
-                backgroundColor: ['#012d1d', '#ffb628', '#ff8348', '#86af99'][Math.floor(Math.random() * 4)]
+                backgroundColor: ['#b60065', '#e3037f', '#ffd9e3', '#466557'][Math.floor(Math.random() * 4)]
               }}
             />
           ))}

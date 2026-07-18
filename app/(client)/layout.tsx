@@ -1,5 +1,6 @@
 import { CartProvider } from '@/context/CartContext';
 import Navbar from '@/components/Navbar';
+import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 
 export default function ClientLayout({
@@ -16,6 +17,7 @@ export default function ClientLayout({
         <main className="flex-1 flex flex-col md:pt-20 pb-16 md:pb-0">
           {children}
         </main>
+        <BottomNav />
         <Footer />
       </div>
     </CartProvider>

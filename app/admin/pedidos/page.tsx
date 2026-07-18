@@ -1186,8 +1186,12 @@ export default function AdminPedidosPage() {
 
         {/* Side Details Panel */}
         {selectedOrder && (
-          <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[350px] lg:relative lg:inset-auto lg:z-10 lg:w-[350px] border-l border-outline-variant/70 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none transition-all duration-300">
-            <div className="p-md border-b border-outline-variant/70 flex justify-between items-center">
+          <aside className="fixed inset-x-0 bottom-0 top-[15%] z-40 w-full lg:inset-auto lg:top-auto lg:right-auto lg:relative lg:z-10 lg:w-[350px] lg:border-l border-outline-variant/70 bg-surface-container-lowest flex flex-col h-full flex-shrink-0 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] lg:shadow-none transition-transform duration-300 rounded-t-3xl lg:rounded-none animate-slide-up-bar lg:animate-none">
+            {/* Grabber handle for mobile */}
+            <div className="w-full flex justify-center pt-3 pb-1 lg:hidden">
+              <div className="w-12 h-1.5 bg-outline-variant/50 rounded-full"></div>
+            </div>
+            <div className="p-md lg:pt-md border-b border-outline-variant/70 flex justify-between items-center">
               <div>
                 <h3 className="text-xs text-primary font-bold font-mono">{selectedOrder.codigo}</h3>
                 <p className="text-[10px] text-on-surface-variant">Creado: {new Date(selectedOrder.creado_a).toLocaleTimeString('es-CO')}</p>

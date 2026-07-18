@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -14,10 +14,20 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#012d1d",
+};
+
 export const metadata: Metadata = {
   title: "Super IN – Domicilios de comida típica en Barranquilla",
   description: "Disfruta del mejor almuerzo casero y comida típica a domicilio en Barranquilla y Soledad. Realiza tu pedido en línea rápido o cotiza eventos especiales.",
   keywords: ["domicilios", "comida típica", "almuerzos", "Barranquilla", "Soledad", "eventos", "catering"],
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Super IN",
+  },
   openGraph: {
     title: "Super IN – Domicilios de comida típica en Barranquilla",
     description: "Disfruta del mejor almuerzo casero y comida típica a domicilio en Barranquilla y Soledad.",

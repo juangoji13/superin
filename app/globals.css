@@ -12,37 +12,45 @@
   --font-caption: var(--font-inter), sans-serif;
 
   /* Colors */
-  --color-primary: #012d1d;
+  --color-primary: #E3037F;
   --color-on-primary: #ffffff;
-  --color-primary-container: #1b4332;
-  --color-on-primary-container: #86af99;
-  --color-secondary: #7f5700;
+  --color-primary-container: #ffcedf;
+  --color-on-primary-container: #70003b;
+  
+  --color-secondary: #0D6DC1;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #ffb628;
-  --color-on-secondary-container: #6d4a00;
-  --color-tertiary: #471700;
+  --color-secondary-container: #d2e4ff;
+  --color-on-secondary-container: #001c37;
+
+  --color-tertiary: #DA80BE;
   --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #6a2600;
-  --color-on-tertiary-container: #ff8348;
+  --color-tertiary-container: #ffd7ef;
+  --color-on-tertiary-container: #36002f;
+
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
-  --color-background: #fef8f3;
-  --color-on-background: #1d1b19;
-  --color-surface: #fef8f3;
-  --color-surface-dim: #ded9d4;
-  --color-surface-bright: #fef8f3;
-  --color-surface-variant: #e6e2dd;
-  --color-on-surface: #1d1b19;
-  --color-on-surface-variant: #414844;
-  --color-outline: #717973;
-  --color-outline-variant: #c1c8c2;
+  
+  --color-background: #E8FBFF;
+  --color-on-background: #3E3E3E;
+  
+  --color-surface: #ffffff;
+  --color-surface-dim: #E8FBFF;
+  --color-surface-bright: #ffffff;
+  --color-surface-variant: #e1e2ec;
+  
+  --color-on-surface: #3E3E3E;
+  --color-on-surface-variant: #44474e;
+  
+  --color-outline: #74777f;
+  --color-outline-variant: #c4c6d0;
+  
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f8f3ee;
-  --color-surface-container: #f2ede8;
-  --color-surface-container-high: #ece7e2;
-  --color-surface-container-highest: #e6e2dd;
+  --color-surface-container-low: #f8faff;
+  --color-surface-container: #f1f4f9;
+  --color-surface-container-high: #ebeef3;
+  --color-surface-container-highest: #e6e8ee;
 
   /* Border Radius */
   --radius-DEFAULT: 0.25rem;

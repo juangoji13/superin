@@ -3,7 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { supabase } from '@/lib/supabase';
+
+const DeliveryMap = dynamic(() => import('@/components/DeliveryMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[300px] md:h-[400px] bg-surface-container-high rounded-2xl skeleton flex items-center justify-center border border-outline-variant/40">
+      <span className="material-symbols-outlined text-4xl text-outline">map</span>
+    </div>
+  )
+});
 
 interface OrderDetail {
   id: string;
@@ -547,51 +557,64 @@ export default function PedidoEstadoPage() {
           </article>
         </div>
 
-        {/* Right Column: Timeline */}
-        <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
-          <h2 className="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/70 pb-sm font-bold">
-            Seguimiento de Entrega
-          </h2>
-          {order.estado === 'Cancelado' ? (
-            <div className="text-center py-xl text-on-surface-variant flex flex-col items-center">
-              <span className="material-symbols-outlined text-[48px] text-error mb-sm">block</span>
-              <p className="font-body-md font-semibold">El pedido fue cancelado y no se está procesando.</p>
-            </div>
-          ) : (
-            <div className="flex flex-col md:flex-row items-start md:items-start w-full relative pt-2">
-              {STEPS.map((step, index) => {
-                const isActive = index <= activeIndex;
-                const isCurrent = index === activeIndex;
+        {/* Right Column: Timeline & Map */}
+        <div className="flex flex-col gap-lg">
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
+            <h2 className="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/70 pb-sm font-bold">
+              Seguimiento de Entrega
+            </h2>
+            {order.estado === 'Cancelado' ? (
+              <div className="text-center py-xl text-on-surface-variant flex flex-col items-center">
+                <span className="material-symbols-outlined text-[48px] text-error mb-sm">block</span>
+                <p className="font-body-md font-semibold">El pedido fue cancelado y no se está procesando.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col md:flex-row items-start md:items-start w-full relative pt-2">
+                {STEPS.map((step, index) => {
+                  const isActive = index <= activeIndex;
+                  const isCurrent = index === activeIndex;
 
-                return (
-                  <div key={step.name} className="flex-1 flex md:flex-col items-start md:items-center group relative w-full mb-6 md:mb-0">
-                    {/* Horizontal Line for Desktop */}
-                    {index < STEPS.length - 1 && (
-                      <div className={`hidden md:block absolute top-5 left-[50%] w-full h-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
-                    )}
-                    {/* Vertical Line for Mobile */}
-                    {index < STEPS.length - 1 && (
-                      <div className={`md:hidden absolute left-[22px] top-10 h-full w-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
-                    )}
-                    
-                    <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all duration-300 ${isActive ? 'bg-primary text-on-primary shadow-sm scale-110' : 'bg-surface-container-highest border border-outline-variant text-outline-variant scale-100'}`}>
-                      <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{step.icon}</span>
-                    </div>
-                    
-                    <div className="ml-4 md:ml-0 md:mt-3 md:text-center flex-1 pr-2 md:pr-0">
-                      <h3 className={`font-label-sm text-sm transition-colors ${isCurrent ? 'text-primary font-bold' : isActive ? 'text-on-background font-semibold' : 'text-on-surface-variant/60 font-medium'}`}>{step.name}</h3>
-                      <p className="hidden md:block font-caption text-xs text-on-surface-variant mt-1.5 px-1 leading-tight max-w-[140px] mx-auto">{step.description}</p>
-                      {/* Show description on mobile only if current step */}
-                      {isCurrent && (
-                        <p className="md:hidden font-caption text-xs text-on-surface-variant mt-1">{step.description}</p>
+                  return (
+                    <div key={step.name} className="flex-1 flex md:flex-col items-start md:items-center group relative w-full mb-6 md:mb-0">
+                      {/* Horizontal Line for Desktop */}
+                      {index < STEPS.length - 1 && (
+                        <div className={`hidden md:block absolute top-5 left-[50%] w-full h-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
                       )}
+                      {/* Vertical Line for Mobile */}
+                      {index < STEPS.length - 1 && (
+                        <div className={`md:hidden absolute left-[22px] top-10 h-full w-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
+                      )}
+                      
+                      <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all duration-300 ${isActive ? 'bg-primary text-on-primary shadow-sm scale-110' : 'bg-surface-container-highest border border-outline-variant text-outline-variant scale-100'}`}>
+                        <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{step.icon}</span>
+                      </div>
+                      
+                      <div className="ml-4 md:ml-0 md:mt-3 md:text-center flex-1 pr-2 md:pr-0">
+                        <h3 className={`font-label-sm text-sm transition-colors ${isCurrent ? 'text-primary font-bold' : isActive ? 'text-on-background font-semibold' : 'text-on-surface-variant/60 font-medium'}`}>{step.name}</h3>
+                        <p className="hidden md:block font-caption text-xs text-on-surface-variant mt-1.5 px-1 leading-tight max-w-[140px] mx-auto">{step.description}</p>
+                        {/* Show description on mobile only if current step */}
+                        {isCurrent && (
+                          <p className="md:hidden font-caption text-xs text-on-surface-variant mt-1">{step.description}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
+          </article>
+
+          {/* Delivery Map */}
+          {(activeIndex >= 3 || order.estado === 'Entregado') && order.estado !== 'Cancelado' && order.estado !== 'Expirado' && (
+            <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md animate-fade-in">
+              <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">pin_drop</span>
+                Mapa de Seguimiento
+              </h2>
+              <DeliveryMap status={order.estado} />
+            </article>
           )}
-        </article>
+        </div>
       </div>
     </div>
   );

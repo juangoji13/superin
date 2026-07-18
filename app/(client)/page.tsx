@@ -1,15 +1,47 @@
-import Link from 'next/link';
+'use client';
 
+import React, { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 export default function LandingPage() {
+  const [scrollY, setScrollY] = useState(0);
+  const [statsVisible, setStatsVisible] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStatsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full min-h-[618px] flex items-center justify-center bg-surface-container-low px-container-margin md:px-xl py-xl overflow-hidden">
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <div
-            className="w-full h-full bg-cover bg-center bg-fixed opacity-40 parallax-bg"
+            className="w-full h-[120%] bg-cover bg-center opacity-40 parallax-bg"
             style={{
               backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLuXXf0trIIA-AE4svzO90QJaxj39J9ga2yD1wEKgxYM_agO-J-4lQPt4pHBr_iieCZYrDJgdH1Krrwp4duu4LsHqiYYIUD8QyIPBEaH5dYNnB0MZxH97m4KNO_f0eoG9xk9eqk6SbxkKP_zcf7YTpm2t8wQYVY4bo-7nA576JgEs2XToKsg6ZNNImrUi92SmOdaGLMfeEapJV6i0RUAhBH1A1PHP5hSWoY1jt1HxDIVFXqgjpeJqYfQ_JVDiPy9gzzvk9Nl3670k')`,
+              transform: `translateY(${scrollY * 0.4}px)`
             }}
           ></div>
           <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent"></div>
@@ -38,14 +70,14 @@ export default function LandingPage() {
             </div>
             
             {/* Quick Stats / Social Proof */}
-            <div className="flex gap-lg mt-8 pt-6 border-t border-outline-variant/30">
+            <div ref={statsRef} className="flex gap-lg mt-8 pt-6 border-t border-outline-variant/30">
               <div className="flex flex-col">
-                <span className="font-display-lg text-2xl font-bold text-primary animate-count-up" style={{animationDelay: '0.2s', animationFillMode: 'both'}}>+15,000</span>
+                <span className={`font-display-lg text-2xl font-bold text-primary ${statsVisible ? 'animate-count-up' : 'opacity-0'}`} style={{animationDelay: '0.2s', animationFillMode: 'both'}}>+15,000</span>
                 <span className="font-caption text-xs text-on-surface-variant font-medium">Pedidos entregados</span>
               </div>
               <div className="w-[1px] h-10 bg-outline-variant/30"></div>
               <div className="flex flex-col">
-                <span className="font-display-lg text-2xl font-bold text-primary animate-count-up" style={{animationDelay: '0.4s', animationFillMode: 'both'}}>100%</span>
+                <span className={`font-display-lg text-2xl font-bold text-primary ${statsVisible ? 'animate-count-up' : 'opacity-0'}`} style={{animationDelay: '0.4s', animationFillMode: 'both'}}>100%</span>
                 <span className="font-caption text-xs text-on-surface-variant font-medium">Sabor casero local</span>
               </div>
             </div>

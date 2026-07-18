@@ -348,7 +348,7 @@ export default function DomiciliosPage() {
               ))
             ) : (
               preparedDishes.map((dish) => {
-              const isAvailable = dish.stock > 0;
+                const isAvailable = dish.stock > 0;
               const isLowStock = dish.stock > 0 && dish.stock <= 5;
               
               // Dynamic portion text
@@ -445,7 +445,8 @@ export default function DomiciliosPage() {
                   </div>
                 </article>
               );
-            })}
+            })
+            )}
           </div>
         </div>
       ) : (

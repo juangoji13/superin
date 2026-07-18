@@ -24,6 +24,7 @@ export default function RepartoPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmOrderCode, setConfirmOrderCode] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Audio notification for new delivery assignments
   const playDeliveryChime = () => {
@@ -283,16 +284,6 @@ export default function RepartoPage() {
                 </div>
 
                 {/* Communication buttons */}
-                <div className="grid grid-cols-3 gap-sm pt-sm border-t border-outline-variant/40">
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex justify-center items-center gap-1 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-[11px] font-bold text-on-surface border border-outline-variant/40 transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-xs">map</span>
-                    Ver Mapa
-                  </a>
                 <div className="flex gap-sm pt-sm border-t border-outline-variant/40">
                   <a
                     href={`tel:${o.celular}`}

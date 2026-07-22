@@ -368,69 +368,95 @@ Pago: ${paymentMethod}`;
       </div>
 
       {/* Resumen del Pedido */}
-      <section className="bg-surface-container-lowest rounded-2xl p-md shadow-soft-lift flex flex-col gap-md border border-outline-variant/30">
-        <h2 className="font-label-sm text-label-sm text-on-surface uppercase tracking-wider mb-xs">
-          Resumen del Pedido
-        </h2>
-        <div className="flex flex-col gap-md">
+      {/* Resumen del Pedido */}
+      <section className="bg-surface rounded-3xl p-md md:p-lg shadow-sm border border-outline-variant/30 flex flex-col gap-md">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="material-symbols-outlined text-primary">receipt_long</span>
+          <h2 className="font-title-md text-title-md text-on-surface font-bold">
+            Tu Pedido
+          </h2>
+        </div>
+        
+        <div className="flex flex-col gap-sm">
           {cart.map((item) => (
-            <div key={item.cartId} className="flex gap-md items-center border-b border-outline-variant/10 pb-sm last:border-0 last:pb-0">
-              <div className="flex-1">
-                <h3 className="font-label-sm text-label-sm text-on-surface">{item.nombre}</h3>
-                {item.type === 'custom' && item.componentes ? (
-                  <p className="font-caption text-caption text-on-surface-variant">
-                    {item.componentes.arroz.nombre}, {item.componentes.proteina.nombre}, {item.componentes.acompanamiento.nombre}, {item.componentes.bebida.nombre}
-                    {item.componentes.ensalada && `, Ensalada: ${item.componentes.ensalada.nombre}`}
-                    {item.componentes.sopa && `, Sopa: ${item.componentes.sopa.nombre}`}
-                  </p>
-                ) : (
-                  <p className="font-caption text-caption text-on-surface-variant line-clamp-1">
-                    {item.observaciones || 'Sin especificaciones'}
-                  </p>
-                )}
-                {/* Quantity Editor inside cart summary */}
-                <div className="flex items-center gap-sm mt-sm">
-                  <button
-                    onClick={() => updateQuantity(item.cartId, item.cantidad - 1)}
-                    className="w-6 h-6 rounded-full border border-outline flex items-center justify-center font-bold text-xs"
-                  >
-                    -
-                  </button>
-                  <span className="font-caption font-bold w-4 text-center">{item.cantidad}</span>
-                  <button
-                    onClick={() => updateQuantity(item.cartId, item.cantidad + 1)}
-                    className="w-6 h-6 rounded-full border border-outline flex items-center justify-center font-bold text-xs"
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => removeFromCart(item.cartId)}
-                    className="text-xs text-error font-semibold ml-md hover:underline cursor-pointer"
-                  >
-                    Eliminar
-                  </button>
+            <div key={item.cartId} className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/20 flex flex-col gap-3 relative transition-all hover:shadow-sm">
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex-1">
+                  <h3 className="font-label-lg font-bold text-on-surface mb-1">{item.nombre}</h3>
+                  {item.type === 'custom' && item.componentes ? (
+                    <div className="flex flex-col gap-0.5">
+                      <p className="font-caption text-xs text-on-surface-variant flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-primary/50"></span> {item.componentes.arroz.nombre}
+                      </p>
+                      <p className="font-caption text-xs text-on-surface-variant flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-primary/50"></span> {item.componentes.proteina.nombre}
+                      </p>
+                      <p className="font-caption text-xs text-on-surface-variant flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-primary/50"></span> {item.componentes.acompanamiento.nombre}
+                      </p>
+                      <p className="font-caption text-xs text-on-surface-variant flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-primary/50"></span> {item.componentes.bebida.nombre}
+                      </p>
+                      {item.componentes.ensalada && (
+                        <p className="font-caption text-xs text-on-surface-variant flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-primary/50"></span> {item.componentes.ensalada.nombre}
+                        </p>
+                      )}
+                      {item.componentes.sopa && (
+                        <p className="font-caption text-xs text-on-surface-variant flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-primary/50"></span> {item.componentes.sopa.nombre}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="font-caption text-xs text-on-surface-variant italic">
+                      {item.observaciones || 'Sin especificaciones'}
+                    </p>
+                  )}
+                </div>
+                <div className="font-title-sm font-bold text-primary shrink-0 text-right bg-primary/5 px-3 py-1.5 rounded-lg">
+                  ${(item.precio * item.cantidad).toLocaleString('es-CO')}
                 </div>
               </div>
-              <div className="font-label-sm text-label-sm text-primary shrink-0">
-                ${(item.precio * item.cantidad).toLocaleString('es-CO')}
+              
+              <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10 mt-1">
+                <div className="flex items-center gap-3 bg-surface-container-high rounded-full p-1">
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(item.cartId, item.cantidad - 1)}
+                    className="w-8 h-8 rounded-full bg-surface text-on-surface shadow-sm flex items-center justify-center hover:bg-surface-container-lowest transition-colors active:scale-95"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">remove</span>
+                  </button>
+                  <span className="font-body-md font-bold w-4 text-center">{item.cantidad}</span>
+                  <button
+                    type="button"
+                    onClick={() => updateQuantity(item.cartId, item.cantidad + 1)}
+                    className="w-8 h-8 rounded-full bg-surface text-on-surface shadow-sm flex items-center justify-center hover:bg-surface-container-lowest transition-colors active:scale-95"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">add</span>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(item.cartId)}
+                  className="text-xs font-bold text-error flex items-center gap-1 px-3 py-1.5 rounded-full hover:bg-error/10 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[16px]">delete</span>
+                  Quitar
+                </button>
               </div>
             </div>
           ))}
         </div>
-        <div className="border-t border-outline-variant/30 pt-md mt-sm flex flex-col gap-sm">
+        <div className="bg-surface-container-lowest p-md rounded-2xl border border-outline-variant/20 flex flex-col gap-sm mt-xs">
           <div className="flex justify-between items-center text-caption font-medium">
             <span className="text-on-surface-variant">Subtotal platos</span>
-            <span className="text-on-surface">${cartTotal.toLocaleString('es-CO')}</span>
+            <span className="text-on-surface font-bold">${cartTotal.toLocaleString('es-CO')}</span>
           </div>
           <div className="flex justify-between items-center text-caption font-medium">
             <span className="text-on-surface-variant">Domicilio</span>
-            <span className="text-on-surface">${deliveryCost.toLocaleString('es-CO')}</span>
-          </div>
-          <div className="flex justify-between items-center font-bold border-t border-outline-variant/20 pt-sm mt-xs">
-            <span className="text-on-surface">Total Estimado</span>
-            <span className="text-title-md text-primary font-bold">
-              ${(cartTotal + deliveryCost).toLocaleString('es-CO')} COP
-            </span>
+            <span className="text-on-surface font-bold">${deliveryCost.toLocaleString('es-CO')}</span>
           </div>
         </div>
       </section>
@@ -447,94 +473,123 @@ Pago: ${paymentMethod}`;
             </h2>
           </div>
           <div className="flex flex-col gap-sm">
-            <div>
+            <div className="relative">
               <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
                 Nombre Completo <span className="text-error">*</span>
               </label>
-              <input
-                required
-                value={nombre}
-                onChange={(e) => {
-                  setNombre(e.target.value);
-                  if (errors.nombre) setErrors(prev => ({ ...prev, nombre: '' }));
-                }}
-                className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
-                  errors.nombre ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
-                }`}
-                placeholder="Ej. María Pérez"
-                type="text"
-              />
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-3 text-on-surface-variant/50 text-[20px]">
+                  person
+                </span>
+                <input
+                  required
+                  value={nombre}
+                  onChange={(e) => {
+                    setNombre(e.target.value);
+                    if (errors.nombre) setErrors(prev => ({ ...prev, nombre: '' }));
+                  }}
+                  className={`w-full bg-surface border rounded-xl pl-10 pr-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 transition-colors ${
+                    errors.nombre ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary ring-1 ring-transparent focus:ring-primary/20'
+                  }`}
+                  placeholder="Ej. María Pérez"
+                  type="text"
+                />
+              </div>
               {errors.nombre && <p className="text-xs text-error mt-1 font-semibold">{errors.nombre}</p>}
             </div>
-            <div>
+            
+            <div className="relative">
               <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
                 Celular <span className="text-error">*</span>
               </label>
-              <input
-                required
-                value={celular}
-                onChange={(e) => {
-                  setCelular(e.target.value);
-                  if (errors.celular) setErrors(prev => ({ ...prev, celular: '' }));
-                }}
-                className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
-                  errors.celular ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
-                }`}
-                placeholder="Ej. 300 123 4567"
-                type="tel"
-              />
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-3 text-on-surface-variant/50 text-[20px]">
+                  call
+                </span>
+                <input
+                  required
+                  value={celular}
+                  onChange={(e) => {
+                    setCelular(e.target.value);
+                    if (errors.celular) setErrors(prev => ({ ...prev, celular: '' }));
+                  }}
+                  className={`w-full bg-surface border rounded-xl pl-10 pr-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 transition-colors ${
+                    errors.celular ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary ring-1 ring-transparent focus:ring-primary/20'
+                  }`}
+                  placeholder="Ej. 300 123 4567"
+                  type="tel"
+                />
+              </div>
               {errors.celular && <p className="text-xs text-error mt-1 font-semibold">{errors.celular}</p>}
             </div>
-            <div>
+
+            <div className="relative">
               <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
                 Dirección (Barranquilla / Soledad) <span className="text-error">*</span>
               </label>
-              <input
-                required
-                value={direccion}
-                onChange={(e) => {
-                  setDireccion(e.target.value);
-                  if (errors.direccion) setErrors(prev => ({ ...prev, direccion: '' }));
-                }}
-                className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
-                  errors.direccion ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
-                }`}
-                placeholder="Ej. Cra 51B # 80 - 12"
-                type="text"
-              />
+              <div className="relative flex items-center">
+                <span className="material-symbols-outlined absolute left-3 text-on-surface-variant/50 text-[20px]">
+                  home
+                </span>
+                <input
+                  required
+                  value={direccion}
+                  onChange={(e) => {
+                    setDireccion(e.target.value);
+                    if (errors.direccion) setErrors(prev => ({ ...prev, direccion: '' }));
+                  }}
+                  className={`w-full bg-surface border rounded-xl pl-10 pr-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 transition-colors ${
+                    errors.direccion ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary ring-1 ring-transparent focus:ring-primary/20'
+                  }`}
+                  placeholder="Ej. Cra 51B # 80 - 12"
+                  type="text"
+                />
+              </div>
               {errors.direccion && <p className="text-xs text-error mt-1 font-semibold">{errors.direccion}</p>}
             </div>
+
             <div className="grid grid-cols-2 gap-sm">
-              <div>
+              <div className="relative">
                 <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
                   Barrio <span className="text-error">*</span>
                 </label>
-                <input
-                  required
-                  value={barrio}
-                  onChange={(e) => {
-                    setBarrio(e.target.value);
-                    if (errors.barrio) setErrors(prev => ({ ...prev, barrio: '' }));
-                  }}
-                  className={`w-full bg-surface border rounded-lg px-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 ${
-                    errors.barrio ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary'
-                  }`}
-                  placeholder="Ej. El Prado"
-                  type="text"
-                />
+                <div className="relative flex items-center">
+                  <span className="material-symbols-outlined absolute left-3 text-on-surface-variant/50 text-[20px]">
+                    signpost
+                  </span>
+                  <input
+                    required
+                    value={barrio}
+                    onChange={(e) => {
+                      setBarrio(e.target.value);
+                      if (errors.barrio) setErrors(prev => ({ ...prev, barrio: '' }));
+                    }}
+                    className={`w-full bg-surface border rounded-xl pl-10 pr-4 py-3 font-body-md text-on-surface focus:outline-none placeholder:text-on-surface-variant/40 transition-colors ${
+                      errors.barrio ? 'border-error focus:border-error ring-1 ring-error' : 'border-outline focus:border-primary ring-1 ring-transparent focus:ring-primary/20'
+                    }`}
+                    placeholder="Ej. El Prado"
+                    type="text"
+                  />
+                </div>
                 {errors.barrio && <p className="text-xs text-error mt-1 font-semibold">{errors.barrio}</p>}
               </div>
-              <div>
+              
+              <div className="relative">
                 <label className="block font-label-sm text-label-sm text-on-surface mb-xs">
                   Referencia
                 </label>
-                <input
-                  value={referencia}
-                  onChange={(e) => setReferencia(e.target.value)}
-                  className="w-full bg-surface border border-outline rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:outline-none placeholder:text-on-surface-variant/40"
-                  placeholder="Edificio, casa roja..."
-                  type="text"
-                />
+                <div className="relative flex items-center">
+                  <span className="material-symbols-outlined absolute left-3 text-on-surface-variant/50 text-[20px]">
+                    info
+                  </span>
+                  <input
+                    value={referencia}
+                    onChange={(e) => setReferencia(e.target.value)}
+                    className="w-full bg-surface border border-outline rounded-xl pl-10 pr-4 py-3 font-body-md text-on-surface focus:border-primary focus:outline-none placeholder:text-on-surface-variant/40 transition-colors ring-1 ring-transparent focus:ring-primary/20"
+                    placeholder="Casa roja, apt 201..."
+                    type="text"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -551,8 +606,8 @@ Pago: ${paymentMethod}`;
             </h2>
           </div>
           
-          <div className="flex gap-sm">
-            <label className="flex-1 cursor-pointer">
+          <div className="flex bg-surface-container-high p-1 rounded-xl">
+            <label className="flex-1 cursor-pointer relative">
               <input
                 checked={deliveryType === 'inmediato'}
                 onChange={() => {
@@ -564,11 +619,11 @@ Pago: ${paymentMethod}`;
                 name="delivery_type"
                 type="radio"
               />
-              <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
+              <div className="text-center py-2.5 rounded-lg text-on-surface-variant font-label-sm peer-checked:bg-surface peer-checked:text-primary peer-checked:shadow-sm transition-all font-bold z-10 relative">
                 Lo antes posible
               </div>
             </label>
-            <label className="flex-1 cursor-pointer">
+            <label className="flex-1 cursor-pointer relative">
               <input
                 checked={deliveryType === 'programado'}
                 onChange={() => {
@@ -579,7 +634,7 @@ Pago: ${paymentMethod}`;
                 name="delivery_type"
                 type="radio"
               />
-              <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
+              <div className="text-center py-2.5 rounded-lg text-on-surface-variant font-label-sm peer-checked:bg-surface peer-checked:text-primary peer-checked:shadow-sm transition-all font-bold z-10 relative">
                 Pedir para después
               </div>
             </label>
@@ -590,8 +645,8 @@ Pago: ${paymentMethod}`;
               {/* Fecha */}
               <div>
                 <p className="font-caption text-caption text-on-surface-variant mb-xs">Fecha de entrega</p>
-                <div className="flex gap-sm">
-                  <label className="flex-1 cursor-pointer">
+                <div className="flex bg-surface-container-high p-1 rounded-xl">
+                  <label className="flex-1 cursor-pointer relative">
                     <input
                       checked={deliveryDate === 'hoy'}
                       onChange={() => setDeliveryDate('hoy')}
@@ -599,11 +654,11 @@ Pago: ${paymentMethod}`;
                       name="delivery_date"
                       type="radio"
                     />
-                    <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
+                    <div className="text-center py-2.5 rounded-lg text-on-surface-variant font-label-sm peer-checked:bg-surface peer-checked:text-primary peer-checked:shadow-sm transition-all font-bold z-10 relative">
                       Hoy
                     </div>
                   </label>
-                  <label className="flex-1 cursor-pointer">
+                  <label className="flex-1 cursor-pointer relative">
                     <input
                       checked={deliveryDate === 'manana'}
                       onChange={() => setDeliveryDate('manana')}
@@ -611,7 +666,7 @@ Pago: ${paymentMethod}`;
                       name="delivery_date"
                       type="radio"
                     />
-                    <div className="text-center py-3 rounded-lg border border-outline-variant text-on-surface-variant font-label-sm peer-checked:bg-primary peer-checked:border-primary peer-checked:text-on-primary transition-all font-semibold">
+                    <div className="text-center py-2.5 rounded-lg text-on-surface-variant font-label-sm peer-checked:bg-surface peer-checked:text-primary peer-checked:shadow-sm transition-all font-bold z-10 relative">
                       Mañana
                     </div>
                   </label>
@@ -668,84 +723,105 @@ Pago: ${paymentMethod}`;
           </div>
           <div className="flex flex-col gap-sm">
             {/* Efectivo */}
-            <label className={`relative flex items-center p-4 border rounded-xl cursor-pointer bg-surface transition-all ${
+            <label className={`relative flex items-center p-md border-2 rounded-2xl cursor-pointer transition-all duration-300 overflow-hidden ${
               paymentMethod === 'Efectivo'
-                ? 'border-primary bg-primary-container/10 font-semibold'
-                : 'border-outline hover:bg-surface-container-low'
+                ? 'border-primary bg-primary/5 shadow-soft-lift'
+                : 'border-outline-variant/30 bg-surface hover:border-primary/30 hover:bg-surface-container-lowest hover:-translate-y-0.5'
             }`}>
               <input
                 checked={paymentMethod === 'Efectivo'}
                 onChange={() => setPaymentMethod('Efectivo')}
-                className="w-5 h-5 text-primary border-outline focus:ring-primary"
+                className="peer sr-only"
                 name="payment_method"
                 type="radio"
               />
-              <div className="ml-4 flex items-center gap-3">
-                <span className="material-symbols-outlined text-on-surface-variant">local_atm</span>
-                <span className="font-body-md text-on-surface">Efectivo contra entrega</span>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${paymentMethod === 'Efectivo' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                <span className="material-symbols-outlined text-[24px]">payments</span>
               </div>
+              <div className="ml-4 flex flex-col">
+                <span className={`font-body-md font-bold transition-colors ${paymentMethod === 'Efectivo' ? 'text-primary' : 'text-on-surface'}`}>Efectivo contra entrega</span>
+                <span className="font-caption text-xs text-on-surface-variant">Paga al recibir tu almuerzo</span>
+              </div>
+              {paymentMethod === 'Efectivo' && (
+                <span className="material-symbols-outlined absolute right-4 text-primary animate-pop-in">check_circle</span>
+              )}
             </label>
+            
             {/* Transferencia */}
-            <label className={`relative flex flex-col p-4 border rounded-xl cursor-pointer bg-surface transition-all ${
+            <label className={`relative flex flex-col p-md border-2 rounded-2xl cursor-pointer transition-all duration-300 overflow-hidden ${
               paymentMethod === 'Transferencia'
-                ? 'border-primary bg-primary-container/10'
-                : 'border-outline hover:bg-surface-container-low'
+                ? 'border-primary bg-primary/5 shadow-soft-lift'
+                : 'border-outline-variant/30 bg-surface hover:border-primary/30 hover:bg-surface-container-lowest hover:-translate-y-0.5'
             }`}>
               <div className="flex items-center">
                 <input
                   checked={paymentMethod === 'Transferencia'}
                   onChange={() => setPaymentMethod('Transferencia')}
-                  className="w-5 h-5 text-primary border-outline focus:ring-primary"
+                  className="peer sr-only"
                   name="payment_method"
                   type="radio"
                 />
-                <div className="ml-4 flex items-center gap-3">
-                  <span className="material-symbols-outlined text-on-surface-variant">account_balance</span>
-                  <span className="font-body-md text-on-surface font-semibold">Transferencia (Nequi / Bancolombia)</span>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${paymentMethod === 'Transferencia' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                  <span className="material-symbols-outlined text-[24px]">account_balance</span>
                 </div>
+                <div className="ml-4 flex flex-col">
+                  <span className={`font-body-md font-bold transition-colors ${paymentMethod === 'Transferencia' ? 'text-primary' : 'text-on-surface'}`}>Transferencia Digital</span>
+                  <span className="font-caption text-xs text-on-surface-variant">Nequi o Bancolombia</span>
+                </div>
+                {paymentMethod === 'Transferencia' && (
+                  <span className="material-symbols-outlined absolute right-4 text-primary animate-pop-in">check_circle</span>
+                )}
               </div>
               
               {paymentMethod === 'Transferencia' && (
-                <div className="mt-4 p-4 bg-surface-container rounded-lg border border-outline-variant border-dashed w-full" onClick={(e) => e.stopPropagation()}>
+                <div className="mt-4 pt-4 border-t border-primary/10 w-full animate-slide-up-bar" onClick={(e) => e.stopPropagation()}>
                   {/* Cuentas bancarias */}
-                  <div className="flex flex-col gap-2 mb-4 bg-surface p-3 rounded-lg border border-outline-variant/30">
-                    <p className="font-caption font-bold text-primary mb-1">Cuentas para transferencia:</p>
+                  <div className="flex flex-col gap-2 mb-4 bg-surface p-4 rounded-xl border border-primary/10 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                    <p className="font-caption font-bold text-primary mb-1 uppercase tracking-wider text-[10px]">Cuentas autorizadas</p>
                     {bancos.length === 0 ? (
-                      <p className="text-[10px] text-on-surface-variant">No hay cuentas de cobro registradas. Contacta al soporte para concretar el pago.</p>
+                      <p className="text-xs text-on-surface-variant italic">No hay cuentas configuradas actualmente.</p>
                     ) : (
                       bancos.map((b, index) => (
-                        <div key={index} className="flex flex-col text-[11px] pb-2 border-b border-outline-variant/10 last:border-0 last:pb-0">
+                        <div key={index} className="flex flex-col text-sm pb-2 border-b border-outline-variant/10 last:border-0 last:pb-0">
                           <div className="flex justify-between items-center font-bold">
                             <span className="text-primary">{b.banco}</span>
-                            <span className="text-on-background">{b.numero}</span>
+                            <span className="text-on-surface font-mono tracking-tight bg-surface-container-lowest px-2 py-0.5 rounded">{b.numero}</span>
                           </div>
-                          <span className="text-on-surface-variant font-medium">Titular: {b.titular}</span>
+                          <span className="text-xs text-on-surface-variant font-medium mt-1">Titular: {b.titular}</span>
                         </div>
                       ))
                     )}
                   </div>
 
-                  <p className="font-caption text-caption text-on-surface-variant mb-3">
-                    Adjunta el comprobante de pago para agilizar tu pedido.
-                  </p>
-                  
+                  {/* Uploader UI */}
                   {receiptFile ? (
-                    <div className="flex items-center justify-between bg-surface p-sm rounded-lg border border-outline">
-                      <span className="font-caption font-semibold text-primary truncate max-w-[200px]">
-                        {receiptFile.name}
-                      </span>
+                    <div className="flex items-center justify-between bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[16px]">task</span>
+                        </div>
+                        <span className="font-caption font-bold text-emerald-700 truncate max-w-[160px] md:max-w-[200px]">
+                          {receiptFile.name}
+                        </span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => setReceiptFile(null)}
-                        className="text-xs text-error font-bold hover:underline cursor-pointer"
+                        className="w-8 h-8 rounded-full hover:bg-error/10 text-error flex items-center justify-center transition-colors"
                       >
-                        Remover
+                        <span className="material-symbols-outlined text-[18px]">close</span>
                       </button>
                     </div>
                   ) : (
-                    <label className="w-full py-3 bg-surface border border-outline rounded-lg font-label-sm text-on-surface flex justify-center items-center gap-2 hover:bg-surface-container-low transition-colors cursor-pointer">
-                      <span className="material-symbols-outlined text-sm">upload_file</span>
-                      Cargar Comprobante
+                    <label className="w-full py-6 bg-surface border-2 border-dashed border-primary/30 rounded-xl flex flex-col justify-center items-center gap-2 hover:bg-primary/5 hover:border-primary transition-colors cursor-pointer group">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined">cloud_upload</span>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-label-sm text-primary font-bold">Toca para cargar tu comprobante</p>
+                        <p className="font-caption text-xs text-on-surface-variant mt-1">Formatos de imagen soportados</p>
+                      </div>
                       <input
                         type="file"
                         accept="image/*"
@@ -760,8 +836,7 @@ Pago: ${paymentMethod}`;
           </div>
         </section>
 
-        {/* Floating Action Button Area (Bottom Anchor) */}
-        <div className="fixed bottom-0 left-0 w-full p-4 bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 shadow-[0_-4px_12px_rgba(27,67,50,0.05)] pb-safe z-40">
+        <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest/80 backdrop-blur-xl border-t-2 border-primary/10 shadow-[0_-10px_40px_-10px_rgba(27,67,50,0.15)] pb-safe z-40 p-4">
           <div className="max-w-lg mx-auto">
             {!isLocalOpen && (
               <div className="bg-error-container/20 text-error p-3 mb-3 rounded-xl text-center text-xs font-bold flex items-center justify-center gap-1.5 border border-error/20">
@@ -769,22 +844,35 @@ Pago: ${paymentMethod}`;
                 El local está cerrado temporalmente en este momento. No se aceptan nuevos pedidos.
               </div>
             )}
-            <button
-              disabled={submitting || !isLocalOpen}
-              type="submit"
-              className="w-full bg-primary text-on-primary py-4 rounded-full font-label-sm text-label-sm shadow-soft-lift active:scale-[0.98] transition-transform flex justify-center items-center gap-2 disabled:opacity-50 cursor-pointer"
-            >
-              {submitting ? (
-                <>Registrando pedido...</>
-              ) : (
-                <>
-                  Registrar pedido y continuar en WhatsApp
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path>
-                  </svg>
-                </>
-              )}
-            </button>
+            
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col">
+                <span className="font-caption text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Total a pagar</span>
+                <span className="font-display-lg text-2xl font-black text-primary leading-none">${(cartTotal + deliveryCost).toLocaleString('es-CO')}</span>
+              </div>
+              
+              <button
+                disabled={submitting || (cartTotal === 0 && deliveryCost === 0) || !isLocalOpen}
+                className={`flex-1 py-3.5 px-6 rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98] ${
+                  submitting || !isLocalOpen
+                    ? 'bg-surface-container-high text-on-surface-variant cursor-not-allowed'
+                    : 'bg-primary text-on-primary hover:bg-primary-container cursor-pointer'
+                }`}
+                type="submit"
+              >
+                {submitting ? (
+                  <>
+                    <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                    Registrando...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[20px]">send</span>
+                    Registrar y pedir
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </form>

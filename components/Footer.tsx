@@ -13,7 +13,7 @@ export default function Footer() {
             Super IN
           </div>
           <p className="font-body-md text-sm text-on-primary/80 max-w-sm">
-            La sazón casera y tradicional del Caribe directo a tu mesa. Almuerzos preparados al día con ingredientes frescos de Barranquilla.
+            Los mejores almuerzos ejecutivos directos a tu mesa. Preparados al día con ingredientes frescos para acompañar tu jornada laboral.
           </p>
         </div>
         
@@ -40,7 +40,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-2 mt-2">
               <span className="material-symbols-outlined text-[18px]">schedule</span>
-              Lunes a Domingo: 10:00 AM - 3:00 PM
+              Lunes a Sábado: 09:00 AM - 05:30 PM
             </div>
           </div>
         </div>

@@ -107,7 +107,7 @@ export default function CarritoPage() {
     if (deliveryDate === 'manana') {
       d.setDate(d.getDate() + 1);
     }
-    const days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const days = ['cerrado', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
     const months = [
       'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
       'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'

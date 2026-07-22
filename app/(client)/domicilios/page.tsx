@@ -82,7 +82,7 @@ export default function DomiciliosPage() {
   const [selectedDay, setSelectedDay] = useState<string>('');
 
   useEffect(() => {
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const days = ['Cerrado', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const todayIndex = new Date().getDay();
     setSelectedDay(days[todayIndex]);
   }, []);
@@ -354,7 +354,7 @@ export default function DomiciliosPage() {
               Menú disponible por día
             </span>
             <div className="flex gap-sm overflow-x-auto pb-2 scrollbar-thin mt-1.5">
-              {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo', 'Todos'].map((day) => {
+              {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Todos'].map((day) => {
                 const isSelected = selectedDay === day;
                 return (
                   <button
@@ -687,7 +687,7 @@ export default function DomiciliosPage() {
               Horarios y Entregas
             </h3>
             <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
-              <strong>Horario de atención:</strong> Lunes a Domingo de 10:00 AM a 3:00 PM.<br />
+              <strong>Horario de atención:</strong> Lunes a Sábado de 09:00 AM a 05:30 PM.<br />
               <strong>Franjas horarias:</strong> Despachamos en intervalos de 15 minutos para asegurar que tu comida llegue caliente y a tiempo.
             </p>
           </div>

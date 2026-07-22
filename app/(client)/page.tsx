@@ -55,7 +55,7 @@ export default function LandingPage() {
               Tu almuerzo favorito, <span className="text-primary">directo a tu puerta</span>
             </h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant mt-2 mb-4">
-              Pide fácil, recibe rápido y disfruta comida casera preparada con los mejores ingredientes locales.
+              Pide fácil, recibe rápido y disfruta comida casera preparada con los mejores ingredientes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -78,7 +78,7 @@ export default function LandingPage() {
               <div className="w-[1px] h-10 bg-outline-variant/30"></div>
               <div className="flex flex-col">
                 <span className={`font-display-lg text-2xl font-bold text-primary ${statsVisible ? 'animate-count-up' : 'opacity-0'}`} style={{animationDelay: '0.4s', animationFillMode: 'both'}}>100%</span>
-                <span className="font-caption text-xs text-on-surface-variant font-medium">Sabor casero local</span>
+                <span className="font-caption text-xs text-on-surface-variant font-medium">Almuerzos ejecutivos</span>
               </div>
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function LandingPage() {
               </div>
               <h3 className="font-title-md text-title-md font-bold mb-2">Salón de eventos</h3>
               <p className="font-body-md text-body-md text-white/90">
-                Espacios elegantes y catering exclusivo para tus celebraciones más importantes.
+                Próximamente un espacio increíble para tus celebraciones.
               </p>
             </div>
           </Link>

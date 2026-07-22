@@ -15,13 +15,13 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#b60065",
+  themeColor: "#e949a1ff",
 };
 
 export const metadata: Metadata = {
-  title: "Super IN – Domicilios de comida típica en Barranquilla",
-  description: "Disfruta del mejor almuerzo casero y comida típica a domicilio en Barranquilla y Soledad. Realiza tu pedido en línea rápido o cotiza eventos especiales.",
-  keywords: ["domicilios", "comida típica", "almuerzos", "Barranquilla", "Soledad", "eventos", "catering"],
+  title: "Super IN - Eventos y recreaciones",
+  description: "Disfruta de los mejores almuerzos ejecutivos en Barranquilla y Soledad. Realiza tu pedido en línea rápido o cotiza eventos especiales.",
+  keywords: ["domicilios", "almuerzos ejecutivos", "almuerzos", "Barranquilla", "Soledad", "eventos", "catering"],
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     title: "Super IN",
   },
   openGraph: {
-    title: "Super IN – Domicilios de comida típica en Barranquilla",
-    description: "Disfruta del mejor almuerzo casero y comida típica a domicilio en Barranquilla y Soledad.",
+    title: "Super IN - Eventos y recreaciones",
+    description: "Disfruta de los mejores almuerzos ejecutivos en Barranquilla y Soledad.",
     locale: "es_CO",
     type: "website",
   }
@@ -51,23 +51,23 @@ export default function RootLayout({
     "servesCuisine": "Colombian, Regional",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Barranquilla",
-      "addressLocality": "Barranquilla",
+      "streetAddress": "Cl. 70 #43-37",
+      "addressLocality": "Nte. Centro Histórico Barranquilla",
       "addressRegion": "Atlántico",
       "addressCountry": "CO"
     },
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": [
-        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
       ],
-      "opens": "10:00",
-      "closes": "15:00"
+      "opens": "09:00",
+      "closes": "17:30"
     },
     "hasMenu": {
       "@type": "FoodMenu",
       "name": "Menú del Día Super IN",
-      "description": "Platos típicos costeños del día y almuerzos armables personalizados",
+      "description": "Almuerzos ejecutivos y almuerzos armables personalizados",
       "inLanguage": "es"
     }
   };

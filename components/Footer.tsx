@@ -30,13 +30,13 @@ export default function Footer() {
         <div className="flex flex-col gap-sm">
           <h4 className="font-title-md font-bold mb-2">Contáctanos</h4>
           <div className="flex flex-col gap-3 font-body-md text-sm text-on-primary/80">
-            <a href="tel:+573001234567" className="flex items-center gap-2 hover:text-white transition-colors w-fit">
+            <a href="tel:+573004870606" className="flex items-center gap-2 hover:text-white transition-colors w-fit">
               <span className="material-symbols-outlined text-[18px]">call</span>
-              +57 300 123 4567
+              +57 300 4870606
             </a>
             <div className="flex items-start gap-2">
               <span className="material-symbols-outlined text-[18px] mt-0.5">location_on</span>
-              <p>Barranquilla, Colombia<br/>Entregas en Barranquilla y Soledad</p>
+              <p>Cl. 70 #43-37 Nte.<br/>Centro Histórico, Barranquilla</p>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <span className="material-symbols-outlined text-[18px]">schedule</span>

@@ -17,7 +17,7 @@ export interface CustomDishComponents {
   bebida: { nombre: string; precio_adicional: number };
   ensalada?: { nombre: string; precio_adicional: number } | null;
   sopa?: { nombre: string; precio_adicional: number } | null;
-  postre?: { nombre: string; precio_adicional: number } | null;
+
 }
 
 export interface CartItem {

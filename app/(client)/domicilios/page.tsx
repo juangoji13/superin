@@ -104,14 +104,14 @@ export default function DomiciliosPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Customizer Selections
+  const [activeStep, setActiveStep] = useState(0);
   const [customSelections, setCustomSelections] = useState({
     Arroz: '',
     Proteína: '',
     Acompañamiento: '',
     Bebida: '',
     Ensalada: 'Sin ensalada',
-    Sopa: 'Sin sopa',
-    Postre: 'Sin postre'
+    Sopa: 'Sin sopa'
   });
   const [customNotes, setCustomNotes] = useState('');
 
@@ -200,7 +200,6 @@ export default function DomiciliosPage() {
     const bebidaOpt = customOptions.find(o => o.grupo === 'Bebida' && o.nombre === customSelections.Bebida);
     const ensaladaOpt = customOptions.find(o => o.grupo === 'Ensalada' && o.nombre === customSelections.Ensalada);
     const sopaOpt = customOptions.find(o => o.grupo === 'Sopa' && o.nombre === customSelections.Sopa);
-    const postreOpt = customOptions.find(o => o.grupo === 'Postre' && o.nombre === customSelections.Postre);
 
     const components: CustomDishComponents = {
       arroz: { nombre: customSelections.Arroz, precio_adicional: arrozOpt?.precio_adicional || 0 },
@@ -208,8 +207,7 @@ export default function DomiciliosPage() {
       acompanamiento: { nombre: customSelections.Acompañamiento, precio_adicional: acomOpt?.precio_adicional || 0 },
       bebida: { nombre: customSelections.Bebida, precio_adicional: bebidaOpt?.precio_adicional || 0 },
       ensalada: ensaladaOpt && ensaladaOpt.nombre !== 'Sin ensalada' ? { nombre: ensaladaOpt.nombre, precio_adicional: ensaladaOpt.precio_adicional || 0 } : null,
-      sopa: sopaOpt && sopaOpt.nombre !== 'Sin sopa' ? { nombre: sopaOpt.nombre, precio_adicional: sopaOpt.precio_adicional || 0 } : null,
-      postre: postreOpt && postreOpt.nombre !== 'Sin postre' ? { nombre: postreOpt.nombre, precio_adicional: postreOpt.precio_adicional || 0 } : null
+      sopa: sopaOpt && sopaOpt.nombre !== 'Sin sopa' ? { nombre: sopaOpt.nombre, precio_adicional: sopaOpt.precio_adicional || 0 } : null
     };
 
     addToCart({
@@ -228,10 +226,10 @@ export default function DomiciliosPage() {
       Acompañamiento: '',
       Bebida: '',
       Ensalada: 'Sin ensalada',
-      Sopa: 'Sin sopa',
-      Postre: 'Sin postre'
+      Sopa: 'Sin sopa'
     });
     setCustomNotes('');
+    setActiveStep(0);
     showToast('¡Almuerzo personalizado agregado al carrito!');
   };
 
@@ -511,11 +509,14 @@ export default function DomiciliosPage() {
             Selecciona las opciones para construir tu plato del día. Base: <strong>${BASE_CUSTOM_PLATE_PRICE.toLocaleString('es-CO')} COP</strong>.
           </p>
 
-          {/* Groups Customizer */}
-          <div className="flex flex-col gap-lg">
-            {['Arroz', 'Proteína', 'Acompañamiento', 'Bebida', 'Ensalada', 'Sopa', 'Postre'].map((group) => {
+          {/* Groups Customizer (Stepper) */}
+          <div className="flex flex-col gap-sm">
+            {['Arroz', 'Proteína', 'Acompañamiento', 'Bebida', 'Ensalada', 'Sopa'].map((group, index) => {
               const options = getOptionsByGroup(group);
               const isRequired = ['Arroz', 'Proteína', 'Acompañamiento', 'Bebida'].includes(group);
+              const isActive = activeStep === index;
+              const isCompleted = activeStep > index || (customSelections[group as keyof typeof customSelections] !== '' && customSelections[group as keyof typeof customSelections] !== 'Sin ensalada' && customSelections[group as keyof typeof customSelections] !== 'Sin sopa');
+              const isLocked = activeStep < index;
               
               const groupIcons: Record<string, string> = {
                 'Arroz': 'rice_bowl',
@@ -523,108 +524,153 @@ export default function DomiciliosPage() {
                 'Acompañamiento': 'local_dining',
                 'Bebida': 'local_drink',
                 'Ensalada': 'eco',
-                'Sopa': 'soup_kitchen',
-                'Postre': 'cake'
+                'Sopa': 'soup_kitchen'
               };
               const icon = groupIcons[group] || 'restaurant';
 
               return (
-                <div key={group} className="bg-surface p-md md:p-lg rounded-3xl shadow-sm border border-outline-variant/30 transition-all hover:shadow-md">
-                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-outline-variant/20">
-                    <div className="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
-                      <span className="material-symbols-outlined text-[20px]">{icon}</span>
-                    </div>
-                    <div>
-                      <h3 className="font-title-md font-bold text-on-surface flex items-center gap-1">
-                        {group}
-                        {isRequired && <span className="text-error text-lg leading-none">*</span>}
-                      </h3>
-                      <span className="font-caption text-xs text-on-surface-variant uppercase tracking-wider font-semibold">
-                        {isRequired ? 'Selección Obligatoria' : 'Selección Opcional'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {options.map((opt) => {
-                      const isSelected = customSelections[group as keyof typeof customSelections] === opt.nombre;
-                      const hasStock = opt.stock > 0;
-                      const extraCost = opt.precio_adicional > 0 ? ` (+ $${opt.precio_adicional.toLocaleString('es-CO')})` : '';
-
-                      return (
-                        <button
-                          key={opt.id}
-                          disabled={!hasStock}
-                          onClick={() => handleCustomSelectionChange(group, opt.nombre)}
-                          className={`group relative flex flex-col p-4 rounded-2xl text-left border-2 transition-all duration-300 ${
-                            !hasStock
-                              ? 'bg-surface-container-lowest border-outline-variant/20 opacity-60 cursor-not-allowed grayscale'
-                              : isSelected
-                              ? 'bg-primary/5 border-primary text-primary shadow-soft-lift scale-[1.02]'
-                              : 'bg-surface border-outline-variant/40 hover:border-primary/40 hover:bg-surface-container-lowest cursor-pointer hover:-translate-y-0.5'
-                          }`}
-                        >
-                          <div className="flex justify-between items-start w-full mb-1">
-                            <span className={`font-body-md font-bold ${isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary transition-colors'}`}>
-                              {opt.nombre}
-                            </span>
-                            {isSelected && (
-                              <span className="material-symbols-outlined text-[20px] text-primary animate-pop-in">
-                                check_circle
-                              </span>
-                            )}
-                          </div>
-                          <span className={`font-caption text-xs mt-auto font-medium ${isSelected ? 'text-primary/80' : 'text-on-surface-variant'}`}>
-                            {!hasStock 
-                              ? '❌ Agotado' 
-                              : opt.stock > 0 && opt.stock <= 5 && opt.nombre !== 'Sin ensalada' && opt.nombre !== 'Sin sopa' && opt.nombre !== 'Sin postre'
-                                ? <span className="text-orange-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse"></span>¡Solo quedan {opt.stock}!</span>
-                                : <span className="text-emerald-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Disponible</span>
-                            }
+                <div 
+                  key={group} 
+                  className={`bg-surface rounded-3xl transition-all duration-300 ${isActive ? 'shadow-md border-primary ring-1 ring-primary' : 'shadow-sm border border-outline-variant/30'} ${isLocked ? 'opacity-60 grayscale-[50%]' : ''}`}
+                >
+                  {/* Stepper Header */}
+                  <div 
+                    onClick={() => !isLocked && setActiveStep(index)}
+                    className={`flex items-center justify-between p-md md:p-lg cursor-pointer rounded-3xl ${isActive ? 'bg-primary/5' : ''}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isActive || isCompleted ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                        {isCompleted && !isActive ? (
+                          <span className="material-symbols-outlined text-[20px]">check</span>
+                        ) : (
+                          <span className="material-symbols-outlined text-[20px]">{icon}</span>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className={`font-title-md font-bold flex items-center gap-1 ${isActive ? 'text-primary' : 'text-on-surface'}`}>
+                          {group}
+                          {isRequired && <span className="text-error text-lg leading-none">*</span>}
+                        </h3>
+                        {!isActive && isCompleted && (
+                          <span className="font-caption text-sm text-primary/80 font-bold">
+                            {customSelections[group as keyof typeof customSelections]}
                           </span>
-                          {extraCost && (
-                            <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold w-fit ${isSelected ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant'}`}>
-                              +{extraCost.replace(' (+ $', '$').replace(')', '')}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
+                        )}
+                        {!isActive && !isCompleted && (
+                          <span className="font-caption text-xs text-on-surface-variant uppercase tracking-wider font-semibold">
+                            {isRequired ? 'Selección Obligatoria' : 'Selección Opcional'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {isCompleted && !isActive && (
+                      <button className="text-xs font-bold text-secondary hover:underline py-1 px-2">Editar</button>
+                    )}
                   </div>
+
+                  {/* Stepper Content */}
+                  {isActive && (
+                    <div className="p-md md:p-lg pt-0 animate-slide-up-bar">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                        {options.map((opt) => {
+                          const isSelected = customSelections[group as keyof typeof customSelections] === opt.nombre;
+                          const hasStock = opt.stock > 0;
+                          const extraCost = opt.precio_adicional > 0 ? ` (+ $${opt.precio_adicional.toLocaleString('es-CO')})` : '';
+
+                          return (
+                            <button
+                              key={opt.id}
+                              disabled={!hasStock}
+                              onClick={() => {
+                                handleCustomSelectionChange(group, opt.nombre);
+                                // Auto advance to next step after a short delay
+                                setTimeout(() => {
+                                  if (index < 5) setActiveStep(index + 1);
+                                }, 300);
+                              }}
+                              className={`group relative flex flex-col p-4 rounded-2xl text-left border-2 transition-all duration-300 ${
+                                !hasStock
+                                  ? 'bg-surface-container-lowest border-outline-variant/20 opacity-60 cursor-not-allowed grayscale'
+                                  : isSelected
+                                  ? 'bg-primary/5 border-primary text-primary shadow-soft-lift scale-[1.02]'
+                                  : 'bg-surface border-outline-variant/40 hover:border-primary/40 hover:bg-surface-container-lowest cursor-pointer hover:-translate-y-0.5'
+                              }`}
+                            >
+                              <div className="flex justify-between items-start w-full mb-1">
+                                <span className={`font-body-md font-bold ${isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary transition-colors'}`}>
+                                  {opt.nombre}
+                                </span>
+                                {isSelected && (
+                                  <span className="material-symbols-outlined text-[20px] text-primary animate-pop-in">
+                                    check_circle
+                                  </span>
+                                )}
+                              </div>
+                              <span className={`font-caption text-xs mt-auto font-medium ${isSelected ? 'text-primary/80' : 'text-on-surface-variant'}`}>
+                                {!hasStock 
+                                  ? '❌ Agotado' 
+                                  : opt.stock > 0 && opt.stock <= 5 && opt.nombre !== 'Sin ensalada' && opt.nombre !== 'Sin sopa'
+                                    ? <span className="text-orange-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse"></span>¡Solo quedan {opt.stock}!</span>
+                                    : <span className="text-emerald-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Disponible</span>
+                                }
+                              </span>
+                              {extraCost && (
+                                <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold w-fit ${isSelected ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant'}`}>
+                                  +{extraCost.replace(' (+ $', '$').replace(')', '')}
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      
+                      <div className="mt-6 flex justify-end">
+                         <button 
+                           onClick={() => {
+                             if (index < 5) setActiveStep(index + 1);
+                           }}
+                           className="bg-secondary-container text-on-secondary-container px-6 py-2 rounded-full font-bold text-sm hover:bg-secondary-container/80 transition-all cursor-pointer shadow-sm"
+                         >
+                           {index === 5 ? 'Finalizar selección' : 'Siguiente'}
+                         </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
+          </div>
 
-            {/* Observaciones */}
-            <div className="flex flex-col gap-sm">
-              <label htmlFor="custom-notes" className="font-label-sm text-on-background">
-                Observaciones especiales
-              </label>
-              <textarea
-                id="custom-notes"
-                rows={3}
-                placeholder="Ej. Sin cebolla en la ensalada, el jugo que sea sin azúcar, etc."
-                value={customNotes}
-                onChange={(e) => setCustomNotes(e.target.value)}
-                className="bg-surface rounded-xl border border-outline p-md text-body-md focus:border-primary focus:outline-none"
-              ></textarea>
-            </div>
-
-            {/* Order Summary & CTA */}
-            <div className="bg-surface-container p-md rounded-xl flex flex-col md:flex-row justify-between items-center gap-md mt-md">
-              <div>
-                <span className="font-caption text-on-surface-variant">Precio total del plato</span>
-                <div className="font-display-lg text-primary font-bold">
-                  ${getCustomTotalPrice().toLocaleString('es-CO')}
-                </div>
+          {/* Sticky Total Price Summary */}
+          <div className="sticky bottom-4 z-30 mt-lg bg-surface-container-lowest/80 backdrop-blur-xl p-md rounded-2xl border-2 border-primary shadow-[0_10px_40px_-10px_rgba(27,67,50,0.3)] flex flex-col md:flex-row justify-between items-center gap-md animate-slide-up-bar">
+            <div>
+              <span className="font-caption font-bold text-on-surface-variant uppercase tracking-wider text-xs">Total de tu almuerzo</span>
+              <div className="font-display-lg text-primary font-black text-3xl">
+                ${getCustomTotalPrice().toLocaleString('es-CO')}
               </div>
-              <button
-                onClick={submitCustomToCart}
-                className="w-full md:w-auto bg-primary text-on-primary font-bold text-xs px-6 py-3.5 rounded-full hover:bg-primary-container btn-haptic transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                Agregar al pedido
-              </button>
             </div>
+            <button
+              onClick={submitCustomToCart}
+              className="w-full md:w-auto bg-primary text-on-primary font-bold text-sm px-8 py-4 rounded-full hover:bg-primary-container btn-haptic transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+              Agregar al pedido
+            </button>
+          </div>
+
+          {/* Observaciones */}
+          <div className="flex flex-col gap-sm mt-4">
+            <label htmlFor="custom-notes" className="font-label-sm text-on-background">
+              Observaciones especiales
+            </label>
+            <textarea
+              id="custom-notes"
+              rows={3}
+              placeholder="Ej. Sin cebolla en la ensalada, el jugo que sea sin azúcar, etc."
+              value={customNotes}
+              onChange={(e) => setCustomNotes(e.target.value)}
+              className="bg-surface rounded-xl border border-outline p-md text-body-md focus:border-primary focus:outline-none"
+            ></textarea>
           </div>
         </div>
       )}

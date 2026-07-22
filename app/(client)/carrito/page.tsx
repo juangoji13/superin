@@ -303,8 +303,7 @@ export default function CarritoPage() {
             comps.acompanamiento.nombre,
             comps.bebida.nombre,
             comps.ensalada?.nombre,
-            comps.sopa?.nombre,
-            comps.postre?.nombre
+            comps.sopa?.nombre
           ].filter(Boolean).join(', ');
           orderItemsText += `- ${item.cantidad} x ${item.nombre} armado (${extras})\n`;
         } else {
@@ -383,7 +382,6 @@ Pago: ${paymentMethod}`;
                     {item.componentes.arroz.nombre}, {item.componentes.proteina.nombre}, {item.componentes.acompanamiento.nombre}, {item.componentes.bebida.nombre}
                     {item.componentes.ensalada && `, Ensalada: ${item.componentes.ensalada.nombre}`}
                     {item.componentes.sopa && `, Sopa: ${item.componentes.sopa.nombre}`}
-                    {item.componentes.postre && `, Postre: ${item.componentes.postre.nombre}`}
                   </p>
                 ) : (
                   <p className="font-caption text-caption text-on-surface-variant line-clamp-1">

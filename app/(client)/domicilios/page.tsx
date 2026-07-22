@@ -256,10 +256,10 @@ export default function DomiciliosPage() {
             Entrega rápida en Barranquilla y Soledad
           </span>
           <h1 className="font-display-lg text-3xl md:text-5xl text-white font-extrabold tracking-tight mb-4 leading-tight">
-            Domicilios de comida típica en Barranquilla
+            Domicilios de almuerzos ejecutivos en Barranquilla
           </h1>
           <p className="font-body-lg text-base md:text-lg text-on-primary-container/85 mb-6 max-w-xl">
-            Almuerzos caseros con sabor caribeño auténtico, preparados al día con ingredientes frescos y entregados calientes a tu casa u oficina.
+            Los mejores almuerzos ejecutivos, preparados al día con ingredientes frescos y entregados calientes a tu casa u oficina para acompañar tu jornada.
           </p>
           <div className="flex flex-wrap items-center gap-md">
             <a
@@ -516,17 +516,35 @@ export default function DomiciliosPage() {
             {['Arroz', 'Proteína', 'Acompañamiento', 'Bebida', 'Ensalada', 'Sopa', 'Postre'].map((group) => {
               const options = getOptionsByGroup(group);
               const isRequired = ['Arroz', 'Proteína', 'Acompañamiento', 'Bebida'].includes(group);
+              
+              const groupIcons: Record<string, string> = {
+                'Arroz': 'rice_bowl',
+                'Proteína': 'set_meal',
+                'Acompañamiento': 'local_dining',
+                'Bebida': 'local_drink',
+                'Ensalada': 'eco',
+                'Sopa': 'soup_kitchen',
+                'Postre': 'cake'
+              };
+              const icon = groupIcons[group] || 'restaurant';
 
               return (
-                <div key={group} className="border-b border-outline-variant/20 pb-md">
-                  <h3 className="font-label-sm text-on-background mb-sm flex items-center gap-1">
-                    {group}
-                    {isRequired && <span className="text-error">*</span>}
-                    <span className="font-caption font-normal text-on-surface-variant">
-                      ({isRequired ? 'Obligatorio' : 'Opcional'})
-                    </span>
-                  </h3>
-                  <div className="grid grid-cols-2 gap-sm">
+                <div key={group} className="bg-surface p-md md:p-lg rounded-3xl shadow-sm border border-outline-variant/30 transition-all hover:shadow-md">
+                  <div className="flex items-center gap-3 mb-4 pb-3 border-b border-outline-variant/20">
+                    <div className="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
+                      <span className="material-symbols-outlined text-[20px]">{icon}</span>
+                    </div>
+                    <div>
+                      <h3 className="font-title-md font-bold text-on-surface flex items-center gap-1">
+                        {group}
+                        {isRequired && <span className="text-error text-lg leading-none">*</span>}
+                      </h3>
+                      <span className="font-caption text-xs text-on-surface-variant uppercase tracking-wider font-semibold">
+                        {isRequired ? 'Selección Obligatoria' : 'Selección Opcional'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {options.map((opt) => {
                       const isSelected = customSelections[group as keyof typeof customSelections] === opt.nombre;
                       const hasStock = opt.stock > 0;
@@ -537,28 +555,37 @@ export default function DomiciliosPage() {
                           key={opt.id}
                           disabled={!hasStock}
                           onClick={() => handleCustomSelectionChange(group, opt.nombre)}
-                          className={`flex flex-col p-md rounded-xl text-left border transition-all ${
+                          className={`group relative flex flex-col p-4 rounded-2xl text-left border-2 transition-all duration-300 ${
                             !hasStock
-                              ? 'bg-surface-container-low border-outline-variant/30 opacity-50 cursor-not-allowed'
+                              ? 'bg-surface-container-lowest border-outline-variant/20 opacity-60 cursor-not-allowed grayscale'
                               : isSelected
-                              ? 'bg-primary border-primary text-on-primary font-semibold shadow-sm'
-                              : 'bg-surface border-outline hover:border-primary cursor-pointer'
+                              ? 'bg-primary/5 border-primary text-primary shadow-soft-lift scale-[1.02]'
+                              : 'bg-surface border-outline-variant/40 hover:border-primary/40 hover:bg-surface-container-lowest cursor-pointer hover:-translate-y-0.5'
                           }`}
                         >
-                          <span className="font-body-md flex justify-between items-center w-full">
-                            <span className={isSelected ? 'text-white' : 'text-on-surface'}>{opt.nombre}</span>
+                          <div className="flex justify-between items-start w-full mb-1">
+                            <span className={`font-body-md font-bold ${isSelected ? 'text-primary' : 'text-on-surface group-hover:text-primary transition-colors'}`}>
+                              {opt.nombre}
+                            </span>
                             {isSelected && (
-                              <span className="material-symbols-outlined text-[18px] text-white">check_circle</span>
+                              <span className="material-symbols-outlined text-[20px] text-primary animate-pop-in">
+                                check_circle
+                              </span>
                             )}
-                          </span>
-                          <span className={`font-caption mt-1 ${isSelected ? 'text-white/80' : 'text-on-surface-variant'}`}>
+                          </div>
+                          <span className={`font-caption text-xs mt-auto font-medium ${isSelected ? 'text-primary/80' : 'text-on-surface-variant'}`}>
                             {!hasStock 
                               ? '❌ Agotado' 
                               : opt.stock > 0 && opt.stock <= 5 && opt.nombre !== 'Sin ensalada' && opt.nombre !== 'Sin sopa' && opt.nombre !== 'Sin postre'
-                                ? `⚠️ ¡Solo ${opt.stock}!${extraCost || ' Sin costo adicional'}`
-                                : `${extraCost || 'Sin costo adicional'}`
+                                ? <span className="text-orange-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse"></span>¡Solo quedan {opt.stock}!</span>
+                                : <span className="text-emerald-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Disponible</span>
                             }
                           </span>
+                          {extraCost && (
+                            <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold w-fit ${isSelected ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant'}`}>
+                              +{extraCost.replace(' (+ $', '$').replace(')', '')}
+                            </span>
+                          )}
                         </button>
                       );
                     })}
@@ -677,7 +704,7 @@ export default function DomiciliosPage() {
               ¿Quiénes somos?
             </h3>
             <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
-              En <strong>Super IN</strong> nos apasiona llevar la sazón casera y tradicional del Caribe a tu mesa. Cocinamos cada plato al día con ingredientes frescos comprados a productores locales en Barranquilla, garantizando un almuerzo contundente y lleno de amor.
+              En <strong>Super IN</strong> nos apasiona ofrecer los mejores almuerzos ejecutivos directos a tu mesa. Cocinamos cada plato al día con ingredientes frescos comprados a productores locales en Barranquilla, garantizando un almuerzo contundente y nutritivo para tu jornada laboral.
             </p>
           </div>
           {/* Col 2 */}

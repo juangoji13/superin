@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Inter } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -89,6 +90,28 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-on-background">
         {children}
+        <Toaster position="top-center" toastOptions={{
+          style: {
+            background: '#333',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '16px',
+            fontSize: '14px',
+            fontWeight: '500',
+          },
+          success: {
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }} />
       </body>
     </html>
   );

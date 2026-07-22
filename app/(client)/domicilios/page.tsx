@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart, PreparedProduct, CustomDishComponents } from '@/context/CartContext';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 // Local Fallback Data
 const MOCK_PREPARED_DISHES = [
@@ -190,7 +191,7 @@ export default function DomiciliosPage() {
   const submitCustomToCart = () => {
     // Validate required selections
     if (!customSelections.Arroz || !customSelections.Proteína || !customSelections.Acompañamiento || !customSelections.Bebida) {
-      alert('Por favor selecciona los componentes obligatorios (Arroz, Proteína, Acompañamiento y Bebida).');
+      toast.error('Por favor selecciona los componentes obligatorios (Arroz, Proteína, Acompañamiento y Bebida).');
       return;
     }
 

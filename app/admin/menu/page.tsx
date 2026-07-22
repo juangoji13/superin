@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface Categoria {
   id: number;
@@ -116,7 +117,7 @@ export default function AdminMenuPage() {
         prev.map((p) => (p.id === id ? { ...p, activo: !currentVal } : p))
       );
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -133,7 +134,7 @@ export default function AdminMenuPage() {
         prev.map((p) => (p.id === id ? { ...p, stock: Math.max(0, newStock) } : p))
       );
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -150,7 +151,7 @@ export default function AdminMenuPage() {
         prev.map((o) => (o.id === id ? { ...o, activo: !currentVal } : o))
       );
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -198,7 +199,7 @@ export default function AdminMenuPage() {
         }
       }
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -237,7 +238,7 @@ export default function AdminMenuPage() {
         setNewProdDias([]);
       }
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -271,7 +272,7 @@ export default function AdminMenuPage() {
         setNewOptStock('20');
       }
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -301,7 +302,7 @@ export default function AdminMenuPage() {
         setNewProdFoto(data.publicUrl);
       }
     } catch (err: any) {
-      alert('Error subiendo imagen: ' + err.message);
+      toast.error('Error subiendo imagen: ' + err.message);
     } finally {
       setUploading(false);
     }
@@ -349,7 +350,7 @@ export default function AdminMenuPage() {
         setEditingProduct(null);
       }
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -389,7 +390,7 @@ export default function AdminMenuPage() {
         setEditingOption(null);
       }
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -403,7 +404,7 @@ export default function AdminMenuPage() {
       if (error) throw error;
       setProductos((prev) => prev.filter((p) => p.id !== id));
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -417,7 +418,7 @@ export default function AdminMenuPage() {
       if (error) throw error;
       setOpciones((prev) => prev.filter((o) => o.id !== id));
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 

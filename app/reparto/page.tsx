@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface Order {
   codigo: string;
@@ -147,7 +148,7 @@ export default function RepartoPage() {
           .filter((o) => !(o.codigo === code && newStatus === 'Entregado'))
       );
     } catch (err: any) {
-      alert(`Error al actualizar estado: ${err.message}`);
+      toast.error(`Error al actualizar estado: ${err.message}`);
     }
   };
   

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface OrderDetail {
   id: string;
@@ -266,7 +267,7 @@ export default function PedidoEstadoPage() {
   const handleCancelOrder = async () => {
     if (!order) return;
     if (order.estado !== 'Pendiente de confirmación') {
-      alert('Solo se pueden cancelar pedidos pendientes de confirmación.');
+      toast.error('Solo se pueden cancelar pedidos pendientes de confirmación.');
       return;
     }
 
@@ -281,10 +282,10 @@ export default function PedidoEstadoPage() {
 
       if (error) throw error;
       setOrder(prev => prev ? { ...prev, estado: 'Cancelado' } : null);
-      alert('Pedido cancelado correctamente.');
+      toast.success('Pedido cancelado correctamente.');
     } catch (err) {
       console.error(err);
-      alert('No se pudo cancelar el pedido. Por favor contáctanos por WhatsApp.');
+      toast.error('No se pudo cancelar el pedido. Por favor contáctanos por WhatsApp.');
     }
   };
 
@@ -413,41 +414,68 @@ export default function PedidoEstadoPage() {
         </div>
       )}
 
-      {/* Estimated Time Progress Bar */}
-      {order.tiempo_estimado && order.estado !== 'Cancelado' && order.estado !== 'Expirado' && (
-        <article className="bg-surface-container-lowest rounded-2xl p-md shadow-sm border border-outline-variant/70 flex flex-col gap-sm">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-label-sm text-xs text-on-background font-bold">Tiempo Estimado de Entrega</h3>
-              <p className="font-caption text-[11px] text-on-surface-variant mt-0.5">
-                {order.estado === 'Entregado' 
-                  ? '¡Tu pedido ha sido entregado!' 
-                  : `Restan aproximadamente ${remainingMinutes} minutos`}
-              </p>
+      {/* 1. Seguimiento de Entrega (Stepper + Progress Bar Merged) */}
+      <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md mb-xs">
+        <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold flex justify-between items-center">
+          <span>Seguimiento de Entrega</span>
+          {order.tiempo_estimado && order.estado !== 'Cancelado' && order.estado !== 'Expirado' && (
+            <span className="font-label-sm text-xs text-primary bg-primary/10 px-3 py-1 rounded-full flex items-center gap-1">
+              <span className="material-symbols-outlined text-[16px]">schedule</span>
+              {order.estado === 'Entregado' ? 'Entregado' : `${remainingMinutes} min aprox`}
+            </span>
+          )}
+        </h2>
+
+        {order.estado === 'Cancelado' ? (
+          <div className="text-center py-xl text-on-surface-variant flex flex-col items-center">
+            <span className="material-symbols-outlined text-[48px] text-error mb-sm">block</span>
+            <p className="font-body-md font-semibold">El pedido fue cancelado y no se está procesando.</p>
+          </div>
+        ) : (
+          <div className="w-full overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+            <div className="flex flex-row items-start min-w-[400px] md:min-w-full w-full relative pt-2">
+              {STEPS.map((step, index) => {
+                const isActive = index <= activeIndex;
+                const isCurrent = index === activeIndex;
+
+                return (
+                  <div key={step.name} className="flex-1 flex flex-col items-center group relative w-full">
+                    {/* Horizontal Line */}
+                    {index < STEPS.length - 1 && (
+                      <div className={`absolute top-5 left-[50%] w-full h-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
+                    )}
+                    
+                    <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all duration-300 ${isActive ? 'bg-primary text-on-primary shadow-sm scale-110' : 'bg-surface-container-highest border border-outline-variant text-outline-variant scale-100'}`}>
+                      <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{step.icon}</span>
+                    </div>
+                    
+                    {/* Only show title if it's the current step */}
+                    <div className={`mt-3 text-center flex-1 px-1 w-full transition-all duration-300 ${isCurrent ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+                      <h3 className="font-label-sm text-sm text-primary font-bold leading-tight">{step.name}</h3>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <span className="material-symbols-outlined text-primary text-sm">schedule</span>
+            
+            {/* Progress Bar (Merged visually below stepper) */}
+            {order.tiempo_estimado && order.estado !== 'Cancelado' && order.estado !== 'Expirado' && (
+              <div className="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden mt-6">
+                <div
+                  className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            )}
           </div>
+        )}
+      </article>
 
-          <div className="w-full bg-surface-container-high rounded-full h-2.5 p-[1px] border border-outline-variant/40 overflow-hidden mt-1">
-            <div
-              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className="flex justify-between text-[9px] font-extrabold text-on-surface-variant/80 px-1 mt-0.5">
-            <span>Pedido Recibido</span>
-            <span>En Preparación</span>
-            <span>Entregado</span>
-          </div>
-        </article>
-      )}
-
+      {/* 2. Grid for Detalles & Productos */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-        {/* Left Column: Details & Items */}
+        {/* Left Column: Details */}
         <div className="flex flex-col gap-lg">
-          {/* Summary */}
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md h-full">
             <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold">
               Detalles de Entrega
             </h2>
@@ -472,17 +500,13 @@ export default function PedidoEstadoPage() {
                 <span className="text-on-surface-variant font-medium text-xs">Método de Pago</span>
                 <span className="font-semibold text-on-background text-xs">{order.metodo_pago}</span>
               </div>
-              {order.tiempo_estimado && (
-                <div className="flex justify-between items-center py-1 bg-primary-container/10 p-sm rounded-lg border border-outline-variant/40">
-                  <span className="text-primary font-bold text-xs">Tiempo estimado</span>
-                  <span className="font-bold text-primary text-xs">{order.tiempo_estimado} minutos</span>
-                </div>
-              )}
             </div>
           </article>
-
-          {/* Items List */}
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
+        </div>
+        
+        {/* Right Column: Productos */}
+        <div className="flex flex-col gap-lg">
+          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md h-full">
             <h2 className="font-title-md text-title-md text-on-background border-b border-outline-variant/70 pb-sm font-bold">
               Productos Solicitados
             </h2>
@@ -514,88 +538,41 @@ export default function PedidoEstadoPage() {
                 </div>
               ))}
             </div>
-            <div className="border-t border-outline-variant/40 pt-md flex justify-between items-center mt-sm">
+            <div className="border-t border-outline-variant/40 pt-md flex justify-between items-center mt-auto">
               <span className="font-title-md text-on-background font-bold">Total</span>
               <span className="font-title-md text-primary font-bold">
                 ${order.total.toLocaleString('es-CO')} COP
               </span>
             </div>
           </article>
-
-          {/* Actions */}
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col items-center text-center gap-md">
-            <p className="font-body-md text-on-surface-variant">
-              ¿Quieres realizar un cambio o resolver dudas sobre tu pedido?
-            </p>
-            <a
-              href={`https://wa.me/${whatsappContact}?text=${encodeURIComponent(`Hola, tengo una pregunta sobre mi pedido ${order.codigo}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full bg-[#25D366] text-white font-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold border border-[#25D366]/30"
-            >
-              <span className="material-symbols-outlined">chat</span>
-              Chatear por WhatsApp
-            </a>
-            {order.estado === 'Pendiente de confirmación' && (
-              <button
-                onClick={handleCancelOrder}
-                className="w-full bg-transparent text-error border border-error hover:bg-error-container/10 font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-sm transition-colors mt-2 text-sm cursor-pointer"
-              >
-                Cancelar Pedido
-              </button>
-            )}
-          </article>
-        </div>
-
-        {/* Right Column: Timeline & Map */}
-        <div className="flex flex-col gap-lg">
-          <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col gap-md">
-            <h2 className="font-title-md text-title-md text-on-background mb-lg border-b border-outline-variant/70 pb-sm font-bold">
-              Seguimiento de Entrega
-            </h2>
-            {order.estado === 'Cancelado' ? (
-              <div className="text-center py-xl text-on-surface-variant flex flex-col items-center">
-                <span className="material-symbols-outlined text-[48px] text-error mb-sm">block</span>
-                <p className="font-body-md font-semibold">El pedido fue cancelado y no se está procesando.</p>
-              </div>
-            ) : (
-              <div className="flex flex-col md:flex-row items-start md:items-start w-full relative pt-2">
-                {STEPS.map((step, index) => {
-                  const isActive = index <= activeIndex;
-                  const isCurrent = index === activeIndex;
-
-                  return (
-                    <div key={step.name} className="flex-1 flex md:flex-col items-start md:items-center group relative w-full mb-6 md:mb-0">
-                      {/* Horizontal Line for Desktop */}
-                      {index < STEPS.length - 1 && (
-                        <div className={`hidden md:block absolute top-5 left-[50%] w-full h-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
-                      )}
-                      {/* Vertical Line for Mobile */}
-                      {index < STEPS.length - 1 && (
-                        <div className={`md:hidden absolute left-[22px] top-10 h-full w-[2px] z-0 transition-colors duration-500 ${index < activeIndex ? 'bg-primary' : 'bg-outline-variant/40'}`} />
-                      )}
-                      
-                      <div className={`relative z-10 w-11 h-11 rounded-full flex items-center justify-center ring-4 ring-surface-container-lowest transition-all duration-300 ${isActive ? 'bg-primary text-on-primary shadow-sm scale-110' : 'bg-surface-container-highest border border-outline-variant text-outline-variant scale-100'}`}>
-                        <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{step.icon}</span>
-                      </div>
-                      
-                      <div className="ml-4 md:ml-0 md:mt-3 md:text-center flex-1 pr-2 md:pr-0">
-                        <h3 className={`font-label-sm text-sm transition-colors ${isCurrent ? 'text-primary font-bold' : isActive ? 'text-on-background font-semibold' : 'text-on-surface-variant/60 font-medium'}`}>{step.name}</h3>
-                        <p className="hidden md:block font-caption text-xs text-on-surface-variant mt-1.5 px-1 leading-tight max-w-[140px] mx-auto">{step.description}</p>
-                        {/* Show description on mobile only if current step */}
-                        {isCurrent && (
-                          <p className="md:hidden font-caption text-xs text-on-surface-variant mt-1">{step.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </article>
-
         </div>
       </div>
+
+      {/* 3. Actions */}
+      <article className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-outline-variant/70 flex flex-col items-center text-center gap-md max-w-xl mx-auto w-full mt-4">
+        <p className="font-body-md text-on-surface-variant">
+          ¿Quieres realizar un cambio o resolver dudas sobre tu pedido?
+        </p>
+        <div className="flex flex-col sm:flex-row gap-sm w-full">
+          <a
+            href={`https://wa.me/${whatsappContact}?text=${encodeURIComponent(`Hola, tengo una pregunta sobre mi pedido ${order.codigo}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-[#25D366] text-white font-label-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-[#1EBE5C] transition-colors shadow-md text-sm font-bold border border-[#25D366]/30"
+          >
+            <span className="material-symbols-outlined">chat</span>
+            Chatear por WhatsApp
+          </a>
+          {order.estado === 'Pendiente de confirmación' && (
+            <button
+              onClick={handleCancelOrder}
+              className="flex-1 bg-transparent text-error border border-error hover:bg-error-container/10 font-semibold py-3 px-6 rounded-full flex items-center justify-center gap-sm transition-colors text-sm cursor-pointer"
+            >
+              Cancelar Pedido
+            </button>
+          )}
+        </div>
+      </article>
     </div>
   );
 }

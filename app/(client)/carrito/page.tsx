@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 // Standard fallback time slots
 const DEFAULT_TIME_SLOTS = [
@@ -177,7 +178,7 @@ export default function CarritoPage() {
     }
 
     if (paymentMethod === 'Transferencia' && !receiptFile) {
-      alert('Por favor adjunta el comprobante de transferencia.');
+      toast.error('Por favor adjunta el comprobante de transferencia.');
       return;
     }
 
@@ -331,7 +332,7 @@ Pago: ${paymentMethod}`;
       window.open(whatsappUrl, '_blank');
 
     } catch (err: any) {
-      alert(`Ocurrió un error al registrar el pedido: ${err.message || err}`);
+      toast.error(`Ocurrió un error al registrar el pedido: ${err.message || err}`);
       console.error(err);
     } finally {
       setSubmitting(false);

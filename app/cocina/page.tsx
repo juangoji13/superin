@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface OrderDetail {
   id: string;
@@ -159,7 +160,7 @@ export default function CocinaPage() {
       // Update local state instantly
       setOrders(prev => prev.filter(o => !(o.codigo === code && newStatus === 'Listo')));
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      toast.error(`Error: ${err.message}`);
     }
   };
 

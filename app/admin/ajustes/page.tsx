@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface BancoCuenta {
   banco: string;
@@ -129,7 +130,7 @@ export default function AdminAjustesPage() {
   const handleAddBanco = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newBanco.trim() || !newNumero.trim() || !newTitular.trim()) {
-      alert('Por favor completa todos los campos para agregar la cuenta bancaria.');
+      toast.error('Por favor completa todos los campos para agregar la cuenta bancaria.');
       return;
     }
 

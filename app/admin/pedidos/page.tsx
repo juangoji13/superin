@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'react-hot-toast';
 
 interface OrderDetail {
   id: string;
@@ -314,7 +315,7 @@ export default function AdminPedidosPage() {
       setShowConfirmModal(false);
       setConfirmOrderTarget(null);
     } catch (err: any) {
-      alert(`Error al confirmar pedido: ${err.message}`);
+      toast.error(`Error al confirmar pedido: ${err.message}`);
     }
   };
 
@@ -327,7 +328,7 @@ export default function AdminPedidosPage() {
 
       if (error) throw error;
     } catch (err: any) {
-      alert(`Error al actualizar estado: ${err.message}`);
+      toast.error(`Error al actualizar estado: ${err.message}`);
     }
   };
 
@@ -343,7 +344,7 @@ export default function AdminPedidosPage() {
 
       if (error) throw error;
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message);
     }
   };
 
@@ -366,7 +367,7 @@ export default function AdminPedidosPage() {
       if (error) throw error;
       setLocalAbierto(newStatus);
     } catch (err: any) {
-      alert('Error al actualizar estado del local: ' + err.message);
+      toast.error('Error al actualizar estado del local: ' + err.message);
     } finally {
       setLoadingLocalStatus(false);
     }
@@ -413,7 +414,7 @@ export default function AdminPedidosPage() {
       link.click();
       document.body.removeChild(link);
     } catch (err: any) {
-      alert('Error al exportar reporte: ' + err.message);
+      toast.error('Error al exportar reporte: ' + err.message);
     }
   };
 
